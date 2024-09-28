@@ -3,7 +3,6 @@
 CS-401_Group Project Requirements
 Software Requirements Specification
 
-
 1. Purpose
 This document outlines the requirements for a Large Banking System.
 
@@ -20,74 +19,168 @@ This document outlines the requirements for a Large Banking System.
               User - A regular account user. Has the ability to draw or add funds from their account.
               Joint Account - Multiple users can share the same account.
               Client - Module for client code.
-              Host - Module for server code.
+              Server - Module for server code.
               Message - Module for data transfer between client and server.
               JVM - Java Virtual Machine.
 
-       1.3. References 
-              Use Cases:
+       1.3. References and Use Cases:
 
-              Use Case ID: 1
+       Use Case ID: 1
               Use Case Name: Deposit cash
               Relevant Requirements: 
+                     The cash must be added to the account's balance.
               Primary Actor: 
-              Pre-condition: 
+                     Client Module
+              Pre-condition:
+                     The user is logged into the account they want to deposit cash to.
               Post-condition: 
+                     The cash amount is deposited to the account in which the user is logged into.
               Basic Flow: 
+                     1. The user logs into the account.
+                     2. The user requests to deposit some $ amount.
+                     3. The client module uses the message module to pack and send the request.
+                     4. The server module recieves the message.
+                     5. The server module stores the $ amount in the correct account file.
               Alternate Flows: 
+                     1. The user tries to logs in.
+                     2. log in fails.
+
               Exceptions: 
+                     1. The server may fail to recieve or fulfill the request due to reasons
+                     such as data corruption and connection issue.
               Related Use Cases: 
+                     Retrieve cash
 
 
-              Use Case ID: 2
+       Use Case ID: 2
               Use Case Name: Retrieve cash
               Relevant Requirements: 
+                     The cash must be taken out of the account's balance.
               Primary Actor: 
+                     Client Module
               Pre-condition: 
+                     The user is logged into their account and there exist enough balance to retrieve.
               Post-condition: 
+                     The retrieved cash must be subtracted from the account balance.
               Basic Flow: 
+                     1. The user logs into the account.
+                     2. The user requests to retrieve some $ amount.
+                     3. The client module uses the message module to pack and send the request.
+                     4. The server module recieves the message.
+                     5. The server module subtracts the $ amount from the correct account.
               Alternate Flows: 
+                     1. The user tries to logs in.
+                     2. log in fails.
+
               Exceptions: 
+                     Server failiure
+                     data corruption
+                     wrong account (account doesn't exist or has been deleted)
               Related Use Cases: 
+                     Deposit cash
 
-
-              Use Case ID: 3
+       Use Case ID: 3
               Use Case Name: log in
               Relevant Requirements: 
+                     The user must be logged into the account they want to log in.
               Primary Actor: 
+                     Client Module
               Pre-condition: 
+                     The user is not logged into the account.
+                     The account trying to log into exists.
               Post-condition: 
+                     The user is logged into the account.
               Basic Flow: 
+                     1. The user tries to log into their account.
+                     2. The user enters their credentials
+                     3. The user is logged into their account.
               Alternate Flows: 
+                     1. The user tries to logs in.
+                     2. log in fails.
+
+                     1. user enter credentials
+                     2. Wrong credentials, log in fails.
               Exceptions: 
+                     The user doesn't exist. 
               Related Use Cases: 
+                     None
 
-
-              Use Case ID: 4
+       Use Case ID: 4
               Use Case Name: send message to server
               Relevant Requirements: 
+                     The client message is sent to the server.
               Primary Actor: 
-              Pre-condition: 
+                     Message Module
+              Pre-condition:
+                     The message to send is has been initialized with proper information. 
               Post-condition: 
-              Basic Flow: 
+                     The message is sent to the server
+              Basic Flow:
+                     1. User makes a request Ex deposit cash.
+                     2. The request is packed and sent via the message module.
+                     3. The request is recieved by the server module and unpacked.
               Alternate Flows: 
-              Exceptions: 
+                     None
+              Exceptions:
+                     This module is likely entirely private with sole purpose of moving back and forth
+                     between the server and the client.
+                     None. 
               Related Use Cases: 
+                     retrieve cash, deposit cash
 
-
-              Use Case ID: 5
+       Use Case ID: 5
               Use Case Name: retrieve message from server
               Relevant Requirements: 
+                     The message is transfered to the client module.
               Primary Actor: 
-              Pre-condition: 
+                     Message Module
+              Pre-condition:
+                     The information asked for is available in the bank account.
               Post-condition: 
-              Basic Flow: 
+                     The information asked will be made available to the client.
+              Basic Flow:
+                     1. The client makes a request using message module.
+                     2. The server processes the request and sends a response to client.
+                     3. The client displays recieves the response and uses it as needed.
               Alternate Flows: 
+                     1. The client makes a request.
+                     2. No response, there's no active server.
               Exceptions: 
+                     The server is down.
+                     The server doesn't exist.
+              Related Use Cases:
+                     retrieve cash, deposit cash 
+
+
+       Use Case ID: 6
+              Use Case Name: get authenticated
+              Relevant Requirements: 
+                     The user is authenticated.
+              Primary Actor: 
+                     Server Module
+              Pre-condition: 
+                     the user has input their credentials.
+              Post-condition: 
+                     the user is authenticated.
+              Basic Flow: 
+                     1. user inputs their credentials.
+                     2. the message gets sent to the server for authentication.
+                     3. the server returns the message after evaluating it.
+                     4. the the user is authenticated.
+              Alternate Flows: 
+                     1. user inputs their credentials.
+                     2. No server response.
+
+                     1->2->3 // basic flow.
+                     4. The authentication fails.
+              Exceptions: 
+                     data for authentication doesn't exist.
+                     server doesn't exists.
               Related Use Cases: 
+                     log in
 
 
-              Use Case ID: 1
+       Use Case ID: 7
               Use Case Name: 
               Relevant Requirements: 
               Primary Actor: 
@@ -99,19 +192,7 @@ This document outlines the requirements for a Large Banking System.
               Related Use Cases: 
 
 
-              Use Case ID: 1
-              Use Case Name: 
-              Relevant Requirements: 
-              Primary Actor: 
-              Pre-condition: 
-              Post-condition: 
-              Basic Flow: 
-              Alternate Flows: 
-              Exceptions: 
-              Related Use Cases: 
-
-
-              Use Case ID: 1
+       Use Case ID: 8
               Use Case Name: 
               Relevant Requirements: 
               Primary Actor: 
@@ -133,7 +214,7 @@ This document outlines the requirements for a Large Banking System.
 
        2.2. Product Architecture 
               The system will be organized into 5 major modules: the Operator module, the Account module, 
-              the Host module, the Message, and the Client module. Note: System architecture should follow 
+              the Server module, the Message, and the Client module. Note: System architecture should follow 
               standard OO design practices. 
 
        2.3. Product Functionality/Features 
@@ -170,7 +251,8 @@ This document outlines the requirements for a Large Banking System.
 3.1. Functional Requirements 
 
        3.1.1. Common Requirements: 
-       
+              3.1.1.1 There should be a standard way of storing information in the txt data file/s.
+              
        3.1.2. Operator Module Requirements: 
               3.1.2. Regular User Sub-Module Requirements:
                      3.1.2.1 ...
@@ -215,7 +297,7 @@ This document outlines the requirements for a Large Banking System.
                      3.1.3.3 The savings account will have a 0.10% annual increase rate.
 
        3.1.4 Message Module Requirements:
-              3.1.4.1 Message between client and host through the internet will be encapsulated. 
+              3.1.4.1 Message between client and Server Modules through the internet will be encapsulated. 
               3.1.4.2 Encapsulated data will be referred to a package.
               3.1.4.3 Package will contain data, current address, receiving address, and type 
               of data.
@@ -235,8 +317,9 @@ This document outlines the requirements for a Large Banking System.
        3.1.5 Client Module Requirements:
 
 
-       3.1.6 Host Module Requirements:
-
+       3.1.6 Server Module Requirements:
+              3.1.6.1 The server must restart if data is corrupted.
+              3.1.6.2 The server should have the ability to transfer funds between differerent accounts.
 
        3.2. External Interface Requirements 
 
@@ -245,8 +328,8 @@ This document outlines the requirements for a Large Banking System.
 
 4. Non-Functional Requirements 
 4.1. Security and Privacy Requirements 
-       4.1.1. User will need to be authenticated before getting access to any sensitive information such as bank balance, 
-       account information and account actions. 
+       4.1.1. User will need to be authenticated before getting access to any sensitive information
+       such as bank balance, account information and account actions. 
        4.1.2. A sequential ordering of server request and response need to be created to prevent 
        inappropriate sequence of actions that affects the balance. 
        4.1.3. Proper authentication methods need to be in place to prevent users from being able 
