@@ -3,8 +3,7 @@
 CS-401_Group Project Requirements
 Software Requirements Specification
 
-
-1.	Purpose
+1. Purpose
 This document outlines the requirements for a Large Banking System.
 
        1.1. Scope
@@ -19,71 +18,169 @@ This document outlines the requirements for a Large Banking System.
               GUI - Graphical user interface.
               User - A regular account user. Has the ability to draw or add funds from their account.
               Joint Account - Multiple users can share the same account.
+              Client - Module for client code.
+              Server - Module for server code.
+              Message - Module for data transfer between client and server.
+              JVM - Java Virtual Machine.
 
-       1.3. References 
-              Use Cases:
+       1.3. References and Use Cases:
 
-              Use Case ID: 1
+       Use Case ID: 1
               Use Case Name: Deposit cash
               Relevant Requirements: 
+                     The cash must be added to the account's balance.
               Primary Actor: 
-              Pre-condition: 
+                     Client Module
+              Pre-condition:
+                     The user is logged into the account they want to deposit cash to.
               Post-condition: 
+                     The cash amount is deposited to the account in which the user is logged into.
               Basic Flow: 
+                     1. The user logs into the account.
+                     2. The user requests to deposit some $ amount.
+                     3. The client module uses the message module to pack and send the request.
+                     4. The server module recieves the message.
+                     5. The server module stores the $ amount in the correct account file.
               Alternate Flows: 
+                     1. The user tries to logs in.
+                     2. log in fails.
+
               Exceptions: 
+                     1. The server may fail to recieve or fulfill the request due to reasons
+                     such as data corruption and connection issue.
               Related Use Cases: 
+                     Retrieve cash
 
 
-              Use Case ID: 2
+       Use Case ID: 2
               Use Case Name: Retrieve cash
               Relevant Requirements: 
+                     The cash must be taken out of the account's balance.
               Primary Actor: 
+                     Client Module
               Pre-condition: 
+                     The user is logged into their account and there exist enough balance to retrieve.
               Post-condition: 
+                     The retrieved cash must be subtracted from the account balance.
               Basic Flow: 
+                     1. The user logs into the account.
+                     2. The user requests to retrieve some $ amount.
+                     3. The client module uses the message module to pack and send the request.
+                     4. The server module recieves the message.
+                     5. The server module subtracts the $ amount from the correct account.
               Alternate Flows: 
+                     1. The user tries to logs in.
+                     2. log in fails.
+
               Exceptions: 
+                     Server failiure
+                     data corruption
+                     wrong account (account doesn't exist or has been deleted)
               Related Use Cases: 
+                     Deposit cash
 
-
-              Use Case ID: 3
+       Use Case ID: 3
               Use Case Name: log in
               Relevant Requirements: 
+                     The user must be logged into the account they want to log in.
               Primary Actor: 
+                     Client Module
               Pre-condition: 
+                     The user is not logged into the account.
+                     The account trying to log into exists.
               Post-condition: 
+                     The user is logged into the account.
               Basic Flow: 
+                     1. The user tries to log into their account.
+                     2. The user enters their credentials
+                     3. The user is logged into their account.
               Alternate Flows: 
+                     1. The user tries to logs in.
+                     2. log in fails.
+
+                     1. user enter credentials
+                     2. Wrong credentials, log in fails.
               Exceptions: 
+                     The user doesn't exist. 
               Related Use Cases: 
+                     None
 
-
-              Use Case ID: 4
+       Use Case ID: 4
               Use Case Name: send message to server
               Relevant Requirements: 
+                     The client message is sent to the server.
               Primary Actor: 
-              Pre-condition: 
+                     Message Module
+              Pre-condition:
+                     The message to send is has been initialized with proper information. 
               Post-condition: 
-              Basic Flow: 
+                     The message is sent to the server
+              Basic Flow:
+                     1. User makes a request Ex deposit cash.
+                     2. The request is packed and sent via the message module.
+                     3. The request is recieved by the server module and unpacked.
               Alternate Flows: 
-              Exceptions: 
+                     None
+              Exceptions:
+                     This module is likely entirely private with sole purpose of moving back and forth
+                     between the server and the client.
+                     None. 
               Related Use Cases: 
+                     retrieve cash, deposit cash
 
-
-              Use Case ID: 5
+       Use Case ID: 5
               Use Case Name: retrieve message from server
               Relevant Requirements: 
+                     The message is transfered to the client module.
               Primary Actor: 
-              Pre-condition: 
+                     Message Module
+              Pre-condition:
+                     The information asked for is available in the bank account.
               Post-condition: 
-              Basic Flow: 
+                     The information asked will be made available to the client.
+              Basic Flow:
+                     1. The client makes a request using message module.
+                     2. The server processes the request and sends a response to client.
+                     3. The client displays recieves the response and uses it as needed.
               Alternate Flows: 
+                     1. The client makes a request.
+                     2. No response, there's no active server.
               Exceptions: 
+                     The server is down.
+                     The server doesn't exist.
+              Related Use Cases:
+                     retrieve cash, deposit cash 
+
+
+       Use Case ID: 6
+              Use Case Name: get authenticated
+              Relevant Requirements: 
+                     The user is authenticated.
+              Primary Actor: 
+                     Server Module
+              Pre-condition: 
+                     the user has input their credentials.
+              Post-condition: 
+                     the user is authenticated.
+              Basic Flow: 
+                     1. user inputs their credentials.
+                     2. the message gets sent to the server for authentication.
+                     3. the server returns the message after evaluating it.
+                     4. the the user is authenticated.
+              Alternate Flows: 
+                     1. user inputs their credentials.
+                     2. No server response.
+
+                     1->2->3 // basic flow.
+                     4. The authentication fails.
+              Exceptions: 
+                     data for authentication doesn't exist.
+                     server doesn't exists.
               Related Use Cases: 
+                     log in
 
 
-              Use Case ID: 1
+       Use Case ID: 7
               Use Case Name: 
               Relevant Requirements: 
               Primary Actor: 
@@ -95,19 +192,7 @@ This document outlines the requirements for a Large Banking System.
               Related Use Cases: 
 
 
-              Use Case ID: 1
-              Use Case Name: 
-              Relevant Requirements: 
-              Primary Actor: 
-              Pre-condition: 
-              Post-condition: 
-              Basic Flow: 
-              Alternate Flows: 
-              Exceptions: 
-              Related Use Cases: 
-
-
-              Use Case ID: 1
+       Use Case ID: 8
               Use Case Name: 
               Relevant Requirements: 
               Primary Actor: 
@@ -124,60 +209,62 @@ This document outlines the requirements for a Large Banking System.
               can also add or remove accounts, add people to an account, or take off people from an account. 
 
 
-2. Overall Description 
-// Rohan's note: this whole section is still empty work on it as needed. 
+2. Overall Description
        2.1. Product Perspective 
 
        2.2. Product Architecture 
               The system will be organized into 5 major modules: the Operator module, the Account module, 
-              the Host module, the Message, and the Client module. Note: System architecture should follow 
+              the Server module, the Message, and the Client module. Note: System architecture should follow 
               standard OO design practices. 
 
        2.3. Product Functionality/Features 
               The high-level features of the system are as follows (see section 3 of this document for more 
               detailed requirements that address these features): 
+              2.3.1. Users would be able to login to the system, and conduct actions such as:
+                     a. Transfer funds to other accounts.
+                     b. Manage and see current account balance and information. 
+                     c. Make Virtual Deposits.
+              2.3.2. Users are able to, with the help of a teller, do the following actions:
+                     a. Withdraw money. 
+                     b. Add, remove or edit access to their accounts. 
+                     c. Make a deposit. 
+              2.3.3. 
+
 
        2.4. Constraints 
-              List appropriate constraints.
-              Constraint example: Since users may use any web browser to access the system, no browser-
-              specific code is to be used in the system. 
+              2.4.1. The software will be made in Java, hence the software will need to keep in mind the amount 
+              of objects and keep it to a minimum at all times. 
+              2.4.2. The software will be made for home use as well, hence we will need to keep in mind that 
+              internet connection may be unstable/interrupted during use, and proper measures will need to be taken care of. 
+              2.4.3. 
 
        2.5. Assumptions and Dependencies
-              List appropriate assumptions 
-              Assumption Example: It is assumed that the maximum number of users at a given time is 
-              15,000. 
+              2.5.1. It is assumed that for client-teller interactions, both parties are physically together, 
+              and that the customers are able to provide credentials and proof of identities to the tellers. 
+              2.5.2. It is assumed that in-person deposits are monitored and assisted by a teller such that 
+              any increase in bank balance is already verified to be correct. 
+              2.5.3. It is assumed that there are no transfer fees for any transfer action.
+
 
 3. Specific Requirements 
 
 3.1. Functional Requirements 
 
        3.1.1. Common Requirements: 
-       /*
-              3.1.1.1 Each account will have a unique serial ID used to identify the account.
-              3.1.1.1.1 Serial ID is generated upon account initialization.
-              3.1.1.1.2 Serial ID has a pattern for identification.
-              3.1.1.1.3 Serial ID will be used to authenticate an Account, along with a user 
-              generated passcode, which is initiated during account creation. (currently 
-              disallowing changing passcode)
-              3.1.1.2 User may be registered to an account.
-              3.1.1.2.1 Each registered user gains access to the account through 
-              authentication with the account's reference list. 
-              3.1.1.2.2 Adding and Removing users to account requires the SU.
-              3.1.1.2.3 Multiple Users may be registered to the same account.
-              3.1.1.2.4 The removal of the last User in an account will result in its closure.
-              3.1.1.3 The ability to transfer funds.
-       */
-       //move this part into account //Phil's note
-       3.1.2. User Module Requirements: 
-       //use 3.1.2 for operator and 3.1.2.* and 3.1.2.* for submodule user and super user, check 3.1.4 for example of format //Phil's note
-       3.1.2. SuperUser (Admin) Module Requirements: 
-              3.1.2.1 The superuser will have the ability to create new accounts for bankers
-              3.1.2.2 If a checking account has not been active in the last 6 months, the 
-              superuser has the ability to deactivate the said account. 
-              3.1.2.3 If an account has a negative balance or a history of overdrafts, the 
-              superuser will have the ability to declare the account closed.
-              3.1.2.4 The superuser has the ability to assign roles that have appropriate 
-              permissions
+              3.1.1.1 There should be a standard way of storing information in the txt data file/s.
+              
+       3.1.2. Operator Module Requirements: 
+              3.1.2. Regular User Sub-Module Requirements:
+                     3.1.2.1 ...
+
+              3.1.2. Super User (Admin) Module Requirements: 
+                     3.1.2.1 The superuser will have the ability to create new accounts for bankers
+                     3.1.2.2 If a checking account has not been active in the last 6 months, the 
+                     superuser has the ability to deactivate the said account. 
+                     3.1.2.3 If an account has a negative balance or a history of overdrafts, the 
+                     superuser will have the ability to declare the account closed.
+                     3.1.2.4 The superuser has the ability to assign roles that have appropriate 
+                     permissions
        
        3.1.3 Account Module Requirements:
               3.1.3.1 The account will have the date of creation.
@@ -187,39 +274,52 @@ This document outlines the requirements for a Large Banking System.
               3.1.3.5 The account will have a way to deposit funds.
               3.1.3.6 The account will have a way to extract funds.
               3.1.3.7 The account will have a way to destroy itself upon SU’s request.
+              3.1.3.8 Each account will have a unique serial ID used to identify the account.
+              3.1.1.9 Serial ID is generated upon account initialization.
+              3.1.1.10 Serial ID has a pattern for identification.
+              3.1.1.11 Serial ID will be used to authenticate an Account, along with a user 
+              generated passcode, which is initiated during account creation. (currently 
+              disallowing changing passcode)
+              3.1.1.12 The removal of the last User in an account will result in its closure.
+              3.1.1.13 Each registered user gains access to the account through 
+              authentication with the account's reference list. 
+              3.1.1.14 Only the SU can remove or add users from accounts.
+              3.1.1.15 Multiple Users may be registered to the same account.
+              3.1.1.16 Users can have multiple accounts.
 
-       3.1.3. Checking Account Module Requirements: 
-              3.1.3.1 The checking account has no limit on the number of withdrawals.
-              3.1.3.2 The checking account has a $5 maintenance fee per month.
+              3.1.3. Checking Account Sub-Module Requirements: 
+                     3.1.3.1 The checking account has no limit on the number of withdrawals.
+                     3.1.3.2 The checking account has a $5 maintenance fee per month.
 
-       3.1.3. Saving Account Module Requirements:
-              3.1.3.1 Savings account has a withdrawal limit of 6 monthly withdrawals without a fee.
-              3.1.3.2 If the user withdraws more than 6 times, they will be charged a $5 fee for every withdrawal.
-              3.1.5.2 The savings account will have a 0.10% annual increase rate.
+              3.1.3. Saving Account Sub-Module Requirements:
+                     3.1.3.1 Savings account has a withdrawal limit of 6 monthly withdrawals without a fee.
+                     3.1.3.2 If the user withdraws more than 6 times, they will be charged a $5 fee for every withdrawal.
+                     3.1.3.3 The savings account will have a 0.10% annual increase rate.
 
        3.1.4 Message Module Requirements:
-              3.1.4.1 Message between client and host through the internet will be encapsulated. 
-              3.1.4.1.1 Encapsulated data will be referred to a package.
-              3.1.4.1.2 Package will contain data, current address, receiving address, and type 
+              3.1.4.1 Message between client and Server Modules through the internet will be encapsulated. 
+              3.1.4.2 Encapsulated data will be referred to a package.
+              3.1.4.3 Package will contain data, current address, receiving address, and type 
               of data.
-              3.1.4.2 The encapsulated method will accept different type of information.
-              3.1.4.3 The encapsulated data is able to be decapsulated by the recipient.
-              3.1.4.4 There will be a processor, a sender, and a receiver on both side of the 
+              3.1.4.4 The encapsulated method will accept different type of information.
+              3.1.4.5 The encapsulated data is able to be decapsulated by the recipient.
+              3.1.4.6 There will be a processor, a sender, and a receiver on both side of the 
               connection.
-              3.1.4.4.1 Processor can encapsulate data into package or decapsulate package 
+              3.1.4.7 Processor can encapsulate data into package or decapsulate package 
               into data.
-              3.1.4.4.2 Sender will let processor create package from passed data and send 
+              3.1.4.8 Sender will let processor create package from passed data and send 
               package.
-              3.1.4.4.3 Receiver will listen on a designated port for packages and send them to 
+              3.1.4.9 Receiver will listen on a designated port for packages and send them to 
               processor to get data.
-              3.1.4.4.4 Processor, Sender, and Receiver can handle multiple packages 
+              3.1.4.10 Processor, Sender, and Receiver can handle multiple packages 
               synchronously.
 
        3.1.5 Client Module Requirements:
 
 
-       3.1.6 Host Module Requirements:
-
+       3.1.6 Server Module Requirements:
+              3.1.6.1 The server must restart if data is corrupted.
+              3.1.6.2 The server should have the ability to transfer funds between differerent accounts.
 
        3.2. External Interface Requirements 
 
@@ -228,14 +328,27 @@ This document outlines the requirements for a Large Banking System.
 
 4. Non-Functional Requirements 
 4.1. Security and Privacy Requirements 
-       The data will be stored in a text file.
-       Allow access if the user and password are correct.
+       4.1.1. User will need to be authenticated before getting access to any sensitive information
+       such as bank balance, account information and account actions. 
+       4.1.2. A sequential ordering of server request and response need to be created to prevent 
+       inappropriate sequence of actions that affects the balance. 
+       4.1.3. Proper authentication methods need to be in place to prevent users from being able 
+       to access credentials of other users in the system. 
+       4.1.4. Passwords and other authentication information needs to be processed server side, 
+       that is that any comparisons are done in the server and only a response is returned. 
+       4.1.5 The data will be stored in a text file.
 
 4.2. Environmental Requirements 
-       The system must be deployable on any OS, for Example: Linux, Mac, or Windows. 
-       The system has JVM as it's required to run Java code.
+       4.2.1. The software needs to be “adaptive” and light weight as the software will be used 
+       by customers in a variety of environments.
+       4.2.2. The software needs to be internet friendly, which means that information sent to the 
+       server should be checked and verified to be complete and whole before being sent. 
+       4.2.3. The software would need to be 
+       4.2.4 The system must be deployable on any OS, for Example: Linux, Mac, or Windows. 
+       4.2.5 The system has JVM as it's required to run Java code.
 
 4.3. Performance Requirements 
-       The system should be fast enough for the user to not experience a delay greater than 3 
+       4.3.1 The system should be fast enough for the user to not experience a delay greater than 3 
        seconds.
-
+       4.3.2 Most operations such as adding or retrieving cash are constant time operations and should be 
+       executed in reasonable time. Meaning the algorithm should take O(1) time.
