@@ -1,0 +1,296 @@
+Account Use Cases:
+Use Case ID: A001
+Use Case Name: Deposit cash
+Relevant Requirements: 
+    - The cash must be added to the account's balance.
+Primary Actor: 
+    - Client Module
+Pre-condition:
+    - The user is logged into the account they want to deposit cash to.
+Post-condition: 
+    - The cash amount is deposited to the account in which the user is logged into.
+Basic Flow: 
+    1. The user logs into the account.
+    2. The user requests to deposit some $ amount.
+    3. The client module uses the message module to pack and send the request.
+    4. The server module receives the message.
+    5. The server module stores the $ amount in the correct account file.
+Alternate Flows: 
+    1. The user tries to log in.
+    2. Log in fails.
+Exceptions: 
+    - The server may fail to receive or fulfill the request due to reasons such as data corruption or connection issues.
+Related Use Cases: 
+    - Retrieve cash
+
+---
+
+Use Case ID: A002
+Use Case Name: Retrieve cash
+Relevant Requirements: 
+    - The cash must be taken out of the account's balance.
+Primary Actor: 
+    - Client Module
+Pre-condition: 
+    - The user is logged into their account and there exists enough balance to retrieve.
+Post-condition: 
+    - The retrieved cash must be subtracted from the account balance.
+Basic Flow: 
+    1. The user logs into the account.
+    2. The user requests to retrieve some $ amount.
+    3. The client module uses the message module to pack and send the request.
+    4. The server module receives the message.
+    5. The server module subtracts the $ amount from the correct account.
+Alternate Flows: 
+    1. The user tries to log in.
+    2. Log in fails.
+Exceptions: 
+    - Server failure
+    - Data corruption
+    - Wrong account (account doesn't exist or has been deleted)
+Related Use Cases: 
+    - Deposit cash
+
+---
+
+Use Case ID: A003
+Use Case Name: Log in
+Relevant Requirements: 
+    - The user must be logged into the account they want to log in.
+Primary Actor: 
+    - Client Module
+Pre-condition: 
+    - The user is not logged into the account.
+    - The account trying to log into exists.
+Post-condition: 
+    - The user is logged into the account.
+Basic Flow: 
+    1. The user tries to log into their account.
+    2. The user enters their credentials.
+    3. The user is logged into their account.
+Alternate Flows: 
+    1. The user tries to log in.
+    2. Log in fails.
+
+    1. The user enters credentials.
+    2. Wrong credentials, log in fails.
+Exceptions: 
+    - The user doesn't exist.
+Related Use Cases: 
+    - None
+
+---
+
+Use Case ID: A004
+Use Case Name: Get authenticated
+Relevant Requirements: 
+    - The user is authenticated.
+Primary Actor: 
+    - Server Module
+Pre-condition: 
+    - The user has input their credentials.
+Post-condition: 
+    - The user is authenticated.
+Basic Flow: 
+    1. The user inputs their credentials.
+    2. The message gets sent to the server for authentication.
+    3. The server returns the message after evaluating it.
+    4. The user is authenticated.
+Alternate Flows: 
+    1. The user inputs their credentials.
+    2. No server response.
+
+    1->2->3 // basic flow.
+    4. The authentication fails.
+Exceptions: 
+    - Data for authentication doesn't exist.
+    - Server doesn't exist.
+Related Use Cases: 
+    - Log in
+
+---
+
+Use Case ID: A005
+Use Case Name: Unauthorized user (Attempted fraud)
+Relevant Requirements:
+    - There is an unauthorized user trying to access an account.
+Primary Actor:
+    - Server Module
+Pre-condition:
+    - The attempted user inputs credentials, but there are continued failed attempts.
+Post-condition:
+    - The user is under suspicion for attempting to access an account that is owned by a different user.
+Basic Flow:
+    1. The user enters the account credentials.
+    2. The user inputs an incorrect passcode or ID.
+    3. The server records the failed attempt.
+    4. After several failed attempts, the server sends a warning message for suspicious activity.
+    5. The failed attempt is logged into the server history; if a predetermined amount of attempts is exceeded, the account may be temporarily locked.
+Alternate Flows:
+    1. The user enters the account credentials.
+    2. The server verifies the account credentials.
+    3. The account credentials match the ones on record.
+    4. The user enters the account with no further issues.
+Exceptions:
+    - The server runs into an internal error during credential verification.
+    - Network issues prohibit the server from functioning properly.
+    - The account may already be locked due to previous suspicious activity.
+Related Use Cases: 
+    - Log in
+
+---
+
+Use Case ID: A006
+Use Case Name: Transferring money (from one account to another)
+Relevant Requirements:
+    - Funds are being withdrawn from a user's account.
+Primary Actor:
+    - Client Module
+Pre-condition:
+    - The user is currently active on their account and has a sufficient balance to transfer.
+Post-condition:
+    - The money has been transferred to another account, and all parties involved receive confirmation.
+Basic Flow:
+    1. The user logs into the account.
+    2. The user initiates a transfer money request.
+    3. The user is prompted to enter the account information they wish to transfer money to.
+    4. The user enters the desired amount to transfer.
+    5. The server receives all necessary information.
+    6. The server transfers the correct amount of money to the recipient's account.
+    7. The transaction is successful.
+Alternate Flows:
+    1. The user doesn't have the minimum balance needed to transfer.
+    2. The user cancels the transfer.
+Exceptions:
+    - The server encountered an error during the transfer.
+    - The user entered incorrect account credentials.
+    - The user has met the account transfer limit.
+Related Use Cases: 
+    - Unauthorized user
+    - Log in
+
+---
+
+Client and Server section: 
+
+Use Case ID: CS001
+Use Case Name: Retrieve message from server
+Relevant Requirements: 
+    - The message is transferred to the client module.
+Primary Actor: 
+    - Message Module
+Pre-condition:
+    - The information requested is available in the bank account.
+Post-condition: 
+    - The information asked for will be made available to the client.
+Basic Flow:
+    1. The client makes a request using the message module.
+    2. The server processes the request and sends a response to the client.
+    3. The client receives the response and uses it as needed.
+Alternate Flows: 
+Exceptions: 
+    - The server is down.
+    - The server doesn't exist.
+Related Use Cases:
+    - Retrieve cash, deposit cash, M001
+
+---
+Use Case ID: CS002
+Use Case Name: Send message to server
+Relevant Requirements: 
+    - The client message is sent to the server.
+Primary Actor: 
+    - Message Module
+Pre-condition:
+    - The message to send has been initialized with proper information.
+Post-condition: 
+    - The message is sent to the server.
+Basic Flow:
+    1. The user makes a request (e.g., deposit cash).
+    2. The request is packed and sent via the message module.
+    3. The request is received by the server module and unpacked.
+Alternate Flows: 
+    - None
+Exceptions:
+    - This module is likely entirely private with the sole purpose of moving back and forth between the server and the client.
+Related Use Cases: 
+    - Retrieve cash, deposit cash, M002
+
+---
+
+Messaging Module Use Cases:
+
+Use Case ID: M001
+Use Case Name: Sending Message
+Relevant Requirements: 3.1.4.2, 3.1.4.3, 3.1.4.4, 3.1.4.6, 3.1.4.6.1, 3.1.4.6.4
+Primary Actor: Sender 
+Pre-condition: 
+    Sender is called and provided data, current address, receiving address are provided (3.1.4.3)
+Post-condition: 
+    Package is sent
+Basic Flow: 
+    1. Sender is called and fork a Sender child
+    2. Child call Processor to encapsulate a package
+    3. Processor return package ready to be sent
+    4. Child read receiving address on package and make a connection
+    5. Once connection is made, package is sent
+    6. Kill Child
+Alternate Flows:      
+Exceptions: 
+    1. If Sender is envoked with lacking arguements, throw error according to UI 
+    2. The server is not connected to the internet. 
+    3. The client is not connected to the internet. 
+Related Use Cases: M002, M003
+
+
+Use Case ID: M002
+Use Case Name: Receiving Message
+Relevant Requirements: 3.1.4.2, 3.1.4.3, 3.1.4.4, 3.1.4.6, 3.1.4.6.1, 3.1.4.6.3
+Primary Actor: Receiver
+Pre-condition: 
+    Receiver sit on designated network and listen for connections
+Post-condition: 
+    package received and decapsulated
+Basic Flow: 
+    1. Receiver fork a child upon handling an incoming package on listened port
+    2. Assign the child to handle that request
+    3. Child receive package from connection
+    4. Child call Processor to decapsulate the package
+    5. Child returns encapsulated data
+    6. Kill Child.
+Alternate Flows: 
+Exceptions:   
+    1. The server is not connected to the internet. 
+    2. The client is not connected to the internet. 
+    3. The server returns an unrecognized response. 
+Related Use Cases: M001, M004
+
+Use Case ID: M003
+Use Case Name: Encapsulate data
+Relevant Requirements:  
+Primary Actor: Processor
+Pre-condition: Processor get called with data
+Post-condition: Processor returns a package
+Basic Flow:
+    1. Processor get called with data
+    2. Processor fork a child to process data
+    3. Child create a package
+    4. Kill Child, return package
+Alternate Flows: 
+Exceptions: 
+Related Use Cases: M001
+
+Use Case ID: M004
+Use Case Name: Decapsulate data
+Relevant Requirements: 
+Primary Actor: Processor
+Pre-condition: Processor get called with a package
+Post-condition: Processor returns encapsulated data
+Basic Flow: 
+    1. Processor get called with package
+    2. Processor fork a child to process package
+    3. Child parse and tokenize package
+    4. Kill Child, return data
+Alternate Flows: 
+Exceptions: 
+Related Use Cases: M002
