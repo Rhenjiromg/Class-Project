@@ -45,7 +45,13 @@ This document outlines the requirements for a Large Banking System.
 
     2.1. Product Perspective 
     
-        The Large Banking System is an application that should be designed to operate within a local network among multiple devices. It should provide Server and Client applications. One server should support multiple client applications. The system has several interconnected modules such as The Operator Module, Account Module, Server Module, Message Module and the Client Module. The system should be designed to be scalable, usable with various operating systems through JVM and operational over TCP/IP.
+        The Large Banking System is an application that should be designed to 
+        operate within a local network among multiple devices. It should provide 
+        Server and Client applications. One server should support multiple client applications. 
+        The system has several interconnected modules such as The Operator Module, Account Module, 
+        Server Module, Message Module and the Client Module. The system should be designed to be scalable, 
+        usable with various operating systems through JVM and operational over TCP/IP.
+        
     2.2. Product Architecture 
               
               The system will be organized into 5 major modules: the Operator module, the Account module, 
