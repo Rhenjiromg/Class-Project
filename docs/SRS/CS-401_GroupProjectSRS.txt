@@ -121,17 +121,17 @@ This document outlines the requirements for a Large Banking System.
               3.1.3.6 The account will have a way to extract funds.
               3.1.3.7 The account will have a way to destroy itself upon SU’s request.
               3.1.3.8 Each account will have a unique serial ID used to identify the account.
-              3.1.1.9 Serial ID is generated upon account initialization.
-              3.1.1.10 Serial ID has a pattern for identification.
-              3.1.1.11 Serial ID will be used to authenticate an Account, along with a user 
+              3.1.3.9 Serial ID is generated upon account initialization.
+              3.1.3.10 Serial ID has a pattern for identification.
+              3.1.3.11 Serial ID will be used to authenticate an Account, along with a user 
               generated passcode, which is initiated during account creation. (currently 
               disallowing changing passcode)
-              3.1.1.12 The removal of the last User in an account will result in its closure.
-              3.1.1.13 Each registered user gains access to the account through 
+              3.1.3.12 The removal of the last User in an account will result in its closure.
+              3.1.3.13 Each registered user gains access to the account through 
               authentication with the account's reference list. 
-              3.1.1.14 Only the SU can remove or add users from accounts.
-              3.1.1.15 Multiple Users may be registered to the same account.
-              3.1.1.16 Users can have multiple accounts.
+              3.1.3.14 Only the SU can remove or add users from accounts.
+              3.1.3.15 Multiple Users may be registered to the same account.
+              3.1.3.16 Users can have multiple accounts.
 
               3.1.3. Checking Account Sub-Module Requirements: 
                      3.1.3.1 The checking account has no limit on the number of withdrawals.

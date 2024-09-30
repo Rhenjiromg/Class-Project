@@ -1,8 +1,7 @@
 Account Use Cases:
 Use Case ID: A001
 Use Case Name: Deposit cash
-Relevant Requirements: 
-    - The cash must be added to the account's balance.
+Relevant Requirements: 3.1.3.5
 Primary Actor: 
     - Client Module
 Pre-condition:
@@ -27,8 +26,7 @@ Related Use Cases:
 
 Use Case ID: A002
 Use Case Name: Retrieve cash
-Relevant Requirements: 
-    - The cash must be taken out of the account's balance.
+Relevant Requirements: 3.1.3.6
 Primary Actor: 
     - Client Module
 Pre-condition: 
@@ -168,8 +166,33 @@ Exceptions:
 Related Use Cases: 
     - Unauthorized user
     - Log in
-
 ---
+
+Use Case ID: A007 
+Use Case Name: Money Transfer
+Relevant Requirements: 3.1.4.1, 3.1.4.5, 3.1.3.17.
+Primary Actor: Client Module, Account Module, Server Module.
+Pre-condition: A user initiates fund transfer to another user.
+Post-condition: sending user's funds are deducted, while the receiving user's funds are added.
+Basic Flow: 
+    1. Sending user will open the transfer interface. 
+    2. User will input destination account's information. 
+    3. User will input the amount to transfer.
+    4. A message is created using the encapsulation method. 
+    5. Transfer request message is sent to the server. 
+    6. Server decodes the received message. 
+    7. Server checks for the account balance and destination account.
+    8. Server deducts the amount from the sending account's balance, and adds the amount to the receiving account's balance
+    9. The sending account is given an updated balance by the server. 
+Alternate Flows: 
+    1. Server receives the transfer request
+    2. Server checks and decided that there aren't sufficient funds in the sender account or the receiving account doesnt exist. 
+    3. Server returns an exception.
+    4. An error is displayed and the transaction failed. 
+Exceptions: 
+    1. Desination user is not found. 
+    2. User does not have enough funds to transfer the requested amount.
+Related Use Cases: Send message to server
 
 Client and Server section: 
 
@@ -240,7 +263,7 @@ Exceptions:
     1. If Sender is envoked with lacking arguements, throw error according to UI 
     2. The server is not connected to the internet. 
     3. The client is not connected to the internet. 
-Related Use Cases: M002, M003
+Related Use Cases: Receiving Message, Encapsulate data
 
 
 Use Case ID: M002
@@ -263,7 +286,7 @@ Exceptions:
     1. The server is not connected to the internet. 
     2. The client is not connected to the internet. 
     3. The server returns an unrecognized response. 
-Related Use Cases: M001, M004
+Related Use Cases: Sending Message, Decapsulate data
 
 Use Case ID: M003
 Use Case Name: Encapsulate data
@@ -278,7 +301,7 @@ Basic Flow:
     4. Kill Child, return package
 Alternate Flows: 
 Exceptions: 
-Related Use Cases: M001
+Related Use Cases: Sending Message
 
 Use Case ID: M004
 Use Case Name: Decapsulate data
@@ -293,4 +316,4 @@ Basic Flow:
     4. Kill Child, return data
 Alternate Flows: 
 Exceptions: 
-Related Use Cases: M002
+Related Use Cases: Receiving Message
