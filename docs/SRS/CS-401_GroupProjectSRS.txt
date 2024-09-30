@@ -252,6 +252,19 @@ This document outlines the requirements for a Large Banking System.
               Related Use Cases: 
                     Unauthorized User
                     Log in
+
+
+       Use Case ID: 9
+              Use Case Name: 
+              Relevant Requirements: 
+              Primary Actor: 
+              Pre-condition:
+              Post-condition: 
+              Basic Flow:
+              Alternate Flows: 
+              Exceptions: 
+              Related Use Cases:
+
        1.4. Overview 
               The large banking system will provide users with an interface for deposits, and withdrawals from 
               their checking or savings accounts. The SU can do the same for the use, additionally, the SU 
@@ -373,10 +386,25 @@ This document outlines the requirements for a Large Banking System.
 
 
        3.2. External Interface Requirements 
+              3.2.1 The system must operate over a local network using TCP/IP.
+              3.2.2 The system must support multiple users simultaniously.
+              3.2.3 The system must be scalable to any number of users at any time.
+              3.2.4 The system must store all it's data "securely" in a text file.
 
        3.3. Internal Interface Requirements 
               3.3.1 Server and Client must have Interface to send and receive requests.
-
+              3.3.2 The Operator module is connected to a GUI through which all operations take place.
+              3.3.3 The Superuser Subclass of Operator has slightly different GUI to accomodate for additional functionalities.
+              3.3.4 The Server and Client use Message module for bi-communication. 
+              3.3.5 The Account module must provide an interface for the Operator module to perform 
+              account-related operations such as creating, updating, and deleting accounts.
+              3.3.6 The Message module must provide an interface for encapsulating and decapsulating data.
+              3.3.7 The Server module must provide an interface for handling authentication requests from the Client module.
+              3.3.8 The Client module must provide an interface for users to input their credentials and receive authentication status (GUI).
+              3.3.9 The Server, client and account modules must provide an interface for handling deposits, withdrawals, and transfers.
+              3.3.10 The account module must procide an interface for keeping data recieved from the server temporarily to show to user.
+              3.3.11 The message module must provide an interface for error handling between the client and server modules.
+              3.3.12 The account module must provide a way for applying interest rates, account penalties, monthly fees etc.
 
 4. Non-Functional Requirements 
 4.1. Security and Privacy Requirements 
@@ -404,3 +432,4 @@ This document outlines the requirements for a Large Banking System.
        seconds.
        4.3.2 Most operations such as adding or retrieving cash are constant time operations and should be 
        executed in reasonable time. Meaning the algorithm should take O(1) time.
+       4.3.3 The system should not crash when under load, Example - multiple users try to access it.
