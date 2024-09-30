@@ -1,5 +1,5 @@
-CS-401_Group Project Requirements
-Software Requirements Specification
+### CS-401_Group Project Requirements
+### Software Requirements Specification
 
 1. Purpose
 This document outlines the requirements for a Large Banking System.
@@ -41,21 +41,21 @@ This document outlines the requirements for a Large Banking System.
               data retrieval, scalability, security. It operates over local TCP/IP network.
 
 2. Overall Description
-       2.1. Product Perspective 
-              The Large Banking System is an application that should be designed to operate within a local network among multiple
-              devices. It should provide Server and Client applications. One server should support multiple client applications.
-              The system has several interconnected modules such as The Operator Module, Account Module, Server Module, Message
-              Module and the Client Module.
-              The system should be designed to be scalable, usable with various operating systems through JVM and operational over
-              TCP/IP.
-       2.2. Product Architecture 
+
+    2.1. Product Perspective 
+    
+        The Large Banking System is an application that should be designed to operate within a local network among multiple devices. It should provide Server and Client applications. One server should support multiple client applications. The system has several interconnected modules such as The Operator Module, Account Module, Server Module, Message Module and the Client Module. The system should be designed to be scalable, usable with various operating systems through JVM and operational over TCP/IP.
+    2.2. Product Architecture 
+              
               The system will be organized into 5 major modules: the Operator module, the Account module, 
               the Server module, the Message, and the Client module. Note: System architecture should follow 
               standard OO design practices. 
-
-       2.3. Product Functionality/Features 
+       
+      2.3. Product Functionality/Features 
+       
               The high-level features of the system are as follows (see section 3 of this document for more 
               detailed requirements that address these features): 
+              
               2.3.1. Users would be able to login to the system, and conduct actions such as:
                      a. Transfer funds to other accounts.
                      b. Manage and see current account balance and information. 
@@ -74,7 +74,8 @@ This document outlines the requirements for a Large Banking System.
                      f. compatible
                      g. light-weight
 
-       2.4. Constraints 
+    2.4. Constraints 
+       
               2.4.1. The software will be made in Java, hence the software will need to keep in mind the amount 
               of objects and keep it to a minimum at all times. 
               2.4.2. The software will be made for home use as well, hence we will need to keep in mind that 
@@ -84,35 +85,38 @@ This document outlines the requirements for a Large Banking System.
               2.4.5 The system GUI's must be simple and user friendly.
               2.4.6 The system must have protections against attempted fraud.
 
-       2.5. Assumptions and Dependencies
-              2.5.1. It is assumed that for client-teller interactions, both parties are physically together, 
+
+    2.5. Assumptions and Dependencies
+        
+        2.5.1. It is assumed that for client-teller interactions, both parties are physically together, 
               and that the customers are able to provide credentials and proof of identities to the tellers. 
-              2.5.2. It is assumed that in-person deposits are monitored and assisted by a teller such that 
+        2.5.2. It is assumed that in-person deposits are monitored and assisted by a teller such that 
               any increase in bank balance is already verified to be correct. 
-              2.5.3. It is assumed that there are no transfer fees for any transfer action.
+        2.5.3. It is assumed that there are no transfer fees for any transfer action.
 
 
 3. Specific Requirements 
+    
+    3.1. Functional Requirements:
+        
+        3.1.1. Common Requirements: 
 
-3.1. Functional Requirements 
+            3.1.1.1 There should be a standard way of storing information in the txt data file/s. //this is technical
+        
+        3.1.2. Operator Module Requirements: 
+        3.1.2. Regular User Sub-Module Requirements:
+            3.1.2.1 ...
 
-       3.1.1. Common Requirements: 
-              3.1.1.1 There should be a standard way of storing information in the txt data file/s. //this is technical
-              
-       3.1.2. Operator Module Requirements: 
-              3.1.2. Regular User Sub-Module Requirements:
-                     3.1.2.1 ...
-
-              3.1.2. Super User (Admin) Module Requirements: 
-                     3.1.2.1 The superuser will have the ability to create new accounts. //they are bankers, not for bankers
-                     3.1.2.2 If a checking account has not been active in the last 6 months, the 
-                     superuser has the ability to deactivate the said account. 
-                     3.1.2.3 If an account has a negative balance or a history of overdrafts, the 
-                     superuser will have the ability to declare the account closed.
-                     3.1.2.4 The superuser has the ability to assign roles that have appropriate 
+        3.1.2. Super User (Admin) Module Requirements: 
+        
+            3.1.2.1 The superuser will have the ability to create new accounts. //they are bankers, not for bankers
+            3.1.2.2 If a checking account has not been active in the last 6 months, the superuser has the ability to deactivate the said account. 
+            3.1.2.3 If an account has a negative balance or a history of overdrafts, the superuser will have the ability to declare the account closed.
+            3.1.2.4 The superuser has the ability to assign roles that have appropriate 
                      permissions
        
        3.1.3 Account Module Requirements:
+       
               3.1.3.1 The account will have the date of creation.
               3.1.3.2 The account will have a way to determine that a period of time passed. 
               3.1.3.3 The account will have a checking account balance.
@@ -121,17 +125,34 @@ This document outlines the requirements for a Large Banking System.
               3.1.3.6 The account will have a way to extract funds.
               3.1.3.7 The account will have a way to destroy itself upon SU’s request.
               3.1.3.8 Each account will have a unique serial ID used to identify the account.
-              3.1.1.9 Serial ID is generated upon account initialization.
-              3.1.1.10 Serial ID has a pattern for identification.
-              3.1.1.11 Serial ID will be used to authenticate an Account, along with a user 
+              3.1.3.1 The account will have the date of creation.
+              3.1.3.2 The account will have a way to determine that a period of time passed. 
+              3.1.3.3 The account will have a checking account balance.
+              3.1.3.4 The account will have a separate savings account balance.
+              3.1.3.5 The account will have a way to deposit funds.
+              3.1.3.6 The account will have a way to extract funds.
+              3.1.3.7 The account will have a way to destroy itself upon SU’s request.
+              3.1.3.8 Each account will have a unique serial ID used to identify the account.
+              3.1.3.9 Serial ID is generated upon account initialization.
+              3.1.3.10 Serial ID has a pattern for identification.
+              3.1.3.11 Serial ID will be used to authenticate an Account, along with a user 
               generated passcode, which is initiated during account creation. (currently 
               disallowing changing passcode)
-              3.1.1.12 The removal of the last User in an account will result in its closure.
-              3.1.1.13 Each registered user gains access to the account through 
+              3.1.3.12 The removal of the last User in an account will result in its closure.
+              3.1.3.13 Each registered user gains access to the account through 
               authentication with the account's reference list. 
-              3.1.1.14 Only the SU can remove or add users from accounts.
-              3.1.1.15 Multiple Users may be registered to the same account.
-              3.1.1.16 Users can have multiple accounts.
+              3.1.3.14 Only the SU can remove or add users from accounts.
+              3.1.3.15 Multiple Users may be registered to the same account.
+              3.1.3.16 Users can have multiple accounts.
+
+              3.1.3. Checking Account Sub-Module Requirements: 
+                     3.1.3.1 The checking account has no limit on the number of withdrawals.
+                     3.1.3.2 The checking account has a $5 maintenance fee per month.
+
+              3.1.3. Saving Account Sub-Module Requirements:
+                     3.1.3.1 Savings account has a withdrawal limit of 6 monthly withdrawals without a fee.
+                     3.1.3.2 If the user withdraws more than 6 times, they will be charged a $5 fee for every withdrawal.
+                     3.1.3.3 The savings account will have a 0.10% annual increase rate.
 
               3.1.3. Checking Account Sub-Module Requirements: 
                      3.1.3.1 The checking account has no limit on the number of withdrawals.
@@ -169,16 +190,18 @@ This document outlines the requirements for a Large Banking System.
               3.1.6.3 The server should have the ability to transfer funds between differerent accounts.
 
 
-       3.2. External Interface Requirements 
+      3.2. External Interface Requirements 
+              
               3.2.1 The system must operate over a local network using TCP/IP.
               3.2.2 The system must support multiple users simultaniously.
               3.2.3 The system must be scalable to any number of users at any time.
               3.2.4 The system must store all it's data "securely" in a text file.
               3.2.5 The system must be able to work in common operating systems such as Windows, Linux and MacOS. 
 
-       3.3. Internal Interface Requirements 
-              3.3.1 Server and Client must have Interface to send and receive requests.
-              3.3.2 The Operator module is connected to a GUI through which all operations take place.
+      3.3. Internal Interface Requirements 
+    
+         3.3.1 Server and Client must have Interface to send and receive requests.
+            3.3.2 The Operator module is connected to a GUI through which all operations take place.
               3.3.3 The Superuser Subclass of Operator has slightly different GUI to accomodate for additional functionalities.
               3.3.4 The Server and Client use Message module for bi-communication. 
               3.3.5 The Account module must provide an interface for the Operator module to perform 
@@ -192,29 +215,33 @@ This document outlines the requirements for a Large Banking System.
               3.3.12 The account module must provide a way for applying interest rates, account penalties, monthly fees etc.
 
 4. Non-Functional Requirements 
-4.1. Security and Privacy Requirements 
-       4.1.1. User will need to be authenticated before getting access to any sensitive information
+
+    4.1. Security and Privacy Requirements :
+            
+            4.1.1. User will need to be authenticated before getting access to any sensitive information
        such as bank balance, account information and account actions. 
-       4.1.2. A sequential ordering of server request and response need to be created to prevent 
+            4.1.2. A sequential ordering of server request and response need to be created to prevent 
        inappropriate sequence of actions that affects the balance. 
-       4.1.3. Proper authentication methods need to be in place to prevent users from being able 
+            4.1.3. Proper authentication methods need to be in place to prevent users from being able 
        to access credentials of other users in the system. 
-       4.1.4. Passwords and other authentication information needs to be processed server side, 
+            4.1.4. Passwords and other authentication information needs to be processed server side, 
        that is that any comparisons are done in the server and only a response is returned. 
-       4.1.5 The data will be stored in a text file.
+            4.1.5 The data will be stored in a text file.
 
-4.2. Environmental Requirements 
-       4.2.1. The software needs to be “adaptive” and light weight as the software will be used 
+    4.2. Environmental Requirements 
+       
+        4.2.1. The software needs to be “adaptive” and light weight as the software will be used 
        by customers in a variety of environments.
-       4.2.2. The software needs to be internet friendly, which means that information sent to the 
+        4.2.2. The software needs to be internet friendly, which means that information sent to the 
        server should be checked and verified to be complete and whole before being sent. 
-       4.2.3 The system must be deployable on common operating systems, such as Windows, Linux and MacOS.
-       4.2.4 The system is dependent on JVM 22 being available. 
+        4.2.3 The system must be deployable on common operating systems, such as Windows, Linux and MacOS.
+        4.2.4 The system is dependent on JVM 22 being available. 
 
-4.3. Performance Requirements 
-       4.3.1 The system should be fast enough for the user to not experience a delay greater than 3 
+    4.3. Performance Requirements 
+       
+        4.3.1 The system should be fast enough for the user to not experience a delay greater than 3 
        seconds.
-       4.3.2 Most operations such as adding or retrieving cash are constant time operations and should be 
+        4.3.2 Most operations such as adding or retrieving cash are constant time operations and should be 
        executed in reasonable time. Meaning the algorithm should take O(1) time.
-       4.3.3 The system should not crash when under load, Example - multiple users try to access it.
-       4.3.4 The system should be able to handle any unexpected exceptions without crashing the app. 
+        4.3.3 The system should not crash when under load, Example - multiple users try to access it.
+         4.3.4 The system should be able to handle any unexpected exceptions without crashing the app. 
