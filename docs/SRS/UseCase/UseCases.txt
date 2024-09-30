@@ -1,4 +1,6 @@
-Use Case ID: 1
+General Use Cases: 
+
+Use Case ID: G001
 Use Case Name: Deposit cash
 Relevant Requirements: 
     - The cash must be added to the account's balance.
@@ -24,7 +26,7 @@ Related Use Cases:
 
 ---
 
-Use Case ID: 2
+Use Case ID: G002
 Use Case Name: Retrieve cash
 Relevant Requirements: 
     - The cash must be taken out of the account's balance.
@@ -52,7 +54,7 @@ Related Use Cases:
 
 ---
 
-Use Case ID: 3
+Use Case ID: G003
 Use Case Name: Log in
 Relevant Requirements: 
     - The user must be logged into the account they want to log in.
@@ -80,55 +82,7 @@ Related Use Cases:
 
 ---
 
-Use Case ID: 4
-Use Case Name: Send message to server
-Relevant Requirements: 
-    - The client message is sent to the server.
-Primary Actor: 
-    - Message Module
-Pre-condition:
-    - The message to send has been initialized with proper information.
-Post-condition: 
-    - The message is sent to the server.
-Basic Flow:
-    1. The user makes a request (e.g., deposit cash).
-    2. The request is packed and sent via the message module.
-    3. The request is received by the server module and unpacked.
-Alternate Flows: 
-    - None
-Exceptions:
-    - This module is likely entirely private with the sole purpose of moving back and forth between the server and the client.
-Related Use Cases: 
-    - Retrieve cash, deposit cash
-
----
-
-Use Case ID: 5
-Use Case Name: Retrieve message from server
-Relevant Requirements: 
-    - The message is transferred to the client module.
-Primary Actor: 
-    - Message Module
-Pre-condition:
-    - The information requested is available in the bank account.
-Post-condition: 
-    - The information asked for will be made available to the client.
-Basic Flow:
-    1. The client makes a request using the message module.
-    2. The server processes the request and sends a response to the client.
-    3. The client receives the response and uses it as needed.
-Alternate Flows: 
-    1. The client makes a request.
-    2. No response, there's no active server.
-Exceptions: 
-    - The server is down.
-    - The server doesn't exist.
-Related Use Cases:
-    - Retrieve cash, deposit cash
-
----
-
-Use Case ID: 6
+Use Case ID: G004
 Use Case Name: Get authenticated
 Relevant Requirements: 
     - The user is authenticated.
@@ -157,7 +111,7 @@ Related Use Cases:
 
 ---
 
-Use Case ID: 7
+Use Case ID: G005
 Use Case Name: Unauthorized user (Attempted fraud)
 Relevant Requirements:
     - There is an unauthorized user trying to access an account.
@@ -187,7 +141,7 @@ Related Use Cases:
 
 ---
 
-Use Case ID: 8
+Use Case ID: G006
 Use Case Name: Transferring money (from one account to another)
 Relevant Requirements:
     - Funds are being withdrawn from a user's account.
@@ -217,6 +171,8 @@ Related Use Cases:
     - Log in
 
 ---
+
+Messaging Module Specific Use Cases:
 
 Use Case ID: M001
 Use Case Name: Sending message

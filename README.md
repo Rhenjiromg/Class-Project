@@ -22,17 +22,8 @@ This document outlines the requirements for a Large Banking System.
               JVM - Java Virtual Machine.
 
        1.3. References and Use Cases:
-       Use Case ID: 10 // message from Rohan: DO NOT DELETE, THIS IS A USE CASE TEMPLATE, MAKE A COPY AND USE THAT COPY
-              Use Case Name: 
-              Relevant Requirements: 
-              Primary Actor: 
-              Pre-condition: 
-              Post-condition: 
-              Basic Flow: 
-              Alternate Flows: 
-              Exceptions: 
-              Related Use Cases: 
-
+            UseCases.txt for use cases.
+            
        1.4. Overview 
               The large banking system will provide users with an interface for deposits, and withdrawals from 
               their checking or savings accounts. The SU can do the same for the use, additionally, the SU 
