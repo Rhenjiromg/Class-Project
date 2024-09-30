@@ -160,14 +160,19 @@ This document outlines the requirements for a Large Banking System.
                      synchronously.
 
        3.1.5 Client Module Requirements:
-              3.1.5.1 Client will allow Operators to log in using ID and passcode.
-              3.1.5.2 Client will be able to differentiate user log in and superUser log 
+              3.1.5.1 All operators' interactions with the application will be through client
+              3.1.5.2 Client will authenticate operator before allow access
+              3.1.5.3 Client will be able to differentiate Operators access permissions and provide functions accordingly
+                     3.1.5.3.1 Client for User will simulate an ATM interaction
+                     3.1.5.3.2 Client for SuperUser will simulate a bank teller interaction 
+              3.1.5.4 Client will contain GUI
 
        3.1.6 Server Module Requirements:
               3.1.6.1 The data must be stored within the server application so that it has direct access.
-              3.1.6.2 The server must restart if data is corrupted.
-              3.1.6.3 The server should have the ability to transfer funds between differerent accounts.
-
+              3.1.6.2 The server must restart if data is corrupted. //pending client. need clarification to fit ui and system design
+              3.1.6.3 Server is able to receive requests from Client through Message module
+              3.1.6.4 Server will fulfill client's requests
+              3.1.6.5 All changes to the application's data must be perform by the server
 
        3.2. External Interface Requirements 
               3.2.1 The system must operate over a local network using TCP/IP.
