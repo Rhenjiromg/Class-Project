@@ -81,52 +81,6 @@ Related Use Cases:
 
 ---
 
-Use Case ID: 4
-Use Case Name: Send message to server
-Relevant Requirements: 
-    - The client message is sent to the server.
-Primary Actor: 
-    - Message Module
-Pre-condition:
-    - The message to send has been initialized with proper information.
-Post-condition: 
-    - The message is sent to the server.
-Basic Flow:
-    1. The user makes a request (e.g., deposit cash).
-    2. The request is packed and sent via the message module.
-    3. The request is received by the server module and unpacked.
-Alternate Flows: 
-    - None
-Exceptions:
-    - This module is likely entirely private with the sole purpose of moving back and forth between the server and the client.
-Related Use Cases: 
-    - Retrieve cash, deposit cash
-
----
-
-Use Case ID: 5
-Use Case Name: Retrieve message from server
-Relevant Requirements: 
-    - The message is transferred to the client module.
-Primary Actor: 
-    - Message Module
-Pre-condition:
-    - The information requested is available in the bank account.
-Post-condition: 
-    - The information asked for will be made available to the client.
-Basic Flow:
-    1. The client makes a request using the message module.
-    2. The server processes the request and sends a response to the client.
-    3. The client receives the response and uses it as needed.
-Alternate Flows: 
-    1. The client makes a request.
-    2. No response, there's no active server.
-Exceptions: 
-    - The server is down.
-    - The server doesn't exist.
-Related Use Cases:
-    - Retrieve cash, deposit cash
-
 Use Case ID: A004
 Use Case Name: Get authenticated
 Relevant Requirements: 
@@ -217,6 +171,52 @@ Related Use Cases:
 
 ---
 
+Client and Server section: 
+
+Use Case ID: CS001
+Use Case Name: Retrieve message from server
+Relevant Requirements: 
+    - The message is transferred to the client module.
+Primary Actor: 
+    - Message Module
+Pre-condition:
+    - The information requested is available in the bank account.
+Post-condition: 
+    - The information asked for will be made available to the client.
+Basic Flow:
+    1. The client makes a request using the message module.
+    2. The server processes the request and sends a response to the client.
+    3. The client receives the response and uses it as needed.
+Alternate Flows: 
+Exceptions: 
+    - The server is down.
+    - The server doesn't exist.
+Related Use Cases:
+    - Retrieve cash, deposit cash, M001
+
+---
+Use Case ID: CS002
+Use Case Name: Send message to server
+Relevant Requirements: 
+    - The client message is sent to the server.
+Primary Actor: 
+    - Message Module
+Pre-condition:
+    - The message to send has been initialized with proper information.
+Post-condition: 
+    - The message is sent to the server.
+Basic Flow:
+    1. The user makes a request (e.g., deposit cash).
+    2. The request is packed and sent via the message module.
+    3. The request is received by the server module and unpacked.
+Alternate Flows: 
+    - None
+Exceptions:
+    - This module is likely entirely private with the sole purpose of moving back and forth between the server and the client.
+Related Use Cases: 
+    - Retrieve cash, deposit cash, M002
+
+---
 
 Messaging Module Use Cases:
 
@@ -240,7 +240,6 @@ Exceptions:
     1. If Sender is envoked with lacking arguements, throw error according to UI 
     2. The server is not connected to the internet. 
     3. The client is not connected to the internet. 
-
 Related Use Cases: M002, M003
 
 
@@ -279,7 +278,7 @@ Basic Flow:
     4. Kill Child, return package
 Alternate Flows: 
 Exceptions: 
-Related Use Cases: 
+Related Use Cases: M001
 
 Use Case ID: M004
 Use Case Name: Decapsulate data
@@ -294,4 +293,4 @@ Basic Flow:
     4. Kill Child, return data
 Alternate Flows: 
 Exceptions: 
-Related Use Cases: 
+Related Use Cases: M002
