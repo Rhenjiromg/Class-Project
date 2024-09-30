@@ -390,6 +390,7 @@ This document outlines the requirements for a Large Banking System.
               3.2.2 The system must support multiple users simultaniously.
               3.2.3 The system must be scalable to any number of users at any time.
               3.2.4 The system must store all it's data "securely" in a text file.
+              3.2.5 The system must be able to work in common operating systems such as Windows, Linux and MacOS. 
 
        3.3. Internal Interface Requirements 
               3.3.1 Server and Client must have Interface to send and receive requests.
@@ -423,9 +424,8 @@ This document outlines the requirements for a Large Banking System.
        by customers in a variety of environments.
        4.2.2. The software needs to be internet friendly, which means that information sent to the 
        server should be checked and verified to be complete and whole before being sent. 
-       4.2.3. The software would need to be 
-       4.2.4 The system must be deployable on any OS, for Example: Linux, Mac, or Windows. 
-       4.2.5 The system has JVM as it's required to run Java code.
+       4.2.3 The system must be deployable on common operating systems, such as Windows, Linux and MacOS.
+       4.2.4 The system is dependent on JVM 22 being available. 
 
 4.3. Performance Requirements 
        4.3.1 The system should be fast enough for the user to not experience a delay greater than 3 
@@ -433,3 +433,4 @@ This document outlines the requirements for a Large Banking System.
        4.3.2 Most operations such as adding or retrieving cash are constant time operations and should be 
        executed in reasonable time. Meaning the algorithm should take O(1) time.
        4.3.3 The system should not crash when under load, Example - multiple users try to access it.
+       4.3.4 The system should be able to handle any unexpected exceptions without crashing the app. 
