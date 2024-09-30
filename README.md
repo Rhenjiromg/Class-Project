@@ -4,14 +4,16 @@
 1. Purpose
 This document outlines the requirements for a Large Banking System.
 
-       1.1. Scope
-              This document provides requirements for a Large Banking System. This software will support countless people 
-              and interactions. The primary objective being, providing a GUI for the bank employees and users to interact 
+      1.1. Scope
+       
+              This document provides proposed requirements for a Large Banking System. This software will support countless people 
+              and interactions. The primary objectives for this project is to provide a GUI for bank employees and users to interact 
               with their accounts. The bank has a server that stores all the data and is retrieved through the GUI. The system
               includes features such as Data storage, Account management, transaction operations, scalability. It operates over
-              TCP/IP and is compatible with operating systems with a JVM.
+              TCP/IP and is compatible with operating systems that supports the Java Virtual Machine.
 
-       1.2. Definitions, Acronyms, Abbreviations 
+      1.2. Definitions, Acronyms, Abbreviations 
+              
               SU - SuperUser, refers to the class of user with more permissions and functionalities.
               GUI - Graphical user interface.
               User - A regular account user. Has the ability to draw or add funds from their account.
@@ -21,15 +23,23 @@ This document outlines the requirements for a Large Banking System.
               Message - Module for data transfer between client and server.
               JVM - Java Virtual Machine.
 
-       1.3. References and Use Cases:
+      1.3. References and Use Cases:
+      
             UseCases.txt for use cases.
-            
-       1.4. Overview 
-              The large banking system will provide users with an interface for deposits, and withdrawals from 
-              their checking or savings accounts. The SU can do the same for the use, additionally, the SU 
-              can also add or remove accounts, add people to an account, or take off people from an account. It 
-              has functionalities such as account management, transaction operations, user authentication, data storage,
-              data retrieval, scalability, security. It operates over local TCP/IP network.
+
+      1.4. Overview 
+
+              The large banking system will provide users with an interface to deposit, withdraw and transfer funds 
+              from banking accounts, which includes checking and/or savings accouts. On top of that, the customer will 
+              be able to see their account(s), and the associated balances.  
+              Teller's interface is similar to a customer interface, with the added capabilities of being able to add, edit and 
+              remove users to bank account.
+
+              The application will be able to be used by customer's at home, which will be connected to the bank server
+              through TCP/IP network. Additionally, the software will have protection in form of authentication and data safety. 
+
+
+
 
 2. Overall Description
 
@@ -108,14 +118,6 @@ This document outlines the requirements for a Large Banking System.
        
        3.1.3 Account Module Requirements:
        
-              3.1.3.1 The account will have the date of creation.
-              3.1.3.2 The account will have a way to determine that a period of time passed. 
-              3.1.3.3 The account will have a checking account balance.
-              3.1.3.4 The account will have a separate savings account balance.
-              3.1.3.5 The account will have a way to deposit funds.
-              3.1.3.6 The account will have a way to extract funds.
-              3.1.3.7 The account will have a way to destroy itself upon SU’s request.
-              3.1.3.8 Each account will have a unique serial ID used to identify the account.
               3.1.3.1 The account will have the date of creation.
               3.1.3.2 The account will have a way to determine that a period of time passed. 
               3.1.3.3 The account will have a checking account balance.
@@ -235,4 +237,4 @@ This document outlines the requirements for a Large Banking System.
         4.3.2 Most operations such as adding or retrieving cash are constant time operations and should be 
        executed in reasonable time. Meaning the algorithm should take O(1) time.
         4.3.3 The system should not crash when under load, Example - multiple users try to access it.
-         4.3.4 The system should be able to handle any unexpected exceptions without crashing the app. 
+        4.3.4 The system should be able to handle any unexpected exceptions without crashing the app. 
