@@ -9,11 +9,11 @@ This document outlines the requirements for a Large Banking System.
        1.1. Scope
               This document provides requirements for a Large Banking System. This software will support countless people 
               and interactions. The primary objective being, providing a GUI for the bank employees and users to interact 
-              with their accounts. The bank has a server that stores all the data and is retrieved through the GUI.
+              with their accounts. The bank has a server that stores all the data and is retrieved through the GUI. The system
+              includes features such as Data storage, Account management, transaction operations, scalability. It operates over
+              TCP/IP and is compatible with operating systems with a JVM.
 
        1.2. Definitions, Acronyms, Abbreviations 
-              List any acronyms, terms etc. that need to be defined.
-              List any acronyms, terms etc. that need to be defined.
               SU - SuperUser, refers to the class of user with more permissions and functionalities.
               GUI - Graphical user interface.
               User - A regular account user. Has the ability to draw or add funds from their account.
@@ -255,25 +255,58 @@ This document outlines the requirements for a Large Banking System.
 
 
        Use Case ID: 9
+              Use Case Name: View Transaction History
+              Relevant Requirements: 
+                     The user must be able to see their history of transactions up till a certain number of transactions.
+              Primary Actor: 
+                     Client Module
+              Pre-condition:
+                     The user is logged into their account and selects to view transactions
+              Post-condition: 
+                     The user sees a list of their transactions.
+              Basic Flow:
+                     1. user logs in.
+                     2. user requests to view history.
+                     3. client requests server for history.
+                     4. server sends the right information.
+                     5. the client displays the information.
+              Alternate Flows: 
+                     1. user tries to log in
+                     2. log in fails.
+
+              Exceptions:
+                     server failiure
+                     Data corruption
+                     account doesn't exist 
+              Related Use Cases:
+                     log in
+
+       Use Case ID: 10 // message from Rohan: DO NOT DELETE, THIS IS A USE CASE TEMPLATE, MAKE A COPY AND USE THAT COPY
               Use Case Name: 
               Relevant Requirements: 
               Primary Actor: 
-              Pre-condition:
+              Pre-condition: 
               Post-condition: 
-              Basic Flow:
+              Basic Flow: 
               Alternate Flows: 
               Exceptions: 
-              Related Use Cases:
+              Related Use Cases: 
 
        1.4. Overview 
               The large banking system will provide users with an interface for deposits, and withdrawals from 
               their checking or savings accounts. The SU can do the same for the use, additionally, the SU 
-              can also add or remove accounts, add people to an account, or take off people from an account. 
-
+              can also add or remove accounts, add people to an account, or take off people from an account. It 
+              has functionalities such as account management, transaction operations, user authentication, data storage,
+              data retrieval, scalability, security. It operates over local TCP/IP network.
 
 2. Overall Description
        2.1. Product Perspective 
-
+              The Large Banking System is an application that should be designed to operate within a local network among multiple
+              devices. It should provide Server and Client applications. One server should support multiple client applications.
+              The system has several interconnected modules such as The Operator Module, Account Module, Server Module, Message
+              Module and the Client Module.
+              The system should be designed to be scalable, usable with various operating systems through JVM and operational over
+              TCP/IP.
        2.2. Product Architecture 
               The system will be organized into 5 major modules: the Operator module, the Account module, 
               the Server module, the Message, and the Client module. Note: System architecture should follow 
@@ -286,19 +319,29 @@ This document outlines the requirements for a Large Banking System.
                      a. Transfer funds to other accounts.
                      b. Manage and see current account balance and information. 
                      c. Make Virtual Deposits.
+                     d. view Transaction history
               2.3.2. Users are able to, with the help of a teller, do the following actions:
                      a. Withdraw money. 
                      b. Add, remove or edit access to their accounts. 
                      c. Make a deposit. 
-              2.3.3. 
-
+                     d close account.
+              2.3.3. System features include:
+                     a. Secure communication over TCP/IP.
+                     b. Data storage in a secure text file.
+                     c. Real-time applications such as deposit, retrieve money.
+                     d. scalable
+                     f. compatible
+                     g. light-weight
 
        2.4. Constraints 
               2.4.1. The software will be made in Java, hence the software will need to keep in mind the amount 
               of objects and keep it to a minimum at all times. 
               2.4.2. The software will be made for home use as well, hence we will need to keep in mind that 
               internet connection may be unstable/interrupted during use, and proper measures will need to be taken care of. 
-              2.4.3. 
+              2.4.3. The system must ensure data integrity and available, it must not get corrupted.
+              2.4.4 The system must not let users in if their credentials are invalid.
+              2.4.5 The system GUI's must be simple and user friendly.
+              2.4.6 The system must have protections against attempted fraud.
 
        2.5. Assumptions and Dependencies
               2.5.1. It is assumed that for client-teller interactions, both parties are physically together, 
@@ -390,6 +433,9 @@ This document outlines the requirements for a Large Banking System.
               3.2.2 The system must support multiple users simultaniously.
               3.2.3 The system must be scalable to any number of users at any time.
               3.2.4 The system must store all it's data "securely" in a text file.
+              3.2.5 The system must work in windows.
+              3.2.6 The system must work in linux.
+              3.2.7 The system must work in mac.
 
        3.3. Internal Interface Requirements 
               3.3.1 Server and Client must have Interface to send and receive requests.
