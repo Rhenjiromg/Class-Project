@@ -14,7 +14,7 @@ Basic Flow:
     3. Processor return package ready to be sent
     4. Child read receiving address on package and make a connection
     5. Once connection is made, package is sent
-    6. kill Child
+    6. Kill Child
 Alternate Flows:      
 Exceptions: 
     If Sender is envoke with lacking arguements, throw error according to UI
@@ -35,7 +35,7 @@ Basic Flow:
     3. Child receive package from connection
     4. Child call Processor to decapsulate the package
     5. Child returns encapsulated data
-    6. kill Child.
+    6. Kill Child.
 Alternate Flows: 
 Exceptions:   
 Related Use Cases: M1, M4
@@ -46,7 +46,11 @@ Relevant Requirements:
 Primary Actor: Processor
 Pre-condition: Processor get called with data
 Post-condition: Processor returns a package
-Basic Flow: 
+Basic Flow:
+    1. Processor get called with data
+    2. Processor fork a child to process data
+    3. Child create a package
+    4. Kill Child, return package
 Alternate Flows: 
 Exceptions: 
 Related Use Cases: 
@@ -58,6 +62,10 @@ Primary Actor: Processor
 Pre-condition: Processor get called with a package
 Post-condition: Processor returns encapsulated data
 Basic Flow: 
+    1. Processor get called with package
+    2. Processor fork a child to process package
+    3. Child parse and tokenize package
+    4. Kill Child, return data
 Alternate Flows: 
 Exceptions: 
 Related Use Cases: 
