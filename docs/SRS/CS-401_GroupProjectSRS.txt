@@ -181,27 +181,89 @@ This document outlines the requirements for a Large Banking System.
 
 
        Use Case ID: 7
-              Use Case Name: 
-              Relevant Requirements: 
-              Primary Actor: 
-              Pre-condition: 
-              Post-condition: 
-              Basic Flow: 
-              Alternate Flows: 
-              Exceptions: 
+              Use Case Name: Unauthorized User (Attempted Fraud)
+              Relevant Requirements:
+                     There is an unauthorized user trying to access an account.
+              Primary Actor:
+                     Server Module
+              Pre-condition:
+                     The attempted user attempts to put in credentials but there are
+                     continued failed attempts.
+              Post-condition:
+                     The user is under suspicion for attempting to access an account that
+                     is owned by a different user.
+              Basic Flow:
+                    1. The user enters the account credentials
+                    2. User inputs incorrect passcode or ID
+                    4. The server records the failed attempt.
+                    5. After several failed attempts the server sends back
+                    warning message for suspicious activity.
+                    6. The failed attempted is logged into the server history,
+                    if a predetermined amount of attempts is exceeded, the account
+                    may be temporarily locked.
+              Alternate Flows:
+                    1. The user enters the account credentials
+                    2. The server verifies the account credentials
+                    3. The account credentials match the ones on record
+                    4. The user enters the account with no further issues
+              Exceptions:
+                    The server runs into an internal error in between verifying
+                    the account credentials
+                    There is a network issues going on in the area that is
+                    prohibiting the server from functioning properly.
+                    The account may already be locked from any previous
+                    suspicious activity.
               Related Use Cases: 
-
+                    Log in
 
        Use Case ID: 8
+              Use Case Name: Transferring Money (From one account to another)
+              Relevant Requirements:
+                   Funds are being withdrawn from a user's account.
+              Primary Actor:
+                    Client Module
+              Pre-condition:
+                    The user is currently active on their account and has a sufficient
+                    amount of money that is able to be transferred.
+              Post-condition:
+                    The money has been transferred over to another account, all
+                    parties involved receive confirmation of the transfer.
+              Basic Flow:
+                     1. The user logs into the account.
+                     2. The user initiates a transfer money request.
+                     3. The user is prompted with entering the account information
+                     that they wish to transfer money to.
+                     4. The user enters the desired amount of money wished to be
+                     transferred.
+                     5. The server receives all needed information
+                     6. The server continues to transfer the right amount of money to
+                     recipient account.
+                     7. Transaction is successful.
+              Alternate Flows:
+                    1. The user doesn't have the minimum amount of money needed to
+                    transfer
+                    2. The user at any point decides to cancel a money transfer.
+              Exceptions:
+                    1. The server ran into an error at some point during the transfer
+                    process
+                    2. The user input the incorrect account credentials
+                    3. The user has met the limit set on their account for transferring
+                    money
+              Related Use Cases: 
+                    Unauthorized User
+                    Log in
+
+
+       Use Case ID: 9
               Use Case Name: 
               Relevant Requirements: 
               Primary Actor: 
-              Pre-condition: 
+              Pre-condition:
               Post-condition: 
-              Basic Flow: 
+              Basic Flow:
               Alternate Flows: 
               Exceptions: 
-              Related Use Cases: 
+              Related Use Cases:
 
        1.4. Overview 
               The large banking system will provide users with an interface for deposits, and withdrawals from 
@@ -324,10 +386,25 @@ This document outlines the requirements for a Large Banking System.
 
 
        3.2. External Interface Requirements 
+              3.2.1 The system must operate over a local network using TCP/IP.
+              3.2.2 The system must support multiple users simultaniously.
+              3.2.3 The system must be scalable to any number of users at any time.
+              3.2.4 The system must store all it's data "securely" in a text file.
 
        3.3. Internal Interface Requirements 
               3.3.1 Server and Client must have Interface to send and receive requests.
-
+              3.3.2 The Operator module is connected to a GUI through which all operations take place.
+              3.3.3 The Superuser Subclass of Operator has slightly different GUI to accomodate for additional functionalities.
+              3.3.4 The Server and Client use Message module for bi-communication. 
+              3.3.5 The Account module must provide an interface for the Operator module to perform 
+              account-related operations such as creating, updating, and deleting accounts.
+              3.3.6 The Message module must provide an interface for encapsulating and decapsulating data.
+              3.3.7 The Server module must provide an interface for handling authentication requests from the Client module.
+              3.3.8 The Client module must provide an interface for users to input their credentials and receive authentication status (GUI).
+              3.3.9 The Server, client and account modules must provide an interface for handling deposits, withdrawals, and transfers.
+              3.3.10 The account module must procide an interface for keeping data recieved from the server temporarily to show to user.
+              3.3.11 The message module must provide an interface for error handling between the client and server modules.
+              3.3.12 The account module must provide a way for applying interest rates, account penalties, monthly fees etc.
 
 4. Non-Functional Requirements 
 4.1. Security and Privacy Requirements 
@@ -355,3 +432,4 @@ This document outlines the requirements for a Large Banking System.
        seconds.
        4.3.2 Most operations such as adding or retrieving cash are constant time operations and should be 
        executed in reasonable time. Meaning the algorithm should take O(1) time.
+       4.3.3 The system should not crash when under load, Example - multiple users try to access it.
