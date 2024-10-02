@@ -252,6 +252,79 @@ This document outlines the requirements for a Large Banking System.
               Related Use Cases: 
                     Unauthorized User
                     Log in
+       Use Case ID: 9
+              Use Case Name: Creating an account
+              Relevant Requirements:
+                  - A user wants to create an account to be able to store
+                  their money in either a checkings or savings.
+              Primary Actor:
+                  - Client Module
+                  - Server Module
+              Pre-condition:
+                   - The user is in position where it is beneficial to create
+                  an account.
+              Post-condition:
+                  - The user has now made an account and has gained access to
+                  further pursue a bank account.
+              Basic Flow:
+                  1. The user initiates an account creation request.
+                  2. The user provides necessary personal information.
+                  3. The user's identification begins to be verified.
+                  4. The superuser verifies the user's information.
+                  5. The user now has an account.
+              Alternate Flows:
+                  1. The user enters any type of wrong information during
+                  the process of wanting to create an account. So the user is
+                  prompted to make changes to the incorrect information.
+                  2. The user's request to create an account was rejected.
+              Exceptions:
+                  1. The user provides invalid personal information.
+                  2. The user's ID and password are already taken so the user
+                  must think of a different ID and password.
+                  3. The ID and or password don't meet bank's security requirements.
+                  4. The user doesn't meet the bank's requirements in order to
+                  create an account. (Ex: Age).
+              Related Use Cases:
+                     Logging in, get authorized, send message to server, retrieve message
+                     from server
+
+       Use Case ID: 10
+              Use Case Name: Deleting an account
+              Relevant Requirements:
+                  - A user's account has reached a point in which it is
+                  not needed anymore.
+              Primary Actor:
+                  - Client Module
+                  - Server Module
+              Pre-condition:
+                  - The user's funds have been removed from the account and
+                  has been verified for deletion of account.
+              Post-condition:
+                  - The user's account has been deleted.
+              Basic Flow:
+                  1. Initialize deleting an account.
+                  2. User is authenticated to proceed with the deleting
+                  process.
+                  3. The account's information is under review and the user
+                  is notified of deleting an account.
+                  4. Funds are removed from the account, if any.
+                  5. The account has been deleted.
+              Alternate Flows:
+                  1. The user makes the decision of not wanting to delete
+                  their account.
+                  2. The account can't be deleted if the user has any type
+                  of outstanding charges.
+              Exceptions:
+                  1. The user fails to authenticate credentials.
+                  2. There are outstanding charges to the user's account.
+                  3. The server or client run into technical issues
+                  throughout the deletion process.
+                  4. The user's account has already been deleted.
+                  5. The user's account can't be deleted if the account's
+                  current status is locked, or restricted.
+
+              Related Use Cases:
+                    - Log in ,Unauthorized user
        1.4. Overview 
               The large banking system will provide users with an interface for deposits, and withdrawals from 
               their checking or savings accounts. The SU can do the same for the use, additionally, the SU 
