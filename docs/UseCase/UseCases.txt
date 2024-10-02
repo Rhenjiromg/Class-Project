@@ -1,174 +1,94 @@
-Account Use Cases:
-Use Case ID: A001
+Operator Use Cases:
+Use Case ID: O001
 Use Case Name: Deposit cash
 Relevant Requirements: 
     - The cash must be added to the account's balance.
 Primary Actor: 
-    - Client Module
+    - Operator Module
 Pre-condition:
-    - The user is logged into the account they want to deposit cash to.
+    - The operator is authenticated.
+    - Operator is authorized to operate on that account.
 Post-condition: 
-    - The cash amount is deposited to the account in which the user is logged into.
+    - The cash amount is deposited to the account in which the operator is authorized.
 Basic Flow: 
-    1. The user logs into the account.
-    2. The user requests to deposit some $ amount.
-    3. The client module uses the message module to pack and send the request.
-    4. The server module receives the message.
-    5. The server module stores the $ amount in the correct account file.
+    1. The operator log in to the account.
+    2. The operator requests to deposit some balance amount.
+    3. The client module uses the message module to send the request.
+    4. The server module receives the request.
+    5. The server module invoke correct account's methods to change its balance.
+    6. The interaction is logged.
 Alternate Flows: 
-    1. The user tries to log in.
-    2. Log in fails.
+    1. The operator tries to deposit a non-supported inputs, non-positive numeric inputs, or decided undesirable amounts.
+    2. Client module intercept input.
+    3. Client module deny action.
 Exceptions: 
     - The server may fail to receive or fulfill the request due to reasons such as data corruption or connection issues.
 Related Use Cases: 
-    - Retrieve cash
+    - Log in, Withdraw cash
 
 ---
 
-Use Case ID: A002
-Use Case Name: Retrieve cash
+Use Case ID: O002
+Use Case Name: Withdraw cash
 Relevant Requirements: 
     - The cash must be taken out of the account's balance.
 Primary Actor: 
-    - Client Module
+    - Operator Module
 Pre-condition: 
-    - The user is logged into their account and there exists enough balance to retrieve.
+    - The operator is authenticated.
+    - Operator is authorized to operate on that account.
 Post-condition: 
     - The retrieved cash must be subtracted from the account balance.
 Basic Flow: 
-    1. The user logs into the account.
-    2. The user requests to retrieve some $ amount.
-    3. The client module uses the message module to pack and send the request.
-    4. The server module receives the message.
-    5. The server module subtracts the $ amount from the correct account.
+    1. The operator log in to the account.
+    2. The operator requests to withdraw some balance amount.
+    3. The client module uses the message module to send the request.
+    4. The server module receives the request.
+    5. The server module invoke correct account's methods to withdraw.
+    6. The interaction is logged.
 Alternate Flows: 
-    1. The user tries to log in.
-    2. Log in fails.
+    1. The operator tries to deposit a non-supported inputs, non-positive numeric inputs, or decided undesirable amounts.
+    2. Client module intercept input.
+    3. Client module deny action.
 Exceptions: 
-    - Server failure
-    - Data corruption
-    - Wrong account (account doesn't exist or has been deleted)
+    - The server may fail to receive or fulfill the request due to reasons such as data corruption or connection issues.
+    - If balance is lowere than withdraw request, server will deny request.
 Related Use Cases: 
     - Deposit cash
 
 ---
 
-Use Case ID: A003
-Use Case Name: Log in
-Relevant Requirements: 
-    - The user must be logged into the account they want to log in.
-Primary Actor: 
-    - Client Module
-Pre-condition: 
-    - The user is not logged into the account.
-    - The account trying to log into exists.
-Post-condition: 
-    - The user is logged into the account.
-Basic Flow: 
-    1. The user tries to log into their account.
-    2. The user enters their credentials.
-    3. The user is logged into their account.
-Alternate Flows: 
-    1. The user tries to log in.
-    2. Log in fails.
-
-    1. The user enters credentials.
-    2. Wrong credentials, log in fails.
-Exceptions: 
-    - The user doesn't exist.
-Related Use Cases: 
-    - None
-
----
-
-Use Case ID: A004
-Use Case Name: Get authenticated
-Relevant Requirements: 
-    - The user is authenticated.
-Primary Actor: 
-    - Server Module
-Pre-condition: 
-    - The user has input their credentials.
-Post-condition: 
-    - The user is authenticated.
-Basic Flow: 
-    1. The user inputs their credentials.
-    2. The message gets sent to the server for authentication.
-    3. The server returns the message after evaluating it.
-    4. The user is authenticated.
-Alternate Flows: 
-    1. The user inputs their credentials.
-    2. No server response.
-
-    1->2->3 // basic flow.
-    4. The authentication fails.
-Exceptions: 
-    - Data for authentication doesn't exist.
-    - Server doesn't exist.
-Related Use Cases: 
-    - Log in
-
----
-
-Use Case ID: A005
-Use Case Name: Unauthorized user (Attempted fraud)
+Use Case ID: O003
+Use Case Name: Transferring request 
 Relevant Requirements:
-    - There is an unauthorized user trying to access an account.
+    - Operator can transfer fund between accounts.
 Primary Actor:
-    - Server Module
+    - Operator Module
 Pre-condition:
-    - The attempted user inputs credentials, but there are continued failed attempts.
+    - Authenticated Operator access on Account is currently authorized.
 Post-condition:
-    - The user is under suspicion for attempting to access an account that is owned by a different user.
+    - The transfer is finalized, blance on both account reflect the change.
 Basic Flow:
-    1. The user enters the account credentials.
-    2. The user inputs an incorrect passcode or ID.
-    3. The server records the failed attempt.
-    4. After several failed attempts, the server sends a warning message for suspicious activity.
-    5. The failed attempt is logged into the server history; if a predetermined amount of attempts is exceeded, the account may be temporarily locked.
+    1. The operator initiates a transfer money request.
+    2. The operator is prompted to enter the account they wish to transfer money to.
+    3. The operator enters the desired amount to transfer.
+    4. Client call message to send request to Server using that data.
+    5. The Server receives request.
+    6. The Server call Account's transfer method.
+    7. Server fulfill request to Client.
+    8. Client invoke correct GUI showing result.
 Alternate Flows:
-    1. The user enters the account credentials.
-    2. The server verifies the account credentials.
-    3. The account credentials match the ones on record.
-    4. The user enters the account with no further issues.
+    1. Account's transfer method deny due to lack balance or minimum balance unfulfilled.
+    2. Server deny request.
+    3. Client trigger correct response.
+    4. Events logged.
 Exceptions:
-    - The server runs into an internal error during credential verification.
-    - Network issues prohibit the server from functioning properly.
-    - The account may already be locked due to previous suspicious activity.
+    - The operator has met the account transfer limit.
+    - Account lack balance
+    - Account locked
+    - Minimum amount not met.
 Related Use Cases: 
-    - Log in
-
----
-
-Use Case ID: A006
-Use Case Name: Transferring money (from one account to another)
-Relevant Requirements:
-    - Funds are being withdrawn from a user's account.
-Primary Actor:
-    - Client Module
-Pre-condition:
-    - The user is currently active on their account and has a sufficient balance to transfer.
-Post-condition:
-    - The money has been transferred to another account, and all parties involved receive confirmation.
-Basic Flow:
-    1. The user logs into the account.
-    2. The user initiates a transfer money request.
-    3. The user is prompted to enter the account information they wish to transfer money to.
-    4. The user enters the desired amount to transfer.
-    5. The server receives all necessary information.
-    6. The server transfers the correct amount of money to the recipient's account.
-    7. The transaction is successful.
-Alternate Flows:
-    1. The user doesn't have the minimum balance needed to transfer.
-    2. The user cancels the transfer.
-Exceptions:
-    - The server encountered an error during the transfer.
-    - The user entered incorrect account credentials.
-    - The user has met the account transfer limit.
-Related Use Cases: 
-    - Unauthorized user
-    - Log in
-
+    Account tranfer
 ---
 
 Client and Server section: 
@@ -206,7 +126,7 @@ Pre-condition:
 Post-condition: 
     - The message is sent to the server.
 Basic Flow:
-    1. The user makes a request (e.g., deposit cash).
+    1. The operator makes a request (e.g., deposit cash).
     2. The request is packed and sent via the message module.
     3. The request is received by the server module and unpacked.
 Alternate Flows: 
@@ -215,6 +135,36 @@ Exceptions:
     - This module is likely entirely private with the sole purpose of moving back and forth between the server and the client.
 Related Use Cases: 
     - Retrieve cash, deposit cash, M002
+
+---
+
+Use Case ID: CS001
+Use Case Name: Log in
+Relevant Requirements: 
+    - The operator must be authenticated.
+Primary Actor: 
+    - Client Module
+Pre-condition: 
+    - The operator is not authenticated.
+Post-condition: 
+    - The operator is authenticated.
+Basic Flow: 
+    1. Client show operator a log in interface.
+    2. The operator enters their authenticator.
+    3. Client invoke message to send request to Server using authenticator.
+    4. Server pass authenticator to Operator modules to authenticate.
+    5. Once success, a read-only version of the authenticated Operator is return to Client.
+    3. The operator is authenticated.
+Alternate Flows: 
+    1. The authentication failed.
+    2. Server denies request.
+    3. Client invoke correct GUI response.
+    4. Events are logged
+
+Exceptions: 
+    - If operator doesn't exist, response same as authentication failed.
+Related Use Cases: 
+    - Account authorization
 
 ---
 
@@ -325,7 +275,7 @@ The customer can download or print the transaction statement as needed.
 
 Alternate Flows:
 No Transactions: If the account has no transactions for the selected date range, the system will display a “No transactions found” message.
-Filter Error: If the filters entered by the customer are invalid (e.g., future date), the system prompts the user to correct the input.
+Filter Error: If the filters entered by the customer are invalid (e.g., future date), the system prompts the operator to correct the input.
 
 Postconditions:
 The transaction history is presented to the customer, either filtered or in the default format.
@@ -335,3 +285,57 @@ Exceptions:
 System downtime or unavailability might prevent transaction data from being retrieved.
 If there’s a lag in the backend systems, some recent transactions may not appear immediately.
 
+---
+Account use cases:
+
+Use Case ID: A001
+Use Case Name: Account authorization
+Relevant Requirements: 
+    - The operator is authenticated.
+Primary Actor: 
+    - Operator module
+Pre-condition: 
+    - The operator has input their credentials on the client.
+Post-condition: 
+    - The operator is authenticated.
+Basic Flow: 
+    1. Operator select interface to access account.
+    2. Client invoke Message to handle request to the Server for Authorization.
+    3. The server invoke Account method to check Operator authorization.
+    4. Once authorized, Server fulfill request.
+    5. Events are logged.
+Alternate Flows: 
+    1. Authorization denied.
+    2. Server deny request.
+    3. Client invoke GUI response.
+    4. Events are logged.
+Exceptions: 
+    - Account dont exist, invoke correct client response.
+Related Use Cases: 
+    - Log in
+
+---
+
+Use Case ID: A002
+Use Case Name: Account transfer
+Relevant Requirements: 
+    - recived a request fro transfering
+Primary Actor: 
+    - Account module
+Pre-condition: 
+    - Account is accessing by authorized operator.
+    - Server invoke account transfer method.
+Post-condition: 
+    - Account transferred, balance update.
+Basic Flow: 
+    1. Checking current balance against transfer amount.
+    2. Checking transfer constraint.
+    3. Account initialized correct destination accounts.
+    4. Update balance from both accounts to reflect change.
+    5. Update new balance to files.
+Alternate Flows:
+Exceptions: 
+    - Account dont exist, invoke correct client response.
+    - Transfer constraint invoked, abort
+Related Use Cases: 
+    - Transfering request
