@@ -294,3 +294,44 @@ Basic Flow:
 Alternate Flows: 
 Exceptions: 
 Related Use Cases: M002
+
+
+---
+
+View Transaction History Use Cases:
+
+Use Case ID: VT01
+Actors:
+Primary: Customer
+Secondary: Banking System
+
+Preconditions:
+The customer must be logged into the system with valid credentials.
+The customer must have at least one bank account registered.
+
+Trigger: The customer initiates a request to view their transaction history.
+
+Basic Flow (Happy Path):
+The customer logs into the online banking system.
+The customer navigates to the "Account Summary" or "Transactions" section.
+The system displays a default view of the most recent transactions for the selected account.
+The customer can filter the transactions based on:
+   - Date range (last week, last month, ...).
+   - Transaction type (debits, credits, ...).
+   - Specific payees (billers or transfer recipients, ...).
+The customer selects the filters and submits the request.
+The system displays the filtered transaction history.
+The customer can download or print the transaction statement as needed.
+
+Alternate Flows:
+No Transactions: If the account has no transactions for the selected date range, the system will display a “No transactions found” message.
+Filter Error: If the filters entered by the customer are invalid (e.g., future date), the system prompts the user to correct the input.
+
+Postconditions:
+The transaction history is presented to the customer, either filtered or in the default format.
+The customer can export or print the transaction list if needed.
+
+Exceptions:
+System downtime or unavailability might prevent transaction data from being retrieved.
+If there’s a lag in the backend systems, some recent transactions may not appear immediately.
+
