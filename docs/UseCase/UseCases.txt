@@ -1,0 +1,341 @@
+Operator Use Cases:
+Use Case ID: O001
+Use Case Name: Deposit cash
+Relevant Requirements: 
+    - The cash must be added to the account's balance.
+Primary Actor: 
+    - Operator Module
+Pre-condition:
+    - The operator is authenticated.
+    - Operator is authorized to operate on that account.
+Post-condition: 
+    - The cash amount is deposited to the account in which the operator is authorized.
+Basic Flow: 
+    1. The operator log in to the account.
+    2. The operator requests to deposit some balance amount.
+    3. The client module uses the message module to send the request.
+    4. The server module receives the request.
+    5. The server module invoke correct account's methods to change its balance.
+    6. The interaction is logged.
+Alternate Flows: 
+    1. The operator tries to deposit a non-supported inputs, non-positive numeric inputs, or decided undesirable amounts.
+    2. Client module intercept input.
+    3. Client module deny action.
+Exceptions: 
+    - The server may fail to receive or fulfill the request due to reasons such as data corruption or connection issues.
+Related Use Cases: 
+    - Log in, Withdraw cash
+
+---
+
+Use Case ID: O002
+Use Case Name: Withdraw cash
+Relevant Requirements: 
+    - The cash must be taken out of the account's balance.
+Primary Actor: 
+    - Operator Module
+Pre-condition: 
+    - The operator is authenticated.
+    - Operator is authorized to operate on that account.
+Post-condition: 
+    - The retrieved cash must be subtracted from the account balance.
+Basic Flow: 
+    1. The operator log in to the account.
+    2. The operator requests to withdraw some balance amount.
+    3. The client module uses the message module to send the request.
+    4. The server module receives the request.
+    5. The server module invoke correct account's methods to withdraw.
+    6. The interaction is logged.
+Alternate Flows: 
+    1. The operator tries to deposit a non-supported inputs, non-positive numeric inputs, or decided undesirable amounts.
+    2. Client module intercept input.
+    3. Client module deny action.
+Exceptions: 
+    - The server may fail to receive or fulfill the request due to reasons such as data corruption or connection issues.
+    - If balance is lowere than withdraw request, server will deny request.
+Related Use Cases: 
+    - Deposit cash
+
+---
+
+Use Case ID: O003
+Use Case Name: Transferring request 
+Relevant Requirements:
+    - Operator can transfer fund between accounts.
+Primary Actor:
+    - Operator Module
+Pre-condition:
+    - Authenticated Operator access on Account is currently authorized.
+Post-condition:
+    - The transfer is finalized, blance on both account reflect the change.
+Basic Flow:
+    1. The operator initiates a transfer money request.
+    2. The operator is prompted to enter the account they wish to transfer money to.
+    3. The operator enters the desired amount to transfer.
+    4. Client call message to send request to Server using that data.
+    5. The Server receives request.
+    6. The Server call Account's transfer method.
+    7. Server fulfill request to Client.
+    8. Client invoke correct GUI showing result.
+Alternate Flows:
+    1. Account's transfer method deny due to lack balance or minimum balance unfulfilled.
+    2. Server deny request.
+    3. Client trigger correct response.
+    4. Events logged.
+Exceptions:
+    - The operator has met the account transfer limit.
+    - Account lack balance
+    - Account locked
+    - Minimum amount not met.
+Related Use Cases: 
+    Account tranfer
+---
+
+Client and Server section: 
+
+Use Case ID: CS001
+Use Case Name: Retrieve message from server
+Relevant Requirements: 
+    - The message is transferred to the client module.
+Primary Actor: 
+    - Message Module
+Pre-condition:
+    - The information requested is available in the bank account.
+Post-condition: 
+    - The information asked for will be made available to the client.
+Basic Flow:
+    1. The client makes a request using the message module.
+    2. The server processes the request and sends a response to the client.
+    3. The client receives the response and uses it as needed.
+Alternate Flows: 
+Exceptions: 
+    - The server is down.
+    - The server doesn't exist.
+Related Use Cases:
+    - Retrieve cash, deposit cash, M001
+
+---
+Use Case ID: CS002
+Use Case Name: Send message to server
+Relevant Requirements: 
+    - The client message is sent to the server.
+Primary Actor: 
+    - Message Module
+Pre-condition:
+    - The message to send has been initialized with proper information.
+Post-condition: 
+    - The message is sent to the server.
+Basic Flow:
+    1. The operator makes a request (e.g., deposit cash).
+    2. The request is packed and sent via the message module.
+    3. The request is received by the server module and unpacked.
+Alternate Flows: 
+    - None
+Exceptions:
+    - This module is likely entirely private with the sole purpose of moving back and forth between the server and the client.
+Related Use Cases: 
+    - Retrieve cash, deposit cash, M002
+
+---
+
+Use Case ID: CS001
+Use Case Name: Log in
+Relevant Requirements: 
+    - The operator must be authenticated.
+Primary Actor: 
+    - Client Module
+Pre-condition: 
+    - The operator is not authenticated.
+Post-condition: 
+    - The operator is authenticated.
+Basic Flow: 
+    1. Client show operator a log in interface.
+    2. The operator enters their authenticator.
+    3. Client invoke message to send request to Server using authenticator.
+    4. Server pass authenticator to Operator modules to authenticate.
+    5. Once success, a read-only version of the authenticated Operator is return to Client.
+    3. The operator is authenticated.
+Alternate Flows: 
+    1. The authentication failed.
+    2. Server denies request.
+    3. Client invoke correct GUI response.
+    4. Events are logged
+
+Exceptions: 
+    - If operator doesn't exist, response same as authentication failed.
+Related Use Cases: 
+    - Account authorization
+
+---
+
+Messaging Module Use Cases:
+
+Use Case ID: M001
+Use Case Name: Sending Message
+Relevant Requirements: 3.1.4.2, 3.1.4.3, 3.1.4.4, 3.1.4.6, 3.1.4.6.1, 3.1.4.6.4
+Primary Actor: Sender 
+Pre-condition: 
+    Sender is called and provided data, current address, receiving address are provided (3.1.4.3)
+Post-condition: 
+    Package is sent
+Basic Flow: 
+    1. Sender is called and fork a Sender child
+    2. Child call Processor to encapsulate a package
+    3. Processor return package ready to be sent
+    4. Child read receiving address on package and make a connection
+    5. Once connection is made, package is sent
+    6. Kill Child
+Alternate Flows:      
+Exceptions: 
+    1. If Sender is envoked with lacking arguements, throw error according to UI 
+    2. The server is not connected to the internet. 
+    3. The client is not connected to the internet. 
+Related Use Cases: M002, M003
+
+
+Use Case ID: M002
+Use Case Name: Receiving Message
+Relevant Requirements: 3.1.4.2, 3.1.4.3, 3.1.4.4, 3.1.4.6, 3.1.4.6.1, 3.1.4.6.3
+Primary Actor: Receiver
+Pre-condition: 
+    Receiver sit on designated network and listen for connections
+Post-condition: 
+    package received and decapsulated
+Basic Flow: 
+    1. Receiver fork a child upon handling an incoming package on listened port
+    2. Assign the child to handle that request
+    3. Child receive package from connection
+    4. Child call Processor to decapsulate the package
+    5. Child returns encapsulated data
+    6. Kill Child.
+Alternate Flows: 
+Exceptions:   
+    1. The server is not connected to the internet. 
+    2. The client is not connected to the internet. 
+    3. The server returns an unrecognized response. 
+Related Use Cases: M001, M004
+
+Use Case ID: M003
+Use Case Name: Encapsulate data
+Relevant Requirements:  
+Primary Actor: Processor
+Pre-condition: Processor get called with data
+Post-condition: Processor returns a package
+Basic Flow:
+    1. Processor get called with data
+    2. Processor fork a child to process data
+    3. Child create a package
+    4. Kill Child, return package
+Alternate Flows: 
+Exceptions: 
+Related Use Cases: M001
+
+Use Case ID: M004
+Use Case Name: Decapsulate data
+Relevant Requirements: 
+Primary Actor: Processor
+Pre-condition: Processor get called with a package
+Post-condition: Processor returns encapsulated data
+Basic Flow: 
+    1. Processor get called with package
+    2. Processor fork a child to process package
+    3. Child parse and tokenize package
+    4. Kill Child, return data
+Alternate Flows: 
+Exceptions: 
+Related Use Cases: M002
+
+
+---
+
+View Transaction History Use Cases:
+
+Use Case ID: VT01
+Actors:
+Primary: Customer
+Secondary: Banking System
+
+Preconditions:
+The customer must be logged into the system with valid credentials.
+The customer must have at least one bank account registered.
+
+Trigger: The customer initiates a request to view their transaction history.
+
+Basic Flow (Happy Path):
+The customer logs into the online banking system.
+The customer navigates to the "Account Summary" or "Transactions" section.
+The system displays a default view of the most recent transactions for the selected account.
+The customer can filter the transactions based on:
+   - Date range (last week, last month, ...).
+   - Transaction type (debits, credits, ...).
+   - Specific payees (billers or transfer recipients, ...).
+The customer selects the filters and submits the request.
+The system displays the filtered transaction history.
+The customer can download or print the transaction statement as needed.
+
+Alternate Flows:
+No Transactions: If the account has no transactions for the selected date range, the system will display a “No transactions found” message.
+Filter Error: If the filters entered by the customer are invalid (e.g., future date), the system prompts the operator to correct the input.
+
+Postconditions:
+The transaction history is presented to the customer, either filtered or in the default format.
+The customer can export or print the transaction list if needed.
+
+Exceptions:
+System downtime or unavailability might prevent transaction data from being retrieved.
+If there’s a lag in the backend systems, some recent transactions may not appear immediately.
+
+---
+Account use cases:
+
+Use Case ID: A001
+Use Case Name: Account authorization
+Relevant Requirements: 
+    - The operator is authenticated.
+Primary Actor: 
+    - Operator module
+Pre-condition: 
+    - The operator has input their credentials on the client.
+Post-condition: 
+    - The operator is authenticated.
+Basic Flow: 
+    1. Operator select interface to access account.
+    2. Client invoke Message to handle request to the Server for Authorization.
+    3. The server invoke Account method to check Operator authorization.
+    4. Once authorized, Server fulfill request.
+    5. Events are logged.
+Alternate Flows: 
+    1. Authorization denied.
+    2. Server deny request.
+    3. Client invoke GUI response.
+    4. Events are logged.
+Exceptions: 
+    - Account dont exist, invoke correct client response.
+Related Use Cases: 
+    - Log in
+
+---
+
+Use Case ID: A002
+Use Case Name: Account transfer
+Relevant Requirements: 
+    - recived a request fro transfering
+Primary Actor: 
+    - Account module
+Pre-condition: 
+    - Account is accessing by authorized operator.
+    - Server invoke account transfer method.
+Post-condition: 
+    - Account transferred, balance update.
+Basic Flow: 
+    1. Checking current balance against transfer amount.
+    2. Checking transfer constraint.
+    3. Account initialized correct destination accounts.
+    4. Update balance from both accounts to reflect change.
+    5. Update new balance to files.
+Alternate Flows:
+Exceptions: 
+    - Account dont exist, invoke correct client response.
+    - Transfer constraint invoked, abort
+Related Use Cases: 
+    - Transfering request
