@@ -31,7 +31,6 @@ Related Use Cases:
 Use Case ID: O002
 Use Case Name: Withdraw cash
 Relevant Requirements: 3.1.2.4, 3.1.3.1, 3.1.3.6
-    - The cash must be taken out of the account's balance.
 Primary Actor: 
     - Operator Module
 Pre-condition: 
@@ -190,6 +189,7 @@ Exceptions:
     3. The client is not connected to the internet. 
 Related Use Cases: Receiving Message, Encapsulate data
 
+---
 
 Use Case ID: M002
 Use Case Name: Receiving Message
@@ -243,10 +243,8 @@ Alternate Flows:
 Exceptions: 
 Related Use Cases: M002
 
-
 ---
 
----
 Account use cases:
 
 Use Case ID: A001
@@ -336,6 +334,8 @@ Exceptions:
     Logging in, get authorized, send message to server, retrieve message
     from server
 
+---
+
 Use Case ID: A004
 Use Case Name: Deleting an account
 Relevant Requirements:
@@ -369,9 +369,10 @@ Exceptions:
     4. The user's account has already been deleted.
     5. The user's account can't be deleted if the account's
     current status is locked, or restricted.
-
 Related Use Cases:
     - Log in ,Unauthorized user
+
+---
 
 Use Case ID: A005
 Use Case Name: Add a user to an account
@@ -406,6 +407,8 @@ Exceptions:
     2. The user is already removed from the account. 
 Related Use Cases:
 
+---
+
 Use Case ID: A007
 Use Case Name: Accounts Module, Client Modules, 
 Relevant Requirements: 3.1.2.4.3, 3.1.2.3.5 .
@@ -426,3 +429,5 @@ Exceptions:
     System downtime or unavailability might prevent transaction data from being retrieved.
     If there’s a lag in the backend systems, some recent transactions may not appear immediately.
 Related Use Cases:
+
+---
