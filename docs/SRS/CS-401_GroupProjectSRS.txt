@@ -19,320 +19,12 @@ This document outlines the requirements for a Large Banking System.
               Server - Module for server code.
               Message - Module for data transfer between client and server.
               JVM - Java Virtual Machine.
+              Package - Encapsulated data.
 
        1.3. References and Use Cases:
 
-       Use Case ID: 1
-              Use Case Name: Deposit cash
-              Relevant Requirements: 
-                     The cash must be added to the account's balance.
-              Primary Actor: 
-                     Client Module
-              Pre-condition:
-                     The user is logged into the account they want to deposit cash to.
-              Post-condition: 
-                     The cash amount is deposited to the account in which the user is logged into.
-              Basic Flow: 
-                     1. The user logs into the account.
-                     2. The user requests to deposit some $ amount.
-                     3. The client module uses the message module to pack and send the request.
-                     4. The server module recieves the message.
-                     5. The server module stores the $ amount in the correct account file.
-              Alternate Flows: 
-                     1. The user tries to logs in.
-                     2. log in fails.
-
-              Exceptions: 
-                     1. The server may fail to recieve or fulfill the request due to reasons
-                     such as data corruption and connection issue.
-              Related Use Cases: 
-                     Retrieve cash
-
-
-       Use Case ID: 2
-              Use Case Name: Retrieve cash
-              Relevant Requirements: 
-                     The cash must be taken out of the account's balance.
-              Primary Actor: 
-                     Client Module
-              Pre-condition: 
-                     The user is logged into their account and there exist enough balance to retrieve.
-              Post-condition: 
-                     The retrieved cash must be subtracted from the account balance.
-              Basic Flow: 
-                     1. The user logs into the account.
-                     2. The user requests to retrieve some $ amount.
-                     3. The client module uses the message module to pack and send the request.
-                     4. The server module recieves the message.
-                     5. The server module subtracts the $ amount from the correct account.
-              Alternate Flows: 
-                     1. The user tries to logs in.
-                     2. log in fails.
-
-              Exceptions: 
-                     Server failiure
-                     data corruption
-                     wrong account (account doesn't exist or has been deleted)
-              Related Use Cases: 
-                     Deposit cash
-
-       Use Case ID: 3
-              Use Case Name: log in
-              Relevant Requirements: 
-                     The user must be logged into the account they want to log in.
-              Primary Actor: 
-                     Client Module
-              Pre-condition: 
-                     The user is not logged into the account.
-                     The account trying to log into exists.
-              Post-condition: 
-                     The user is logged into the account.
-              Basic Flow: 
-                     1. The user tries to log into their account.
-                     2. The user enters their credentials
-                     3. The user is logged into their account.
-              Alternate Flows: 
-                     1. The user tries to logs in.
-                     2. log in fails.
-
-                     1. user enter credentials
-                     2. Wrong credentials, log in fails.
-              Exceptions: 
-                     The user doesn't exist. 
-              Related Use Cases: 
-                     None
-
-       Use Case ID: 4
-              Use Case Name: send message to server
-              Relevant Requirements: 
-                     The client message is sent to the server.
-              Primary Actor: 
-                     Message Module
-              Pre-condition:
-                     The message to send is has been initialized with proper information. 
-              Post-condition: 
-                     The message is sent to the server
-              Basic Flow:
-                     1. User makes a request Ex deposit cash.
-                     2. The request is packed and sent via the message module.
-                     3. The request is recieved by the server module and unpacked.
-              Alternate Flows: 
-                     None
-              Exceptions:
-                     This module is likely entirely private with sole purpose of moving back and forth
-                     between the server and the client.
-                     None. 
-              Related Use Cases: 
-                     retrieve cash, deposit cash
-
-       Use Case ID: 5
-              Use Case Name: retrieve message from server
-              Relevant Requirements: 
-                     The message is transfered to the client module.
-              Primary Actor: 
-                     Message Module
-              Pre-condition:
-                     The information asked for is available in the bank account.
-              Post-condition: 
-                     The information asked will be made available to the client.
-              Basic Flow:
-                     1. The client makes a request using message module.
-                     2. The server processes the request and sends a response to client.
-                     3. The client displays recieves the response and uses it as needed.
-              Alternate Flows: 
-                     1. The client makes a request.
-                     2. No response, there's no active server.
-              Exceptions: 
-                     The server is down.
-                     The server doesn't exist.
-              Related Use Cases:
-                     retrieve cash, deposit cash 
-
-
-       Use Case ID: 6
-              Use Case Name: get authenticated
-              Relevant Requirements: 
-                     The user is authenticated.
-              Primary Actor: 
-                     Server Module
-              Pre-condition: 
-                     the user has input their credentials.
-              Post-condition: 
-                     the user is authenticated.
-              Basic Flow: 
-                     1. user inputs their credentials.
-                     2. the message gets sent to the server for authentication.
-                     3. the server returns the message after evaluating it.
-                     4. the the user is authenticated.
-              Alternate Flows: 
-                     1. user inputs their credentials.
-                     2. No server response.
-
-                     1->2->3 // basic flow.
-                     4. The authentication fails.
-              Exceptions: 
-                     data for authentication doesn't exist.
-                     server doesn't exists.
-              Related Use Cases: 
-                     log in
-
-
-       Use Case ID: 7
-              Use Case Name: Unauthorized User (Attempted Fraud)
-              Relevant Requirements:
-                     There is an unauthorized user trying to access an account.
-              Primary Actor:
-                     Server Module
-              Pre-condition:
-                     The attempted user attempts to put in credentials but there are
-                     continued failed attempts.
-              Post-condition:
-                     The user is under suspicion for attempting to access an account that
-                     is owned by a different user.
-              Basic Flow:
-                    1. The user enters the account credentials
-                    2. User inputs incorrect passcode or ID
-                    4. The server records the failed attempt.
-                    5. After several failed attempts the server sends back
-                    warning message for suspicious activity.
-                    6. The failed attempted is logged into the server history,
-                    if a predetermined amount of attempts is exceeded, the account
-                    may be temporarily locked.
-              Alternate Flows:
-                    1. The user enters the account credentials
-                    2. The server verifies the account credentials
-                    3. The account credentials match the ones on record
-                    4. The user enters the account with no further issues
-              Exceptions:
-                    The server runs into an internal error in between verifying
-                    the account credentials
-                    There is a network issues going on in the area that is
-                    prohibiting the server from functioning properly.
-                    The account may already be locked from any previous
-                    suspicious activity.
-              Related Use Cases: 
-                    Log in
-
-       Use Case ID: 8
-              Use Case Name: Transferring Money (From one account to another)
-              Relevant Requirements:
-                   Funds are being withdrawn from a user's account.
-              Primary Actor:
-                    Client Module
-              Pre-condition:
-                    The user is currently active on their account and has a sufficient
-                    amount of money that is able to be transferred.
-              Post-condition:
-                    The money has been transferred over to another account, all
-                    parties involved receive confirmation of the transfer.
-              Basic Flow:
-                     1. The user logs into the account.
-                     2. The user initiates a transfer money request.
-                     3. The user is prompted with entering the account information
-                     that they wish to transfer money to.
-                     4. The user enters the desired amount of money wished to be
-                     transferred.
-                     5. The server receives all needed information
-                     6. The server continues to transfer the right amount of money to
-                     recipient account.
-                     7. Transaction is successful.
-              Alternate Flows:
-                    1. The user doesn't have the minimum amount of money needed to
-                    transfer
-                    2. The user at any point decides to cancel a money transfer.
-              Exceptions:
-                    1. The server ran into an error at some point during the transfer
-                    process
-                    2. The user input the incorrect account credentials
-                    3. The user has met the limit set on their account for transferring
-                    money
+       UseCase.txt -> Use Cases.             
                     
-       Use Case ID: 10 // message from Rohan: DO NOT DELETE, THIS IS A USE CASE TEMPLATE, MAKE A COPY AND USE THAT COPY
-              Use Case Name: 
-              Relevant Requirements: 
-              Primary Actor: 
-              Pre-condition: 
-              Post-condition: 
-              Basic Flow: 
-              Alternate Flows: 
-              Exceptions: 
-              Related Use Cases: 
-                    Unauthorized User
-                    Log in
-                    
-       Use Case ID: 9
-              Use Case Name: Creating an account
-              Relevant Requirements:
-                  - A user wants to create an account to be able to store
-                  their money in either a checkings or savings.
-              Primary Actor:
-                  - Client Module
-                  - Server Module
-              Pre-condition:
-                   - The user is in position where it is beneficial to create
-                  an account.
-              Post-condition:
-                  - The user has now made an account and has gained access to
-                  further pursue a bank account.
-              Basic Flow:
-                  1. The user initiates an account creation request.
-                  2. The user provides necessary personal information.
-                  3. The user's identification begins to be verified.
-                  4. The superuser verifies the user's information.
-                  5. The user now has an account.
-              Alternate Flows:
-                  1. The user enters any type of wrong information during
-                  the process of wanting to create an account. So the user is
-                  prompted to make changes to the incorrect information.
-                  2. The user's request to create an account was rejected.
-              Exceptions:
-                  1. The user provides invalid personal information.
-                  2. The user's ID and password are already taken so the user
-                  must think of a different ID and password.
-                  3. The ID and or password don't meet bank's security requirements.
-                  4. The user doesn't meet the bank's requirements in order to
-                  create an account. (Ex: Age).
-              Related Use Cases:
-                     Logging in, get authorized, send message to server, retrieve message
-                     from server
-
-       Use Case ID: 10
-              Use Case Name: Deleting an account
-              Relevant Requirements:
-                  - A user's account has reached a point in which it is
-                  not needed anymore.
-              Primary Actor:
-                  - Client Module
-                  - Server Module
-              Pre-condition:
-                  - The user's funds have been removed from the account and
-                  has been verified for deletion of account.
-              Post-condition:
-                  - The user's account has been deleted.
-              Basic Flow:
-                  1. Initialize deleting an account.
-                  2. User is authenticated to proceed with the deleting
-                  process.
-                  3. The account's information is under review and the user
-                  is notified of deleting an account.
-                  4. Funds are removed from the account, if any.
-                  5. The account has been deleted.
-              Alternate Flows:
-                  1. The user makes the decision of not wanting to delete
-                  their account.
-                  2. The account can't be deleted if the user has any type
-                  of outstanding charges.
-              Exceptions:
-                  1. The user fails to authenticate credentials.
-                  2. There are outstanding charges to the user's account.
-                  3. The server or client run into technical issues
-                  throughout the deletion process.
-                  4. The user's account has already been deleted.
-                  5. The user's account can't be deleted if the account's
-                  current status is locked, or restricted.
-
-              Related Use Cases:
-                    - Log in ,Unauthorized user
        1.4. Overview 
               The large banking system will provide users with an interface for deposits, and withdrawals from 
               their checking or savings accounts. The SU can do the same for the use, additionally, the SU 
@@ -403,20 +95,20 @@ This document outlines the requirements for a Large Banking System.
               3.1.1.4 The system must handle exceptions and not crash.
 
        3.1.2. Operator Module Requirements: 
-              3.1.2. Regular User Sub-Module Requirements:
-                     3.1.2.1 Regular users must be able to log in.
-                     3.1.2.2 Regular users must be able to transfer funds.
-                     3.1.2.3 Regular users must be able to deposit cash.
-                     3.1.2.4 Regular users must be able to withdraw cash.
-                     3.1.2.5 Regular users must be able to view their transaction history.
+              3.1.2.3 Regular User Sub-Module Requirements:
+                     3.1.2.3.1 Regular users must be able to log in.
+                     3.1.2.3.2 Regular users must be able to transfer funds.
+                     3.1.2.3.3 Regular users must be able to deposit cash.
+                     3.1.2.3.4 Regular users must be able to withdraw cash.
+                     3.1.2.3.5 Regular users must be able to view their transaction history.
 
-              3.1.2. Super User (Admin) Module Requirements: 
-                     3.1.2.1 The superuser will have the ability to create new accounts. //they are bankers, not for bankers
-                     3.1.2.2 If a checking account has not been active in the last 6 months, the 
+              3.1.2.4 Super User (Admin) Module Requirements: 
+                     3.1.2.4.1 The superuser will have the ability to create new accounts. //they are bankers, not for bankers
+                     3.1.2.4.2 If a checking account has not been active in the last 6 months, the 
                      superuser has the ability to deactivate the said account. 
-                     3.1.2.3 If an account has a negative balance or a history of overdrafts, the 
+                     3.1.2.4.3 If an account has a negative balance or a history of overdrafts, the 
                      superuser will have the ability to declare the account closed.
-                     3.1.2.4 The superuser has the ability to assign roles that have appropriate 
+                     3.1.2.4.4 The superuser has the ability to assign roles that have appropriate 
                      permissions
        
        3.1.3 Account Module Requirements:
@@ -428,6 +120,9 @@ This document outlines the requirements for a Large Banking System.
               3.1.3.6 The account will have a way to extract funds.
               3.1.3.7 The account will have a way to destroy itself upon SU’s request.
               3.1.3.8 Each account will have a unique serial ID used to identify the account.
+              3.1.3.9 Serial ID is generated upon account initialization.
+              3.1.3.10 Serial ID has a pattern for identification.
+              3.1.3.11 Serial ID will be used to authenticate an Account, along with a user 
               3.1.3.9 Serial ID is generated upon account initialization.
               3.1.3.10 Serial ID has a pattern for identification.
               3.1.3.11 Serial ID will be used to authenticate an Account, along with a user 
@@ -451,19 +146,18 @@ This document outlines the requirements for a Large Banking System.
 
        3.1.4 Message Module Requirements:
               3.1.4.1 Message between client and Server Modules through the internet will be encapsulated. 
-              3.1.4.2 Encapsulated data will be referred to a package.
-              3.1.4.3 Package will contain data, current address, receiving address.
-              3.1.4.4 Package will accept different type of data.
-              3.1.4.5 Package is able to be decapsulated by the recipient.
-              3.1.4.6 There will be a processor, a sender, and a receiver on both side of the 
+              3.1.4.2 Package will contain data, current address, receiving address.
+              3.1.4.3 Package will accept different type of data.
+              3.1.4.4 Package is able to be decapsulated by the recipient.
+              3.1.4.5 There will be a processor, a sender, and a receiver on both side of the 
               connection.
-                     3.1.4.6.1 Processor can encapsulate data into package or decapsulate package 
+                     3.1.4.5.1 Processor can encapsulate data into package or decapsulate package 
                      into data.
-                     3.1.4.6.2 Sender will let processor create package from passed data and send 
+                     3.1.4.5.2 Sender will let processor create package from passed data and send 
                      package.
-                     3.1.4.6.3 Receiver will listen on a designated port for packages and send them to 
+                     3.1.4.5.3 Receiver will listen on a designated port for packages and send them to 
                      processor to get data.
-                     3.1.4.6.4 Processor, Sender, and Receiver can handle multiple packages 
+                     3.1.4.5.4 Processor, Sender, and Receiver can handle multiple packages 
                      synchronously.
 
        3.1.5 Client Module Requirements:
