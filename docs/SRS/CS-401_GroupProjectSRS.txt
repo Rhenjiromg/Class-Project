@@ -3,7 +3,6 @@ Software Requirements Specification
 
 1. Purpose
 This document outlines the requirements for a Large Banking System.
-
        1.1. Scope
               This document provides requirements for a Large Banking System. This software will support countless people 
               and interactions. The primary objective being, providing a GUI for the bank employees and users to interact 
@@ -98,10 +97,17 @@ This document outlines the requirements for a Large Banking System.
 
        3.1.1. Common Requirements: 
               3.1.1.1 There should be a standard way of storing information in the txt data file/s. //this is technical
-              
+              3.1.1.2 The system must ensure data integrity and availablility.
+              3.1.1.3 The system must be scalable.
+              3.1.1.4 The system must handle exceptions and not crash.
+
        3.1.2. Operator Module Requirements: 
               3.1.2. Regular User Sub-Module Requirements:
-                     3.1.2.1 ...
+                     3.1.2.1 Regular users must be able to log in.
+                     3.1.2.2 Regular users must be able to transfer funds.
+                     3.1.2.3 Regular users must be able to deposit cash.
+                     3.1.2.4 Regular users must be able to withdraw cash.
+                     3.1.2.5 Regular users must be able to view their transaction history.
 
               3.1.2. Super User (Admin) Module Requirements: 
                      3.1.2.1 The superuser will have the ability to create new accounts. //they are bankers, not for bankers
@@ -124,6 +130,9 @@ This document outlines the requirements for a Large Banking System.
               3.1.3.9 Serial ID is generated upon account initialization.
               3.1.3.10 Serial ID has a pattern for identification.
               3.1.3.11 Serial ID will be used to authenticate an Account, along with a user 
+              3.1.3.9 Serial ID is generated upon account initialization.
+              3.1.3.10 Serial ID has a pattern for identification.
+              3.1.3.11 Serial ID will be used to authenticate an Account, along with a user 
               generated passcode, which is initiated during account creation. (currently 
               disallowing changing passcode)
               3.1.3.12 The removal of the last User in an account will result in its closure.
@@ -132,7 +141,6 @@ This document outlines the requirements for a Large Banking System.
               3.1.3.14 Only the SU can remove or add users from accounts.
               3.1.3.15 Multiple Users may be registered to the same account.
               3.1.3.16 Users can have multiple accounts.
-              3.1.3.17 Users will be able to transfer funds between accounts. 
 
               3.1.3. Checking Account Sub-Module Requirements: 
                      3.1.3.1 The checking account has no limit on the number of withdrawals.
@@ -161,14 +169,19 @@ This document outlines the requirements for a Large Banking System.
                      synchronously.
 
        3.1.5 Client Module Requirements:
-              3.1.5.1 Client will allow Operators to log in using ID and passcode.
-              3.1.5.2 Client will be able to differentiate user log in and superUser log 
+              3.1.5.1 All operators' interactions with the application will be through client
+              3.1.5.2 Client will authenticate operator before allow access
+              3.1.5.3 Client will be able to differentiate Operators access permissions and provide functions accordingly
+                     3.1.5.3.1 Client for User will simulate an ATM interaction
+                     3.1.5.3.2 Client for SuperUser will simulate a bank teller interaction 
+              3.1.5.4 Client will contain GUI
 
        3.1.6 Server Module Requirements:
               3.1.6.1 The data must be stored within the server application so that it has direct access.
-              3.1.6.2 The server must restart if data is corrupted.
-              3.1.6.3 The server should have the ability to transfer funds between differerent accounts.
-
+              3.1.6.2 The server must restart if data is corrupted. //pending client. need clarification to fit ui and system design
+              3.1.6.3 Server is able to receive requests from Client through Message module
+              3.1.6.4 Server will fulfill client's requests
+              3.1.6.5 All changes to the application's data must be perform by the server
 
        3.2. External Interface Requirements 
               3.2.1 The system must operate over a local network using TCP/IP.
@@ -218,4 +231,4 @@ This document outlines the requirements for a Large Banking System.
        4.3.2 Most operations such as adding or retrieving cash are constant time operations and should be 
        executed in reasonable time. Meaning the algorithm should take O(1) time.
        4.3.3 The system should not crash when under load, Example - multiple users try to access it.
-       4.3.4 The system should be able to handle any unexpected exceptions without crashing the app. 
+       4.3.4 The system should be able to handle any unexpected exceptions without crashing the app.
