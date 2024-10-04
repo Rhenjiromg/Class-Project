@@ -138,7 +138,7 @@ Related Use Cases:
 
 Use Case ID: CS001
 Use Case Name: Log in
-Relevant Requirements: 3.1.2.1
+Relevant Requirements: 3.1.2.1, 3.1.2.2, 3.1.2.3
 Primary Actor: 
     - Client Module
 Pre-condition: 
@@ -150,19 +150,51 @@ Basic Flow:
     2. The operator enters their authenticator.
     3. Client invoke message to send request to Server using authenticator.
     4. Server pass authenticator to Operator modules to authenticate.
-    5. Once success, a read-only version of the authenticated Operator is return to Client.
-    3. The operator is authenticated.
+    5. Once success, a read-only version of the authenticated Operator is return to Client, include a reference table of authorized accounts.
+    6. The operator is authenticated.
+    7. Show user GUI
 Alternate Flows: 
     1. The authentication failed.
     2. Server denies request.
     3. Client invoke correct GUI response.
     4. Events are logged
 
+    1. entered authenticator belongs to superuser
+    2-6 as basic Flow
+    7. show superuser GUI
 Exceptions: 
     - If operator doesn't exist, response same as authentication failed.
 Related Use Cases: 
     - Account authorization
 
+---
+
+Use Case ID: CS002
+Use Case Name: Account authorization
+Relevant Requirements: 3.1.2.4.6 
+Primary Actor: 
+    - Operator module
+Pre-condition: 
+    - The operator has authenticated.
+    - Client has received the table of reference accounts
+Post-condition: 
+    - The operator is authenticated.
+Basic Flow: 
+    1. Operator select interface to access account.
+    2. Operator enter desired account ID.
+    3. Client check with account authorization reference table.
+    4. Events are logged.
+Alternate Flows: 
+    1. Entered account ID did not exist in table.
+    2. Client deny request.
+    3. Client invoke GUI response.
+    4. Events are logged.
+Exceptions: 
+    - Table empty, invoke correct client response.
+Related Use Cases: 
+    - Log in
+
+---
 ---
 
 Messaging Module Use Cases:
@@ -248,33 +280,6 @@ Related Use Cases: M002
 Account use cases:
 
 Use Case ID: A001
-Use Case Name: Account authorization
-Relevant Requirements: 3.1.2.1 .
-Primary Actor: 
-    - Operator module
-Pre-condition: 
-    - The operator has input their credentials on the client.
-Post-condition: 
-    - The operator is authenticated.
-Basic Flow: 
-    1. Operator select interface to access account.
-    2. Client invoke Message to handle request to the Server for Authorization.
-    3. The server invoke Account method to check Operator authorization.
-    4. Once authorized, Server fulfill request.
-    5. Events are logged.
-Alternate Flows: 
-    1. Authorization denied.
-    2. Server deny request.
-    3. Client invoke GUI response.
-    4. Events are logged.
-Exceptions: 
-    - Account dont exist, invoke correct client response.
-Related Use Cases: 
-    - Log in
-
----
-
-Use Case ID: A002
 Use Case Name: Account transfer
 Relevant Requirements: 
     - recived a request of transfering
@@ -298,7 +303,9 @@ Exceptions:
 Related Use Cases: 
     - Transfering request
 
-Use Case ID: A003
+---
+
+Use Case ID: A002
 Use Case Name: Creating an account
 Relevant Requirements:
     - A user wants to create an account to be able to store
@@ -336,7 +343,7 @@ Exceptions:
 
 ---
 
-Use Case ID: A004
+Use Case ID: A003
 Use Case Name: Deleting an account
 Relevant Requirements:
     - A user's account has reached a point in which it is not needed anymore.
@@ -374,7 +381,7 @@ Related Use Cases:
 
 ---
 
-Use Case ID: A005
+Use Case ID: A004
 Use Case Name: Add a user to an account
 Relevant Requirements: 3.1.3.15, 3.1.3.16.
 Primary Actor: Account Module 
@@ -391,7 +398,7 @@ Exceptions:
     2. The user is already added to the account. 
 Related Use Cases:
 
-Use Case ID: A006
+Use Case ID: A005
 Use Case Name: Remove a user from an account. 
 Relevant Requirements: 3.1.3.15, 3.1.3.16.
 Primary Actor: Client Module.
@@ -409,7 +416,7 @@ Related Use Cases:
 
 ---
 
-Use Case ID: A007
+Use Case ID: A006
 Use Case Name: Accounts Module, Client Modules, 
 Relevant Requirements: 3.1.2.4.3, 3.1.2.3.5 .
 Primary Actor: Operator
