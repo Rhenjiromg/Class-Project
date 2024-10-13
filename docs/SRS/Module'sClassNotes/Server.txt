@@ -1,0 +1,22 @@
+Class: Server
+Attributes:
+-fileReader & fileWriter obj
+-portListener?
+-Message class to handle requests
+
+Methods:
+//notes: ('n') == referencing n's methods
+-FileI/O:
+    -FileReader(Acc/Ope)
+    -FileWriter(Acc/Ope)
+-Networking:
+    -PortListener:  requestHandler //threads //in -> likely call message class processor
+                    RequestResolver //threads //out -> likely call message class processor
+                 
+-RequestHandling:
+    -LogIn(Ope): return a read-only version of Ope obj //no setter ideally
+    -AccountRequest(Acc): potentially call FileWriter(Acc) and return a snapshot of new read-only ver of Acc
+    //likewise for OpeRequest, mainly superuser functions like user creation or password change etc.
+
+
+// possible workflow: requestHandler -> requestHandling -> fileI/O -> requestResolver
