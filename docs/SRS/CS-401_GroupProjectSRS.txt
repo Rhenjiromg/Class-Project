@@ -19,12 +19,19 @@ This document outlines the requirements for a Large Banking System.
               Server - Module for server code.
               Message - Module for data transfer between client and server.
               JVM - Java Virtual Machine.
-              Package - Encapsulated data.
 
        1.3. References and Use Cases:
+       Use Case ID: 10 // message from Rohan: DO NOT DELETE, THIS IS A USE CASE TEMPLATE, MAKE A COPY AND USE THAT COPY
+              Use Case Name: 
+              Relevant Requirements: 
+              Primary Actor: 
+              Pre-condition: 
+              Post-condition: 
+              Basic Flow: 
+              Alternate Flows: 
+              Exceptions: 
+              Related Use Cases: 
 
-       UseCase.txt -> Use Cases.             
-                    
        1.4. Overview 
               The large banking system will provide users with an interface for deposits, and withdrawals from 
               their checking or savings accounts. The SU can do the same for the use, additionally, the SU 
@@ -89,49 +96,45 @@ This document outlines the requirements for a Large Banking System.
 3.1. Functional Requirements 
 
        3.1.1. Common Requirements: 
-              3.1.1.1 There should be a standard way of storing information in the txt files.
-              3.1.1.2 The system must ensure data integrity and availablility with server/client design pattern.
+              3.1.1.1 There should be a standard way of storing information in the txt data file/s. //this is technical
+              3.1.1.2 The system must ensure data integrity and availablility.
               3.1.1.3 The system must be scalable.
-              3.1.1.4 The system must handle exceptions without conflicts with GUI.
-              3.1.1.5 The system will utilize multithreading programming to support multiple active operators.
+              3.1.1.4 The system must handle exceptions and not crash.
 
        3.1.2. Operator Module Requirements: 
-              3.1.2.1 Operator will have unique serial IDs created upon operator initialization.
-              3.1.2.2 Operator must be able to authenticate using ID and passcode.
-              3.1.2.3 Serial ID has a pattern for distinction between type (user and superuser).
-              3.1.2.4 User Sub-Module Requirements:
-                     3.1.2.4.1 Users must be able to view balance.
-                     3.1.2.4.2 Users must be able to transfer funds.
-                     3.1.2.4.3 Users must be able to deposit cash.
-                     3.1.2.4.4 Users must be able to withdraw cash.
-                     3.1.2.4.5 Users must be able to view their transaction history.
-                     3.1.2.4.6 User will retain a list of authorized accounts IDs, these will be the account this user is registered.
+              3.1.2. Regular User Sub-Module Requirements:
+                     3.1.2.1 Regular users must be able to log in.
+                     3.1.2.2 Regular users must be able to transfer funds.
+                     3.1.2.3 Regular users must be able to deposit cash.
+                     3.1.2.4 Regular users must be able to withdraw cash.
+                     3.1.2.5 Regular users must be able to view their transaction history.
 
-              3.1.2.5 Super User (Banker) Module Requirements: 
-                     3.1.2.5.1 The superuser will have the ability to create new accounts.
-                     3.1.2.5.2 If a checking account has not been active in the last 6 months (conditions met), the 
+              3.1.2. Super User (Admin) Module Requirements: 
+                     3.1.2.1 The superuser will have the ability to create new accounts. //they are bankers, not for bankers
+                     3.1.2.2 If a checking account has not been active in the last 6 months, the 
                      superuser has the ability to deactivate the said account. 
-                     3.1.2.5.3 If an account has a negative balance or a history of overdrafts (conditions met), the 
+                     3.1.2.3 If an account has a negative balance or a history of overdrafts, the 
                      superuser will have the ability to declare the account closed.
-                     3.1.2.5.4 The superuser can add users to accounts (or accounts to users depends on design).
+                     3.1.2.4 The superuser has the ability to assign roles that have appropriate 
+                     permissions
        
-       3.1.3 Account Module Requirements: //need to add no overdraft
+       3.1.3 Account Module Requirements:
               3.1.3.1 The account will have the date of creation.
-              3.1.3.2 The account will keep track of real time. 
-              3.1.3.3 The account will have balance.
-              3.1.3.4 Accounts can either be checking account or saving account.
-              3.1.3.5 The account will be able to handle depositing funds.
-              3.1.3.6 The account will be able to handle withdrawing funds.
-              3.1.3.7 The account will be able to handle destroying itself upon SU’s request.
+              3.1.3.2 The account will have a way to determine that a period of time passed. 
+              3.1.3.3 The account will have a checking account balance.
+              3.1.3.4 The account will have a separate savings account balance.
+              3.1.3.5 The account will have a way to deposit funds.
+              3.1.3.6 The account will have a way to extract funds.
+              3.1.3.7 The account will have a way to destroy itself upon SU’s request.
               3.1.3.8 Each account will have a unique serial ID used to identify the account.
               3.1.3.9 Serial ID is generated upon account initialization.
-              3.1.3.10 Serial ID has a pattern for distinction between type (checking and saving).
-              3.1.3.11 Serial ID will be used for authorization. 
-              3.1.3.9 Serial ID is generated upon account initialization.
               3.1.3.10 Serial ID has a pattern for identification.
-              3.1.3.11 Account balance cannot go into negatives.
+              3.1.3.11 Serial ID will be used to authenticate an Account, along with a user 
+              generated passcode, which is initiated during account creation. (currently 
+              disallowing changing passcode)
               3.1.3.12 The removal of the last User in an account will result in its closure.
-              3.1.3.13 Each registered user gains access to the account through authentication with the account's reference list. 
+              3.1.3.13 Each registered user gains access to the account through 
+              authentication with the account's reference list. 
               3.1.3.14 Only the SU can remove or add users from accounts.
               3.1.3.15 Multiple Users may be registered to the same account.
               3.1.3.16 Users can have multiple accounts.
@@ -146,19 +149,21 @@ This document outlines the requirements for a Large Banking System.
                      3.1.3.3 The savings account will have a 0.10% annual increase rate.
 
        3.1.4 Message Module Requirements:
-              3.1.4.1 Message between client and Server Modules through the internet will be encapsulated in package. 
-              3.1.4.2 Package will contain some data, current address, receiving address.
-              3.1.4.3 Package will accept different type of data through utilizing adapter design model.
-              3.1.4.4 Package is able to be decapsulated by message.
-              3.1.4.5 There will be a processor, a sender, and a receiver on both side of the 
+              3.1.4.1 Message between client and Server Modules through the internet will be encapsulated. 
+              3.1.4.2 Encapsulated data will be referred to a package.
+              3.1.4.3 Package will contain data, current address, receiving address.
+              3.1.4.4 Package will accept different type of data.
+              3.1.4.5 Package is able to be decapsulated by the recipient.
+              3.1.4.6 There will be a processor, a sender, and a receiver on both side of the 
               connection.
-                     3.1.4.5.1 Processor can encapsulate data into package or decapsulate package 
+                     3.1.4.6.1 Processor can encapsulate data into package or decapsulate package 
                      into data.
-                     3.1.4.5.2 Sender will let processor create package from passed data and send 
+                     3.1.4.6.2 Sender will let processor create package from passed data and send 
                      package.
-                     3.1.4.5.3 Receiver will listen on a designated port for packages and send them to 
+                     3.1.4.6.3 Receiver will listen on a designated port for packages and send them to 
                      processor to get data.
-              
+                     3.1.4.6.4 Processor, Sender, and Receiver can handle multiple packages 
+                     synchronously.
 
        3.1.5 Client Module Requirements:
               3.1.5.1 All operators' interactions with the application will be through client
@@ -167,15 +172,13 @@ This document outlines the requirements for a Large Banking System.
                      3.1.5.3.1 Client for User will simulate an ATM interaction
                      3.1.5.3.2 Client for SuperUser will simulate a bank teller interaction 
               3.1.5.4 Client will contain GUI
-              3.1.5.5 Client will receive a read-only version of data from Server for responsive performance.
 
        3.1.6 Server Module Requirements:
               3.1.6.1 The data must be stored within the server application so that it has direct access.
-              3.1.6.2 The server must restart if data is corrupted. 
+              3.1.6.2 The server must restart if data is corrupted. //pending client. need clarification to fit ui and system design
               3.1.6.3 Server is able to receive requests from Client through Message module
-              3.1.6.4 Server will attempt to fulfill client's requests
-              3.1.6.5 All changes to the application's data must be perform by the server (all write actions)
-              3.1.6.6 Server will log upon request fulfillment, or when exception is caught.
+              3.1.6.4 Server will fulfill client's requests
+              3.1.6.5 All changes to the application's data must be perform by the server
 
        3.2. External Interface Requirements 
               3.2.1 The system must operate over a local network using TCP/IP.
@@ -213,7 +216,7 @@ This document outlines the requirements for a Large Banking System.
 
 4.2. Environmental Requirements 
        4.2.1. The software needs to be “adaptive” and light weight as the software will be used 
-       by customers in a variety of environments. //pending more opinions
+       by customers in a variety of environments.
        4.2.2. The software needs to be internet friendly, which means that information sent to the 
        server should be checked and verified to be complete and whole before being sent. 
        4.2.3 The system must be deployable on common operating systems, such as Windows, Linux and MacOS.
