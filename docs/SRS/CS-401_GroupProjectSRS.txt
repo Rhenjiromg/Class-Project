@@ -179,6 +179,9 @@ This document outlines the requirements for a Large Banking System.
               3.1.6.3 Server is able to receive requests from Client through Message module
               3.1.6.4 Server will fulfill client's requests
               3.1.6.5 All changes to the application's data must be perform by the server
+              3.1.6.6 The server is multi threaded and can handle multiple client requests at a time.
+              3.1.6.7 The server has a request listner that accepts requests and give them a thread.
+              3.1.6.8 The server has a request responder which works as a facade for the event handler.
 
        3.2. External Interface Requirements 
               3.2.1 The system must operate over a local network using TCP/IP.
