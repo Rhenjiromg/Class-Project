@@ -135,7 +135,7 @@ Related Use Cases:
     - Retrieve cash, deposit cash, M002
 
 ---
-
+//this use case will be change as we no longer support reference table(log in)
 Use Case ID: CS001
 Use Case Name: Log in
 Relevant Requirements: 3.1.2.1, 3.1.2.2, 3.1.2.3
@@ -168,7 +168,7 @@ Related Use Cases:
     - Account authorization
 
 ---
-
+//this use case will be change as we no longer support reference table, so authorization will be done with every request from client received by server(authorization)
 Use Case ID: CS002
 Use Case Name: Account authorization
 Relevant Requirements: 3.1.2.4.6 
@@ -197,8 +197,9 @@ Related Use Cases:
 ---
 ---
 
-Messaging Module Use Cases:
-
+Messaging Module Use Cases: 
+//still pending changes to reflect current message module: inclusion of enum, change from package to data being in string, processor -> getData()
+//encapsulate data use case change to just call the right constructor -> influenced by server/client's facade
 Use Case ID: M001
 Use Case Name: Sending Message
 Relevant Requirements: 3.1.4.2, 3.1.4.3, 3.1.4.4, 3.1.4.5, 3.1.4.5.1, 3.1.4.5.4
@@ -415,7 +416,7 @@ Exceptions:
 Related Use Cases:
 
 ---
-
+//check on A006 use case name
 Use Case ID: A006
 Use Case Name: Accounts Module, Client Modules, 
 Relevant Requirements: 3.1.2.4.3, 3.1.2.3.5 .
