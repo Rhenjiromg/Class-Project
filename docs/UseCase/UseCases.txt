@@ -135,8 +135,7 @@ Related Use Cases:
     - Retrieve cash, deposit cash, M002
 
 ---
-//this use case will be change as we no longer support reference table(log in)
-Use Case ID: CS001
+Use Case ID: CS003
 Use Case Name: Log in
 Relevant Requirements: 3.1.2.1, 3.1.2.2, 3.1.2.3
 Primary Actor: 
@@ -146,13 +145,10 @@ Pre-condition:
 Post-condition: 
     - The operator is authenticated.
 Basic Flow: 
-    1. Client show operator a log in interface.
+    1. Client shows operator a log in interface.
     2. The operator enters their authenticator.
     3. Client invoke message to send request to Server using authenticator.
-    4. Server pass authenticator to Operator modules to authenticate.
-    5. Once success, a read-only version of the authenticated Operator is return to Client, include a reference table of authorized accounts.
-    6. The operator is authenticated.
-    7. Show user GUI
+    4. Account is authenticated.
 Alternate Flows: 
     1. The authentication failed.
     2. Server denies request.
@@ -168,8 +164,7 @@ Related Use Cases:
     - Account authorization
 
 ---
-//this use case will be change as we no longer support reference table, so authorization will be done with every request from client received by server(authorization)
-Use Case ID: CS002
+Use Case ID: CS004
 Use Case Name: Account authorization
 Relevant Requirements: 3.1.2.4.6 
 Primary Actor: 
