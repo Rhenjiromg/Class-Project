@@ -146,7 +146,7 @@ Pre-condition:
     - The operator is not authenticated.
 Post-condition: 
     - The operator is authenticated.
-Basic Flow: 
+Basic Flow:
     1. Client shows operator a log in interface.
     2. The operator enters their authenticator.
     3. Client invoke message to send request to Server using authenticator.
