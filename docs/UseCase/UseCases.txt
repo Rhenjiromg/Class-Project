@@ -1,93 +1,61 @@
-Operator Use Cases:
+GUI Use Cases:
 
-Use Case ID: O001
-Use Case Name: Deposit cash
-Relevant Requirements: 3.1.3.5
+//case G001 i purposedly not using thread because this log in will initiate the GUI, GUI no work while waiting for log in confirm
+//also make sure we dont support duplicate log ins.
+Use Case ID: G001
+Use Case Name: Operator run Client
+Relevant Requirements: 
 Primary Actor: 
-    - Operator Module
+    - GUI
 Pre-condition:
-    - The operator is authenticated.
-    - Operator is authorized to operate on that account.
+    - The executable for the client is successfully launch
 Post-condition: 
-    - The cash amount is deposited to the account in which the operator is authorized.
+    - Operator is lead through interfaces to finish logging in and able to access features.
 Basic Flow: 
-    1. The operator log in to the account.
-    2. The operator requests to deposit some balance amount.
-    3. The client module uses the message module to send the request.
-    4. The server module receives the request.
-    5. The server module invoke correct account's methods to change its balance.
-    6. The interaction is logged.
+    1. GUI shows operator log in interface.
+    2. GUI run client's facade method to handle authentication.
+    3. GUI receive response from method, which will contain data.
+    4. GUI run client facade's method to parse and process data.
+    5. Client's facade run GUI's method to display data to user.
 Alternate Flows: 
-    1. The operator tries to deposit a non-supported inputs, non-positive numeric inputs, or decided undesirable amounts.
-    2. Client module intercept input.
-    3. Client module deny action.
+    1 - 4. same as basic Flow
+    2. Client's facade detect superuser through regex the operator id.
+    3. Client's facade run GUI method to display superuser's interface.
 Exceptions: 
-    - The server may fail to receive or fulfill the request due to reasons such as data corruption or connection issues.
+    - If response data contain failed log in exception, display failed log in GUI.
 Related Use Cases: 
-    - Log in, Withdraw cash
+    - Log in
 
 ---
 
-Use Case ID: O002
-Use Case Name: Withdraw cash
-Relevant Requirements: 3.1.2.4, 3.1.3.1, 3.1.3.6
+Use Case ID: G002
+Use Case Name: Operator at the Banker table (Superuser doing some work on User behalf)
+Relevant Requirements: 
 Primary Actor: 
     - Operator Module
 Pre-condition: 
-    - The operator is authenticated.
-    - Operator is authorized to operate on that account.
+    - Client launch successful.
 Post-condition: 
-    - The retrieved cash must be subtracted from the account balance.
+    - Superuser have access to user accounts.
 Basic Flow: 
-    1. The operator log in to the account.
-    2. The operator requests to withdraw some balance amount.
-    3. The client module uses the message module to send the request.
-    4. The server module receives the request.
-    5. The server module invoke correct account's methods to withdraw.
-    6. The interaction is logged.
+    1. Superuser initiate log in on client.
+    2. Client follows log in process, detect a superuser ID.
+    3. Client shows superuser GUI.
+    4. GUI include an additional log in panel, with option to create user.
+    5. Superuser enters user authenticator, client will use the same method as if an user is attempt to log in.
+    6. Upon 2nd log in success, GUI display user's GUI alongside superuser GUI.
+    7. Each log ins are logged.
 Alternate Flows: 
-    1. The operator tries to deposit a non-supported inputs, non-positive numeric inputs, or decided undesirable amounts.
-    2. Client module intercept input.
-    3. Client module deny action.
+    1-3. as basic
+    4. Superuser select element to create user.
+    5. GUI show textfield similar to log in, take 2 string user id and password.
+    6. Facade's create user method is called.
+    7. Once user is created, GUI show new user with empty list of account, ready to be populated.
 Exceptions: 
-    - The server may fail to receive or fulfill the request due to reasons such as data corruption or connection issues.
-    - If balance is lowere than withdraw request, server will deny request.
+    - Superuser id authenticate failed.
 Related Use Cases: 
-    - Deposit cash
+    - Log in, Operator run client
 
----
-
-Use Case ID: O003
-Use Case Name: Transferring request 
-Relevant Requirements: 3.3.9, 3.1.2.2
-    - Operator can request transfer fund between accounts.
-Primary Actor:
-    - Operator Module
-Pre-condition:
-    - Authenticated Operator access on Account is currently authorized.
-Post-condition:
-    - The transfer is finalized, balance on both account reflect the change.
-Basic Flow:
-    1. The operator initiates a transfer money request.
-    2. The operator is prompted to enter the account they wish to transfer money from.
-    3. The operator enters the desired amount to transfer.
-    4. Client call message to send request to Server using that data.
-    5. The Server receives request.
-    6. The Server call Account's transfer method.
-    7. Server fulfill request to Client.
-    8. Client invoke correct GUI showing result.
-Alternate Flows:
-    1. Account's transfer method deny due to lack balance or minimum balance unfulfilled.
-    2. Server deny request.
-    3. Client trigger correct response.
-    4. Events logged.
-Exceptions:
-    - The operator has met the account transfer limit.
-    - Account lack balance
-    - Account locked
-    - Minimum amount not met.
-Related Use Cases: 
-    Account tranfer
 ---
 
 Client and Server section: 
