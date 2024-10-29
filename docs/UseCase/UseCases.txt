@@ -1,142 +1,111 @@
-Operator Use Cases:
+GUI Use Cases:
 
-Use Case ID: O001
-Use Case Name: Deposit cash
-Relevant Requirements: 3.1.3.5
+//case G001 i purposedly not using thread because this log in will initiate the GUI, GUI no work while waiting for log in confirm
+//also make sure we dont support duplicate log ins.
+Use Case ID: G001
+Use Case Name: Operator run Client
+Relevant Requirements: 
 Primary Actor: 
-    - Operator Module
+    - GUI
 Pre-condition:
-    - The operator is authenticated.
-    - Operator is authorized to operate on that account.
+    - The executable for the client is successfully launch
 Post-condition: 
-    - The cash amount is deposited to the account in which the operator is authorized.
+    - Operator is lead through interfaces to finish logging in and able to access features.
 Basic Flow: 
-    1. The operator log in to the account.
-    2. The operator requests to deposit some balance amount.
-    3. The client module uses the message module to send the request.
-    4. The server module receives the request.
-    5. The server module invoke correct account's methods to change its balance.
-    6. The interaction is logged.
+    1. GUI shows operator log in interface.
+    2. GUI run client's facade method to handle authentication.
+    3. GUI receive response from method, which will contain data.
+    4. GUI run client facade's method to parse and process data.
+    5. Client's facade run GUI's method to display data to user.
 Alternate Flows: 
-    1. The operator tries to deposit a non-supported inputs, non-positive numeric inputs, or decided undesirable amounts.
-    2. Client module intercept input.
-    3. Client module deny action.
+    1 - 4. same as basic Flow
+    2. Client's facade detect superuser through regex the operator id.
+    3. Client's facade run GUI method to display superuser's interface.
 Exceptions: 
-    - The server may fail to receive or fulfill the request due to reasons such as data corruption or connection issues.
+    - If response data contain failed log in exception, display failed log in GUI.
 Related Use Cases: 
-    - Log in, Withdraw cash
+    - Log in
 
 ---
 
-Use Case ID: O002
-Use Case Name: Withdraw cash
-Relevant Requirements: 3.1.2.4, 3.1.3.1, 3.1.3.6
+Use Case ID: G002
+Use Case Name: Operator at the Banker table (Superuser doing some work on User behalf)
+Relevant Requirements: 
 Primary Actor: 
     - Operator Module
 Pre-condition: 
-    - The operator is authenticated.
-    - Operator is authorized to operate on that account.
+    - Client launch successful.
 Post-condition: 
-    - The retrieved cash must be subtracted from the account balance.
+    - Superuser have access to user accounts.
 Basic Flow: 
-    1. The operator log in to the account.
-    2. The operator requests to withdraw some balance amount.
-    3. The client module uses the message module to send the request.
-    4. The server module receives the request.
-    5. The server module invoke correct account's methods to withdraw.
-    6. The interaction is logged.
+    1. Superuser initiate log in on client.
+    2. Client follows log in process, detect a superuser ID.
+    3. Client shows superuser GUI.
+    4. GUI include an additional log in panel, with option to create user.
+    5. Superuser enters user authenticator, client will use the same method as if an user is attempt to log in.
+    6. Upon 2nd log in success, GUI display user's GUI alongside superuser GUI.
+    7. Each log ins are logged.
 Alternate Flows: 
-    1. The operator tries to deposit a non-supported inputs, non-positive numeric inputs, or decided undesirable amounts.
-    2. Client module intercept input.
-    3. Client module deny action.
+    1-3. as basic
+    4. Superuser select element to create user.
+    5. GUI show textfield similar to log in, take 2 string user id and password.
+    6. Facade's create user method is called.
+    7. Once user is created, GUI show new user with empty list of account, ready to be populated.
 Exceptions: 
-    - The server may fail to receive or fulfill the request due to reasons such as data corruption or connection issues.
-    - If balance is lowere than withdraw request, server will deny request.
+    - Superuser id authenticate failed.
 Related Use Cases: 
-    - Deposit cash
+    - Log in, Operator run client
 
----
-
-Use Case ID: O003
-Use Case Name: Transferring request 
-Relevant Requirements: 3.3.9, 3.1.2.2
-    - Operator can request transfer fund between accounts.
-Primary Actor:
-    - Operator Module
-Pre-condition:
-    - Authenticated Operator access on Account is currently authorized.
-Post-condition:
-    - The transfer is finalized, balance on both account reflect the change.
-Basic Flow:
-    1. The operator initiates a transfer money request.
-    2. The operator is prompted to enter the account they wish to transfer money from.
-    3. The operator enters the desired amount to transfer.
-    4. Client call message to send request to Server using that data.
-    5. The Server receives request.
-    6. The Server call Account's transfer method.
-    7. Server fulfill request to Client.
-    8. Client invoke correct GUI showing result.
-Alternate Flows:
-    1. Account's transfer method deny due to lack balance or minimum balance unfulfilled.
-    2. Server deny request.
-    3. Client trigger correct response.
-    4. Events logged.
-Exceptions:
-    - The operator has met the account transfer limit.
-    - Account lack balance
-    - Account locked
-    - Minimum amount not met.
-Related Use Cases: 
-    Account tranfer
 ---
 
 Client and Server section: 
 
 Use Case ID: CS001
-Use Case Name: Retrieve message from server
+Use Case Name: Send message from one host
 Relevant Requirements: 3.1.4.1, 3.1.4.2, 3.1.
 Primary Actor: 
-    - Message Module
+    - Server Module
+    - Client Module
 Pre-condition:
-    - The information requested is available in the bank account.
+    - Server or Client have some data for a specific request.
 Post-condition: 
-    - The information asked for will be made available to the client.
+    - The data is sent to recipient with correct enum flag.
 Basic Flow:
-    1. The client makes a request using the message module.
-    2. The server processes the request and sends a response to the client.
-    3. The client receives the response and uses it as needed.
+    1. The server or client makes a request by passing the data, a corresponding enum flag, and the destination address to the message module.
+    2. The server or client sends the created message object to the address on the message object.
 Alternate Flows: 
 Exceptions: 
-    - The server is down.
-    - The server doesn't exist.
+    - The recipient address is not known to the server or client.
 Related Use Cases:
-    - Retrieve cash, deposit cash, M001
+    - M001
 
 ---
 
 Use Case ID: CS002
-Use Case Name: Send message to server
+Use Case Name: Receive message from one host
 Relevant Requirements: 3.1.4.1, 3.1.4.2, 3.1.4.3,  3.1.4.5.
 Primary Actor: 
-    - Message Module
+    - Client Module
 Pre-condition:
-    - The message to send has been initialized with proper information.
+    - Port listener detect a connection.
 Post-condition: 
-    - The message is sent to the server.
+    - A request is processed.
 Basic Flow:
-    1. The operator makes a request (e.g., deposit cash).
-    2. The request is packed and sent via the message module.
-    3. The request is received by the server module and unpacked.
+    1. Port listener detect a connection.
+    2. Port listener fork a thread to handle this connection.
+    3. Thread call facade method to handle this message object contain by the inbound connection.
+    4. Facade check message enum, pass parsed data as arguements on correct faccade method based on the enum.
 Alternate Flows: 
     - None
 Exceptions:
-    - This module is likely entirely private with the sole purpose of moving back and forth between the server and the client.
+    - Enum is unknown to facade.
+    - Connection does not have a message object.
+    - Message does not contain correct arguements for determined facade method.
 Related Use Cases: 
-    - Retrieve cash, deposit cash, M002
+    - M002
 
 ---
-
-Use Case ID: CS001
+Use Case ID: CS003
 Use Case Name: Log in
 Relevant Requirements: 3.1.2.1, 3.1.2.2, 3.1.2.3
 Primary Actor: 
@@ -145,14 +114,11 @@ Pre-condition:
     - The operator is not authenticated.
 Post-condition: 
     - The operator is authenticated.
-Basic Flow: 
-    1. Client show operator a log in interface.
+Basic Flow:
+    1. Client shows operator a log in interface.
     2. The operator enters their authenticator.
     3. Client invoke message to send request to Server using authenticator.
-    4. Server pass authenticator to Operator modules to authenticate.
-    5. Once success, a read-only version of the authenticated Operator is return to Client, include a reference table of authorized accounts.
-    6. The operator is authenticated.
-    7. Show user GUI
+    4. Account is authenticated by server.
 Alternate Flows: 
     1. The authentication failed.
     2. Server denies request.
@@ -160,120 +126,87 @@ Alternate Flows:
     4. Events are logged
 
     1. entered authenticator belongs to superuser
-    2-6 as basic Flow
+    2-4. as basic Flow
     7. show superuser GUI
 Exceptions: 
     - If operator doesn't exist, response same as authentication failed.
 Related Use Cases: 
-    - Account authorization
+    - CS001, CS002
 
 ---
-
-Use Case ID: CS002
+Use Case ID: CS004
 Use Case Name: Account authorization
 Relevant Requirements: 3.1.2.4.6 
 Primary Actor: 
     - Operator module
 Pre-condition: 
-    - The operator has authenticated.
-    - Client has received the table of reference accounts
+    - Server receive a message object.
+    - message object enum is not logIn
+    - Message object contains an operator id and an account id among its parsed arguements
 Post-condition: 
-    - The operator is authenticated.
+    - The operator is authorized.
 Basic Flow: 
-    1. Operator select interface to access account.
-    2. Operator enter desired account ID.
-    3. Client check with account authorization reference table.
-    4. Events are logged.
+    1. Server message handler thread detect non-logIn enum.
+    2. Facade's method must have first method call be an authorize method with operator id and an account id as arguements.
+    3. Authorize method return true, facade method continues operation.
+    4. Authorization success logged.
 Alternate Flows: 
-    1. Entered account ID did not exist in table.
-    2. Client deny request.
-    3. Client invoke GUI response.
-    4. Events are logged.
+    1. Authorize method return false.
+    2. Facade method halt, return with authorization fails exception.
+    3. Facade calls method to send authorization error together with update display data for client.
+    4. Client handle response and update display.
+    5. Events are logged.
 Exceptions: 
-    - Table empty, invoke correct client response.
 Related Use Cases: 
-    - Log in
+    - CS001, CS002
 
 ---
 ---
 
-Messaging Module Use Cases:
+Messaging Module Use Cases: 
+//still pending changes to reflect current message module: inclusion of enum, change from package to data being in string, processor -> getData()
+//encapsulate data use case change to just call the right constructor -> influenced by server/client's facade (i.e) this will be more of a facade use cases
 
 Use Case ID: M001
-Use Case Name: Sending Message
+Use Case Name: Creating Message
 Relevant Requirements: 3.1.4.2, 3.1.4.3, 3.1.4.4, 3.1.4.5, 3.1.4.5.1, 3.1.4.5.4
-Primary Actor: Sender 
+Primary Actor: Message Module 
 Pre-condition: 
-    Sender is called and provided data, current address, receiving address are provided (3.1.4.3)
+    - Message constructor is called with data string and enum
 Post-condition: 
-    Package is sent
+    - Message object created
 Basic Flow: 
-    1. Sender is called and fork a Sender child
-    2. Child call Processor to encapsulate a package
-    3. Processor return package ready to be sent
-    4. Child read receiving address on package and make a connection
-    5. Once connection is made, package is sent
-    6. Kill Child
+//remove multithreading as now that is handled by other modules
+    1. Constructor is called with enum and string data, and other parameters
+    2. Message object created.
 Alternate Flows:      
 Exceptions: 
-    1. If Sender is envoked with lacking arguements, throw error according to UI 
-    2. The server is not connected to the internet. 
-    3. The client is not connected to the internet. 
-Related Use Cases: Receiving Message, Encapsulate data
+    1. Unrecognized enum. 
+    2. MIssing arguements
+Related Use Cases: CS001
 
 ---
 
 Use Case ID: M002
-Use Case Name: Receiving Message
+Use Case Name: Processing Message
 Relevant Requirements: 3.1.4.2, 3.1.4.3, 3.1.4.4, 3.1.4.6, 3.1.4.6.1, 3.1.4.6.3
-Primary Actor: Receiver
+Primary Actor: Facade
 Pre-condition: 
-    Receiver sit on designated network and listen for connections
+    - Facade is handling a message object
 Post-condition: 
-    package received and decapsulated
+    - Facade decides which appropriate methods to call
 Basic Flow: 
-    1. Receiver fork a child upon handling an incoming package on listened port
-    2. Assign the child to handle that request
-    3. Child receive package from connection
-    4. Child call Processor to decapsulate the package
-    5. Child returns encapsulated data
-    6. Kill Child.
+    1. Get enum and check it with message's enum.
+    2. If enum exist in enum list, call message method to parse data string into array of strings
+    3. Call correct facade methods based on enum, pass strings from parsed string array as arguaments in receiving order.
 Alternate Flows: 
 Exceptions:   
-    1. The server is not connected to the internet. 
-    2. The client is not connected to the internet. 
-    3. The server returns an unrecognized response. 
-Related Use Cases: Sending Message, Decapsulate data
+    1. Message object missing enum.
+    2. Enum does not exist in enum list.
+    3. Parsed string array does not contain correct arguements for method call.
 
-Use Case ID: M003
-Use Case Name: Encapsulate data
-Relevant Requirements:  
-Primary Actor: Processor
-Pre-condition: Processor get called with data
-Post-condition: Processor returns a package
-Basic Flow:
-    1. Processor get called with data
-    2. Processor fork a child to process data
-    3. Child create a package
-    4. Kill Child, return package
-Alternate Flows: 
-Exceptions: 
-Related Use Cases: Sending Message
-
-Use Case ID: M004
-Use Case Name: Decapsulate data
-Relevant Requirements: 3.1.4.4, 3.1.4.5.1 .
-Primary Actor: Processor
-Pre-condition: Processor get called with a package
-Post-condition: Processor returns encapsulated data
-Basic Flow: 
-    1. Processor get called with package
-    2. Processor fork a child to process package
-    3. Child parse and tokenize package
-    4. Kill Child, return data
-Alternate Flows: 
-Exceptions: 
-Related Use Cases: M002
+    -> Log, thow correct exception and facde handle with response messgae to sender.
+Related Use Cases: CS001
 
 ---
 
@@ -415,7 +348,7 @@ Exceptions:
 Related Use Cases:
 
 ---
-
+//check on A006 use case name
 Use Case ID: A006
 Use Case Name: Accounts Module, Client Modules, 
 Relevant Requirements: 3.1.2.4.3, 3.1.2.3.5 .
