@@ -182,7 +182,7 @@ Basic Flow:
 Alternate Flows:      
 Exceptions: 
     1. Unrecognized enum. 
-    2. MIssing arguements
+    2. Missing arguements
 Related Use Cases: CS001
 
 ---
