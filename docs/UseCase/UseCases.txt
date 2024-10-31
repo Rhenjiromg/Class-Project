@@ -182,7 +182,7 @@ Basic Flow:
 Alternate Flows:      
 Exceptions: 
     1. Unrecognized enum. 
-    2. MIssing arguements
+    2. Missing arguements
 Related Use Cases: CS001
 
 ---
@@ -350,9 +350,9 @@ Related Use Cases:
 ---
 //check on A006 use case name
 Use Case ID: A006
-Use Case Name: Accounts Module, Client Modules, 
+Use Case Name: View Transaction History 
 Relevant Requirements: 3.1.2.4.3, 3.1.2.3.5 .
-Primary Actor: Operator
+Primary Actor: Accounts Module, Client Modules
 Pre-condition: 
     1. The customer must be logged into the system with valid credentials.
     2. The customer must have at least one bank account registered.
