@@ -1,0 +1,5 @@
+package resources;
+
+public enum MessageType {
+    VERIFICATION, DEPOSIT, WITHDRAW, TRANSFER, TRANSACTION_HISTORY, ERROR, SUCCESS;
+}
