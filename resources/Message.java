@@ -21,7 +21,23 @@ public class Message {
         return this.ID;
     }
 
-    public String getMessage(){
-        return this.message;
+    public String[] getMessage(){
+        if(sumCheck()){
+            return this.getList();
+        }else{
+            return new String[0];
+        }
+    }
+
+    private boolean sumCheck(){
+        String[] tempList = getList();
+        return tempList.length == type.getArgLength();
+    }
+
+    private String[] getList(){
+        if (message == null || message.isEmpty()) {
+            return new String[0];
+        }
+        return message.split(",");
     }
 }
