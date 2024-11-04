@@ -1,5 +1,8 @@
 GUI Use Cases:
 
+//case G001 i purposedly not using thread because this log in will initiate the GUI, GUI no work while waiting for log in confirm
+//also make sure we dont support duplicate log ins.
+
 Use Case ID: G001
 Use Case Name: Operator run Client
 Relevant Requirements: 
@@ -162,6 +165,9 @@ Related Use Cases:
 
 Messaging Module Use Cases: 
 
+//still pending changes to reflect current message module: inclusion of enum, change from package to data being in string, processor -> getData()
+//encapsulate data use case change to just call the right constructor -> influenced by server/client's facade (i.e) this will be more of a facade use cases
+
 Use Case ID: M001
 Use Case Name: Creating Message
 Relevant Requirements: 3.1.4.2, 3.1.4.3, 3.1.4.4, 3.1.4.5, 3.1.4.5.1, 3.1.4.5.4
@@ -171,6 +177,7 @@ Pre-condition:
 Post-condition: 
     - Message object created
 Basic Flow: 
+    //remove multithreading as now that is handled by other modules
     1. Constructor is called with enum and string data, and other parameters
     2. Message object created.
 Alternate Flows:      
