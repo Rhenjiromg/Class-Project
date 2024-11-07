@@ -1,0 +1,21 @@
+package resources;
+
+public enum MessageType {
+    VERIFICATION(0), 
+    DEPOSIT(0), 
+    WITHDRAW(0), 
+    TRANSFER(0), 
+    TRANSACTION_HISTORY(0), 
+    ERROR(0), 
+    SUCCESS(0);
+
+    private final int argLength;
+
+    MessageType(int argLength) {
+        this.argLength = argLength;
+    }
+
+    public int getArgLength() {
+        return argLength;
+    }
+}

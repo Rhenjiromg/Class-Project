@@ -4,3 +4,6 @@
 *.tmp
 *.DS_Store
 *.tmp
+
+*.tmp
+.DS_Store

@@ -2,6 +2,7 @@ GUI Use Cases:
 
 //case G001 i purposedly not using thread because this log in will initiate the GUI, GUI no work while waiting for log in confirm
 //also make sure we dont support duplicate log ins.
+
 Use Case ID: G001
 Use Case Name: Operator run Client
 Relevant Requirements: 
@@ -161,9 +162,9 @@ Related Use Cases:
     - CS001, CS002
 
 ---
----
 
 Messaging Module Use Cases: 
+
 //still pending changes to reflect current message module: inclusion of enum, change from package to data being in string, processor -> getData()
 //encapsulate data use case change to just call the right constructor -> influenced by server/client's facade (i.e) this will be more of a facade use cases
 
@@ -176,13 +177,13 @@ Pre-condition:
 Post-condition: 
     - Message object created
 Basic Flow: 
-//remove multithreading as now that is handled by other modules
+    //remove multithreading as now that is handled by other modules
     1. Constructor is called with enum and string data, and other parameters
     2. Message object created.
 Alternate Flows:      
 Exceptions: 
     1. Unrecognized enum. 
-    2. MIssing arguements
+    2. Missing arguements
 Related Use Cases: CS001
 
 ---
@@ -348,11 +349,11 @@ Exceptions:
 Related Use Cases:
 
 ---
-//check on A006 use case name
+
 Use Case ID: A006
-Use Case Name: Accounts Module, Client Modules, 
+Use Case Name: View Transaction History 
 Relevant Requirements: 3.1.2.4.3, 3.1.2.3.5 .
-Primary Actor: Operator
+Primary Actor: Accounts Module, Client Modules
 Pre-condition: 
     1. The customer must be logged into the system with valid credentials.
     2. The customer must have at least one bank account registered.
