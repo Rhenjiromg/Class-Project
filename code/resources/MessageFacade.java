@@ -8,13 +8,13 @@ package  resources;
  * 
  * */
 
-public class Message_Facade {
+public class MessageFacade {
 	String message = "test response.";
 	enum Message_type {
 		Log_in,
 		Log_out
 	}
-	public Message_Facade(String message) {
+	public MessageFacade(String message) {
 		this.message = message;
 	}
 	

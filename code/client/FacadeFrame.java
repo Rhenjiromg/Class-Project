@@ -1,12 +1,12 @@
 package client;
 
-import resources.Message_Facade;
+import resources.MessageFacade;
 
 public class FacadeFrame {
-	Message_Facade msg;
+	MessageFacade msg;
 	Client clt;
 
-	public FacadeFrame(Message_Facade msg, Client clt) {
+	public FacadeFrame(MessageFacade msg, Client clt) {
 		this.msg = msg;
 		this.clt = clt;
 	}

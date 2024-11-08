@@ -1,12 +1,12 @@
 package client;
 
-import resources.Message_Facade;
+import resources.MessageFacade;
 
 public class Client {
-	Message_Facade msg;
+	MessageFacade msg;
 	String client_state;
 
-	public Client(String client_state, Message_Facade msg) {
+	public Client(String client_state, MessageFacade msg) {
 		this.client_state = client_state;
 		this.msg = msg;
 	}

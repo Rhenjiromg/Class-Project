@@ -1,10 +1,14 @@
 package resources;
 
-public class Message {
+import java.io.Serializable;
+
+public class Message implements Serializable {
     private static int counter = 0;
     private String message;
     private int ID;
     private MessageType type;
+    private String sender;
+    private String receiver;
 
 
     public Message(String message, MessageType type){
@@ -40,4 +44,20 @@ public class Message {
         }
         return message.split(",");
     }
+
+	public String getSender() {
+		return sender;
+	}
+	
+	public String getReceiver() {
+		return receiver;
+	}
+
+	public void setSender(String sender) {
+		this.sender = sender;
+	}
+
+	public void setReceiver(String receiver) {
+		this.receiver = receiver;
+	}
 }
