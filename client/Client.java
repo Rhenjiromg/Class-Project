@@ -4,74 +4,103 @@ import resources.*;
 import java.io.*;
 import java.net.*;
 
+import java.util.ArrayDeque;
+import java.util.Queue;
+
+import client.Client.ListenThread;
+import client.Client.SendThread;
+
 public class Client {
-    private Socket socket;
-    private Message msg;
     private Message_Facade handler;
     private String IP;
     private int port = 31415;
+	private Queue<Message> outbound = new ArrayDeque<>();
+	private Queue<Message> inbound = new ArrayDeque<>();
 
     public Client() {
-
+		this.IP = InetAddress.getInetAddress().getHostAddress();
     }
 	public Client(int portNum){
+		this.IP = InetAddress.getInetAddress().getHostAddress();
 		this.port = portNum;
 	}
 
     public void start() {
-    	this.IP = InetAddress.getLocalHost().getHostAddress();
-			socket = new Socket("clientHost", port);
-            System.out.println("Connected to the server.");
+			try (Socket socket = new Socket("clientHost", this.port)) {
+				
+				new Thread(new SendThread(socket)).start();
+				new Thread(new ProcessThread(socket)).start();
+				new Thread(new ListenThread(socket)).start();
+				
 
-		//1 thread in one thread out, each thread can handle more threads, 1 infi loop each
-			new Thread(new SendThread(socket)).start();
-            new Thread(new ListenThread(socket)).start();
-    }
-
-    static class SendThread implements Runnable {
-        private Socket socket;
-
-        public SendThread(Socket socket) {
-            this.socket = socket;
-        }
-
-        public void run() {
-			//currently check for console input for debugging frame, will change to check for gui action!
-			while(true){
-				//infi loop to keep checking for inputs (mod down here to change console -> gui)
-				try (BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
-                	PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
-               		String userInput;
-               		while ((userInput = consoleReader.readLine()) != null) {
-                    //call facade to make thread here; make mgs here
-					Message msg = new Message(userInput, MessageType.VERIFICATION);
-					new Thread(new resources.Facade_Frame(msg)).start();
-                	}
-           		} 
-				catch (IOException ex) {
-            	}
 			}
-        }
+			catch (IOException e) {
+			}
+
     }
 
-    static class ListenThread implements Runnable {
-        private Socket socket;
+	//sync keyword to avoid add/pop at the same time to queue
+	private synchronized void addQueue(Queue<Message> queue, Message message) {
+        queue.add(message);
+    }
 
-        public ListenThread(Socket socket) {
-            this.socket = socket;
-        }
+	private synchronized Message popQueue(Queue<Message> queue) {
+        return queue.poll();
+    }
 
+	//send monitor outbound queue and fork a thread to handle each item in queue until it is empty
+    private class SendThread implements Runnable {
+		@Override
         public void run() {
-			//infi loop to listen for object coming in (message)
-            while(true){
-				try (ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream())){
-                	//call facade to make thread here
-					Message msg = (Message) objectInputStream.readObject();
-					new Thread(new resources.Facade_Frame(msg)).start();
+			while(true){ //TODO: update this with better condition instead of inti loop + close stream when it is no longer infi loop
+				ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream()); //object out sender
+				while(!outbound.isEmpty()){
+					new Thread(new Sender(Message)).start();
 				}
-				catch (IOException ex) {
+           	} 
+		}
+    }
+
+	private class Sender implements Runnable {
+		@Override
+        public void run() {
+			objectOutputStream.writeObject(popQueue());
+		}
+    }
+    
+	//process monitor inbound queue and fork a thread to handle each item in the queue until it is empty
+	private class ProcessThread implements Runnable {
+		@Override
+        public void run() {
+			//NOTE: infi loop to listen for object coming in (message), mod later id needed
+            while(true){ //TODO: update this with better condition instead of inti loop + close stream when it is no longer infi loop
+				while(!inbound.isEmpty()){
+					new Thread(new Process()).start();
 				}
 			}
 		}
     }
+
+	private class Process implements Runnable {
+		@Override
+        public void run() {
+			ClientFacade processer = new ClientFacade(popQueue(outbound)); //NOTE: placeholder, ideally we create a facade here in this thread with the Message passed in as args
+			Message result = processer.process(); //placeholder 
+			addQueue(outbound, result);
+		}
+    }
+
+	//listen just listen and add to inbound queue
+    private class ListenThread implements Runnable {
+		@Override
+        public void run() {
+			//NOTE: infi loop to listen for object coming in (message), mod later id needed
+            while(true){
+				ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+				Message msg = (Message) objectInputStream.readObject();
+				addQueue(inbound, msg);
+			}
+		}
+    }
 }
+
