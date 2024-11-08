@@ -61,6 +61,7 @@ public class Client {
 		}
     }
 
+	//sub thread sen
 	private class Sender implements Runnable {
 		@Override
         public void run() {
@@ -81,6 +82,7 @@ public class Client {
 		}
     }
 
+	//sub thread process
 	private class Process implements Runnable {
 		@Override
         public void run() {
@@ -94,13 +96,23 @@ public class Client {
     private class ListenThread implements Runnable {
 		@Override
         public void run() {
+
+			ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
 			//NOTE: infi loop to listen for object coming in (message), mod later id needed
             while(true){
-				ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
-				Message msg = (Message) objectInputStream.readObject();
-				addQueue(inbound, msg);
+				Socket client = server.accept();
+				new Thread(new Listen()).start();
 			}
 		}
     }
+
+	//sub thread process
+	private class Listen implements Runnable {
+		@Override
+		public void run() {
+			Message msg = (Message) objectInputStream.readObject();
+			addQueue(inbound, msg);
+		}
+	}
 }
 
