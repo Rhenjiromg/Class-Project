@@ -75,14 +75,18 @@ public class Server {
 		@Override
 		public void run() {
 			// get the message
-			Message message = incoming.poll();
-			
-			// process the message
-			
-			// add a new message for client to the
-			// outgoing queue
-			if (message != null) {				
-				outgoing.add(message);
+			// while incoming queue has items
+			while (!incoming.isEmpty()){
+				Message message = incoming.poll();
+				
+				// process the message in a separate thread
+				
+				// add a new message for client to the
+				// outgoing queue
+				if (message != null) {				
+					outgoing.add(message);
+				}
+				// put this in thread as well ^^
 			}
 		}
 	}
