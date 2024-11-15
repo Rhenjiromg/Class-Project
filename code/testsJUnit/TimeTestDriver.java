@@ -1,4 +1,6 @@
-package account;
+package testsJUnit;
+
+import resources.Time;
 
 public class TimeTestDriver {
 	public static void main(String args[]) {
@@ -21,5 +23,6 @@ public class TimeTestDriver {
 		System.out.println(time.getCreationDate());
 		System.out.println(time.getCurrentDate());
 		System.out.println(time.getCurrentTime());
+		System.out.println(time.toString());
 	}
 }
