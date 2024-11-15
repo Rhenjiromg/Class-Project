@@ -6,7 +6,6 @@ public class Account {
 	
 	private final String accountID;
 	private static int count;
-	private double balance;
 	private Time time; // custom time class check Time.java
 	private Boolean isActive;
 	
@@ -20,6 +19,7 @@ public class Account {
 	// Account constructor, 
 	Account() {
 		accountID = Integer.toString(++count);
+		time = new Time();
 	}
 	
 	
@@ -55,11 +55,6 @@ public class Account {
 	}
 	
 	
-	public double getBalance() {
-		return balance;
-	}
-	
-	
 	public Boolean getIsActive() {
 		return isActive;
 	}
@@ -78,30 +73,8 @@ public class Account {
 	public String getCurrentTime() {
 		return time.getCurrentTime();
 	}
+	
+	public String getCurrentDate() {
+		return time.getCurrentDate();
+	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

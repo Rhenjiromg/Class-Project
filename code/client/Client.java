@@ -157,13 +157,19 @@ public class Client {
 		@Override
 		public void run() {
 
-			ServerSocket serverSocket = new ServerSocket(port);
-			// NOTE: infi loop to listen for object coming in (message), mod later id needed
-			while (true) {
-				Socket client = serverSocket.accept();
-				new Thread(new Listen(client)).start();
+			try (ServerSocket serverSocket = new ServerSocket(port)) {
+				// NOTE: infi loop to listen for object coming in (message), mod later id needed
+				while (true) {
+					Socket client = serverSocket.accept();
+					new Thread(new Listen(client)).start();
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			serverSocket.close(); // TODO: once loop condition is updated, this will clean up serverSocket
+			
+			// unreachable line of code
+//			serverSocket.close(); // TODO: once loop condition is updated, this will clean up serverSocket
 		}
 	}
 
@@ -171,17 +177,21 @@ public class Client {
 	private class Listen implements Runnable {
 		private Socket s;
 
-		public void Sender(Socket soc) {
+		Listen(Socket soc) {
 			this.s = soc;
 		}
 
 		@Override
 		public void run() {
-			ObjectInputStream objectInputStream = new ObjectInputStream(this.s.getInputStream());
-			Message msg = (Message) objectInputStream.readObject();
-			addQueue(inbound, msg);
-			addPair(msg, s);
-			objectInputStream.close();
+			try {				
+				ObjectInputStream objectInputStream = new ObjectInputStream(this.s.getInputStream());
+				Message msg = (Message) objectInputStream.readObject();
+				addQueue(inbound, msg);
+				addPair(msg, s);
+				objectInputStream.close();
+			} catch (IOException | ClassNotFoundException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
