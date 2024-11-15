@@ -8,6 +8,7 @@ public class Account {
 	private static int count;
 	private Time time; // custom time class check Time.java
 	private Boolean isActive;
+	private double balance;
 	
 	// read use cases SRS
 	// if you think there's a logical issue
@@ -20,6 +21,7 @@ public class Account {
 	Account() {
 		accountID = Integer.toString(++count);
 		time = new Time();
+		setBalance(0);
 	}
 	
 	
@@ -76,5 +78,15 @@ public class Account {
 	
 	public String getCurrentDate() {
 		return time.getCurrentDate();
+	}
+
+
+	public double getBalance() {
+		return balance;
+	}
+
+
+	public void setBalance(double balance) {
+		this.balance = balance;
 	}
 }
