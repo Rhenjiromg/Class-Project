@@ -4,4 +4,9 @@
 *.tmp
 *.DS_Store
 *.tmp
+
+*.tmp
 .DS_Store
+/.metadata/
+.project
+.classpath
