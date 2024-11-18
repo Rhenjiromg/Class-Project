@@ -13,10 +13,18 @@ public class Operator {
 
     public void Login(String Password, String Credentials) {
         String toPass = getUserPassword(Credentials);
-        if (!toPass.equals("") && toPass.equals(Password)) {
+        /**
+         * if account exists, and password matches, and less than 3 attempts
+         */
+        if (!toPass.equals("") && toPass.equals(Password) && counter <= 3) {
+            counter = 0;
             /**
              * Verified code here
              */
+        } else {
+            if (!toPass.equals("")) {
+                counter++;
+            }
         }
     }
 
