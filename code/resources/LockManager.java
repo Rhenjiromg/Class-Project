@@ -1,24 +1,47 @@
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.StampedLock;
 
 public class LockManager {
     private static final LockManager instance = new LockManager();
-    private final ConcurrentHashMap<String, Lock> lockMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, StampedLock> lockMap = new ConcurrentHashMap<>();
 
     private LockManager() {
     }
 
-    public static FileLockManager getInstance() {
+    public static LockManager getInstance() {
         return instance;
     }
 
-    public Lock getLock(String filePath) {
-        Lock lock = lockMap.get(filePath); // Try to get the lock for filePath
-        if (lock == null) {
-            lock = new StampedLock();    // Create a new lock if none exists
-            lockMap.put(filePath, lock);   // Put the new lock in the map
+    // Return StampedLock instead of Lock
+    public StampedLock getLock(String filePath) {
+        return lockMap.computeIfAbsent(filePath, path -> new StampedLock());
+        //if the key filePath is present, 
+        //return its value, 
+        //else it create a new pair with the key and a new lock as value and 
+        //return the created lock
+    }
+
+    // Handles:
+    // write lock
+    public long getWriteLock(String filePath) {
+        StampedLock lock = getLock(filePath);
+        return lock.writeLock();
+    }
+
+    // read lock
+    public long getReadLock(String filePath) {
+        StampedLock lock = getLock(filePath);
+        return lock.readLock();
+    }
+
+    // release a lock
+    public void releaseLock(long stamp, String filePath) {
+        StampedLock lock = getLock(filePath);
+        if (StampedLock.isWriteLockStamp(stamp)) {
+            lock.unlockWrite(stamp);
+        } else {
+            lock.unlockRead(stamp);
         }
-        return lock;                       // Return the lock (existing or newly created)
     }
 }
+
