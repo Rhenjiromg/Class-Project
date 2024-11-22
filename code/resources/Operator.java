@@ -1,6 +1,8 @@
-package server;
+package resources;
 
 public class Operator {
+    private static int counter = 0;
+
     private String Name;
     private String ID;
     private String Password;
@@ -10,7 +12,7 @@ public class Operator {
         this.Password = password;
         this.Name = name;
         this.State = UserState.NEW;
-        this.ID = "null";
+        this.ID = Integer.toString(++counter);
     }
 
     public Operator(String name, String password, String ID) {
