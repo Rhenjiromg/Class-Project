@@ -1,4 +1,4 @@
-package account;
+package resources;
 
 public class SavingAccount extends Account {
 	private final double penalty = 5.0;
