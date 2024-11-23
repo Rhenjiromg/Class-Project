@@ -1,3 +1,5 @@
+package resources;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -8,7 +10,9 @@ import java.util.List;
 import java.util.concurrent.locks.StampedLock;
 import java.util.regex.*;
 
+import client.Operator;
 import resources.CheckingAccount;
+
 //filler method call within this facade right now
 public class FileIO {
     private final LockManager lockManager = LockManager.getInstance();
@@ -28,12 +32,12 @@ public class FileIO {
             writer.newLine();
             writer.write(acc.getState().toString());
             writer.newLine();
-            if(pattern.matcher(accountID).find()){//saving
+            if(pattern.matcher(acc.getAccountID()).find()){//saving
                 writer.write(String.valueOf(acc.getWithdrawalCount()));
                 writer.newLine();
                 writer.write(String.valueOf(acc.getRate()));
                 writer.newLine();
-            } else if(pattern2.matcher(accountID).find()){//checking
+            } else if(pattern2.matcher(acc.getAccountID()).find()){//checking
                 writer.write(String.valueOf(acc.getFee()));
                 writer.newLine();
             }

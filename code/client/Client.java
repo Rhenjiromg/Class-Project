@@ -2,7 +2,7 @@ package client;
 
 import java.io.*;
 import java.net.*;
-
+import resources.Message;
 import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.Scanner;
