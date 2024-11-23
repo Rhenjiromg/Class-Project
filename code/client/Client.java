@@ -1,206 +1,297 @@
 package client;
 
-import resources.*;
 import java.io.*;
 import java.net.*;
-import java.util.HashMap;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
+import java.util.Scanner;
 
-import client.Client.ListenThread;
-import client.Client.SendThread;
 
 public class Client {
-	private MessageFacade handler;
-	private String IP;
-	private int port = 31415;
-	private Queue<Message> outbound = new ArrayDeque<>();
-	private Queue<Message> inbound = new ArrayDeque<>();
-	private HashMap<Message, Socket> receipt = new HashMap<>();
-
+ //test with local host, will have to change if i test with vm. This field must be known out of code
+	private int port;
+	
 	public Client() {
-		try {
-			InetAddress IA = InetAddress.getLocalHost();
-			this.IP = IA.getHostAddress();
-		} catch (Exception e) {
-
-		}
+		this.port = 31415;
 	}
-
-	public Client(int portNum) {
-		try {
-			InetAddress IA = InetAddress.getLocalHost();
-			this.IP = IA.getHostAddress();
-			this.port = portNum;
-		} catch (Exception e) {
-
-		}
+	
+	public Client(int p) {
+		this.port = p;
 	}
-
-	// for some reason, this is the constructor called, in facade frame.
-	public Client(String string, MessageFacade msg) {
-		// TODO Auto-generated constructor stub
+	
+	//NOTE: same with server, this first thread can be made into the start method for client/server
+	public void start() { //the reason why this look like this is because i made threads first then mod for client/server
+			new Thread(new InnitPort()).start();	
 	}
+	
+	private class InnitPort implements Runnable {
 
-	public void start() {
-		try (Socket socket = new Socket("clientHost", this.port)) {
+	    @Override
+	    public void run() {
+	        Socket socket = null;
+	        try {
+	            socket = new Socket("localhost", port);
+	            new Thread(new Session(socket)).start();
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	    }
+		
+		private class Session implements Runnable {
+			private Socket soc;
+			private ObjectOutputStream out;
+			private ObjectInputStream in;
 
-			// commented out for errors
-			// new Thread(new SendThread(socket)).start();
-			// new Thread(new ProcessThread(socket)).start();
-			// new Thread(new ListenThread(socket)).start();
+			
+			//queues here so its socket bounded
+			private Queue<Message> outbound = new ArrayDeque<>();
+			private Queue<Message> inbound = new ArrayDeque<>();
+			private synchronized void addQueue(Queue<Message> queue, Message message) {
+		        queue.add(message);
+		        queue.notify();
+		    }
 
-		} catch (IOException e) {
-		}
+			private synchronized Message popQueue(Queue<Message> queue) {
+		        return queue.poll();
+		    }
 
-	}
 
-	// sync keyword to avoid add/pop at the same time to queue
-	private synchronized void addQueue(Queue<Message> queue, Message message) {
-		queue.add(message);
-	}
+			public Session(Socket s){
+				this.soc = s;
+				try {
+					this.out = new ObjectOutputStream(soc.getOutputStream());
+					this.in = new ObjectInputStream(soc.getInputStream());
 
-	private synchronized Message popQueue(Queue<Message> queue) {
-		return queue.poll();
-	}
-
-	private synchronized void addPair(Message message, Socket socket) {
-		// commented out for error
-		// messageSocketMap.put(message, socket);
-	}
-
-	// this is essentially a pop: get socket from key message then remove it from
-	// map
-	private synchronized Socket removePair(Message message) {
-		// commented out for error
-		// return messageSocketMap.remove(message);
-		// also a placeholder return
-		return new Socket();
-	}
-
-	// send monitor outbound queue and fork a thread to handle each item in queue
-	// until it is empty
-	public class SendThread implements Runnable {
-		@Override
-		public void run() {
-			while (true) { // TODO: update this with better condition instead of inti loop + close stream
-							// when it is no longer infi loop
-				while (!outbound.isEmpty()) {
-					new Thread(new Sender(popQueue(outbound))).start();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
-			}
-		}
-	}
-
-	// sub thread sen
-	private class Sender implements Runnable {
-		private Message m;
-		private Socket s;
-
-		public Sender(Message msg) {
-			this.m = msg;
-			this.s = removePair(msg);
-		}
-
-		@Override
-		public void run() {
-			try {
-				ObjectOutputStream objectOutputStream = new ObjectOutputStream(this.s.getOutputStream()); // object out
-																											// sender
-				objectOutputStream.writeObject(this.m);
-				objectOutputStream.flush();
-				objectOutputStream.close();
-				this.s.close();
-			} catch (Exception e) {
-			}
-		}
-	}
-
-	// process monitor inbound queue and fork a thread to handle each item in the
-	// queue until it is empty
-	private class ProcessThread implements Runnable {
-		@Override
-		public void run() {
-			// NOTE: infi loop to listen for object coming in (message), mod later id needed
-			while (true) { // TODO: update this with better condition instead of inti loop + close stream
-							// when it is no longer infi loop
-				while (!inbound.isEmpty()) {
-					new Thread(new Process()).start();
-				}
-			}
-		}
-	}
-
-	// sub thread process
-
-	/**
-	 * Commented out by Rhenji, 11/10 for error
-	 * 
-	 */
-	private class Process implements Runnable {
-		@Override
-		public void run() {
-			/*
-			 * ClientFacade processer = new ClientFacade(popQueue(inbound)); // NOTE:
-			 * // placeholder, ideally we create a
-			 * // facade here in this thread with the
-			 * // Message passed in as args
-			 * Message result = processer.process(); // NOTE: placeholder
-			 * addQueue(outbound, result);
-			 */
-		}
-	}
-
-	// listen just listen and add to inbound queue
-	public class ListenThread implements Runnable {
-		@Override
-		public void run() {
-
-			try (ServerSocket serverSocket = new ServerSocket(port)) {
-				// NOTE: infi loop to listen for object coming in (message), mod later id needed
-				while (true) {
-					Socket client = serverSocket.accept();
-					new Thread(new Listen(client)).start();
-				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 			
-			// unreachable line of code
-//			serverSocket.close(); // TODO: once loop condition is updated, this will clean up serverSocket
-		}
-	}
-
-	// sub thread process
-	private class Listen implements Runnable {
-		private Socket s;
-
-		Listen(Socket soc) {
-			this.s = soc;
-		}
-
-		@Override
-		public void run() {
-			try {				
-				ObjectInputStream objectInputStream = new ObjectInputStream(this.s.getInputStream());
-				Message msg = (Message) objectInputStream.readObject();
-				addQueue(inbound, msg);
-				addPair(msg, s);
-				objectInputStream.close();
-			} catch (IOException | ClassNotFoundException e) {
-				e.printStackTrace();
+			@Override
+			public void run() {
+				//innit session with a log in attempt, load it onto outbound queue to get ready to fire
+				Message login = new Message(MessageType.LOGIN);
+				synchronized (outbound) {
+					addQueue(outbound, login);
+				}
+				//this is a client only feature
+				
+				Thread listenThread = new Thread(new ListenSession());
+				Thread processThread = new Thread(new ProcessSession());
+				Thread senderThread = new Thread(new SenderSession());
+				
+				listenThread.start(); 
+				processThread.start(); 
+				senderThread.start(); 
+				// Use join to wait for all threads to finish 
+				try { 
+					listenThread.join(); 
+					processThread.join(); 
+					senderThread.join(); 
+				} catch (InterruptedException e) {
+					e.printStackTrace(); 
+					}
+	
+				System.out.println("error: threads exit prematurely");
 			}
+			
+			//Start: listen for session
+			private class ListenSession implements Runnable {
+				@Override
+				public void run() {
+					try {
+						System.out.println("start listen thread.");
+						while(!soc.isClosed()) {
+							Message bufferM = (Message) in.readObject();
+							new Thread(new Listen(bufferM)).start();
+						}
+					} catch (ClassNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+				}
+				
+				//listen...
+				private class Listen implements Runnable {
+					private Message msg;
+					
+					public Listen(Message m) {
+						this.msg = m;
+					}
+					
+					@Override
+					public void run() {
+						synchronized (inbound) {
+							addQueue(inbound, msg);
+						}
+					}
+				} //end scope of Listen
+			} //end scope of sessionListen
+			
+			//Start: process for session
+			private class ProcessSession implements Runnable {
+				private boolean Logout = false;
+				private Scanner scanner = new Scanner(System.in);
+				private boolean Handshake = false;
+				
+				@Override
+				public void run() {
+					new Thread(new ConsoleUI()).start();
+					System.out.println("start process thread.");
+					while(true) {
+						Message buffer;
+						synchronized (inbound) { 
+							while (inbound.isEmpty()) { 
+								try {
+									inbound.wait();
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+								} // Wait until there's something in the queue } buffer = popQueue(outbound); // Retrieve the message }
+							}
+							buffer = popQueue(inbound);
+							new Thread(new Process(buffer)).start();
+						}
+					}	
+				}
+				
+				 private class ConsoleUI implements Runnable {
+				        @Override
+				        public void run() {
+				            while (!Logout) {
+				            	if (!Handshake) {
+				                    //log in msg success from server is the condition of handshake
+				            		//until that is met this condition will keep this console ui blocked and unable to be shown to user.
+				                    try {
+				                        Thread.sleep(100); // Avoid busy-waiting
+				                    } catch (InterruptedException e) {
+				                        e.printStackTrace();
+				                    }
+				                    continue;
+				                }
+				                System.out.print("Enter text to send to the server: \n");
+				                String userInput = scanner.nextLine();
+				                Message msg;
+
+				                if (userInput.equalsIgnoreCase("logout")) {
+				                    msg = new Message("", MessageType.LOGOUT);
+				                } else {
+				                    msg = new Message(userInput, MessageType.TEXT);
+				                }
+
+				                synchronized (outbound) {
+				                    addQueue(outbound, msg);
+				                }
+				            }
+				            scanner.close();
+				        }
+				    }
+				
+				private class Process implements Runnable {
+					private Message msg;
+					public Process(Message m) {
+						this.msg = m;
+					}
+					//for msg coming in that doesnt fit the designed case, it would simply be drop
+					@Override
+					public void run() {
+						switch (msg.getType()) {
+					    case LOGIN:
+					        login();
+					        break;
+					    case TEXT:
+					    	text();
+					        break;
+					    case LOGOUT:
+					    	logout();
+					        break;
+					    default:
+					    	break;
+					    	//this default just gonna ignore bad msg. This thread only generate msg to server if logged in so addqueue is in login case
+						}
+					}
+					
+					//Check to establish basic handshake, once that is done we got a session and constantly send txt until logout bool is true
+					public void login() {
+						if (msg.getMessage().equals("SUCCESS")) {
+							System.out.println("Log in Success");
+							Handshake = true;
+						}
+						
+					}
+
+					
+					public void text() {
+						if (msg.getMessage().equals("SUCCESS")) {
+							System.out.println("Server response: " + msg.getMessage());
+						}
+					}
+					
+					public void logout() {
+						if (msg.getMessage().equals("SUCCESS")) {
+							Logout = true;
+							try { if (in != null) { 
+								in.close(); 
+								} 
+							if (out != null) { 
+								out.close(); 
+								}
+							if (soc != null && !soc.isClosed()) { 
+								soc.close(); 
+								} 
+							}
+							catch (IOException e) { e.printStackTrace(); // Handle exceptions properly } }
+						}
+					}
+				
+				}//end scope process
+				
+			} //end scope processSession
 		}
-	}
+			
+			//Start: session sender
+			private class SenderSession implements Runnable {
 
-	/**
-	 * TODO: add these functions. Currently called in facade frame java.
-	 */
-	public void on() {
-	}
+			    @Override
+			    public void run() {
+			        System.out.println("start sender thread.");
+			        try {
+			            while (true) { // Main loop to keep the thread alive
+			                Message buffer;
 
-	public void off() {
-	}
+			                synchronized (outbound) { 
+			                    // Wait for messages in the queue
+			                    while (outbound.isEmpty()) { 
+			                        try {
+			                            outbound.wait(); // Wait until notified
+			                        } catch (InterruptedException e) {
+			                            e.printStackTrace();
+			                        }
+			                    }
+			                    buffer = popQueue(outbound); // Retrieve the next message to send
+			                } // End synchronized block
+
+			                // Send the message outside the synchronized block
+			                System.out.println("event horizon: writer");
+			                out.writeObject(buffer);
+			                out.flush();
+			                System.out.println("Sent message");
+			            }
+			        } catch (IOException e) {
+			            // Handle and log IOException properly
+			            e.printStackTrace();
+			            System.out.println("Sender thread terminated due to IOException: " + e.getMessage());
+			        }
+			    }
+			}
+
+			
+		}//end scope of session thread
+		
+    } //end scope of innitport thread
 }
+

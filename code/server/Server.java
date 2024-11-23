@@ -1,93 +1,219 @@
-package server;
+package hw5;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
+
+import java.util.ArrayDeque;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
-import resources.Message;
-import resources.Port;
 
 public class Server {
-	protected Queue<Message> incoming = new ConcurrentLinkedQueue<>();
-	protected Queue<Message> outgoing = new ConcurrentLinkedQueue<>();
+	private int port;
 	
-	public static void main(String[] args) {
-		System.out.println("Server active");
-		
-		// run serverListner, Responder and processor 
-		// as threads at the same time for parallel execution
-		Server server = new Server();
-		(new Thread(server.new ServerListener())).start();
-		(new Thread(server.new ServerSender())).start();
-		(new Thread(server.new ServerProcessor())).start();
+	public Server() {
+		this.port = 31415;
 	}
 	
-	// purpose: put message from client in incoming queue.
-	public class ServerListener implements Runnable {
+	public Server(int p) {
+		this.port = p;
+	}
+	
+	public void start() { //the reason why this look like this is because i made threads first then mod for client/server
+		new Thread(new InnitSession()).start();
+	}
+	
+	private class InnitSession implements Runnable {
+
+		
 		@Override
-		public void run() {
-			System.out.println("Listner thread active");
-			try (ServerSocket serverListener = new ServerSocket(new Port().getPort())) {
-				
-				while (true) {
-					Socket client = serverListener.accept();
-					System.out.println("client connection accepted" + client);
-					// get the serialized message object
-					ObjectInputStream in = new ObjectInputStream(client.getInputStream());
-					// add the message object to the queue
-					incoming.add((Message) in.readObject());
+        public void run() {
+			
+			try (ServerSocket serverSocket = new ServerSocket(port)){
+            while(!serverSocket.isClosed()){
+				Socket client = serverSocket.accept();
+				new Thread(new Session(client)).start();
 				}
-			} catch (IOException | ClassNotFoundException e) {
-				e.printStackTrace();
+			} catch (IOException e) {
+
 			}
 		}
-	}
-	
-	// purpose: send message to clients in order from outgoing queue
-	public class ServerSender implements Runnable {
 		
-		@Override
-		public void run() {
-			System.out.println("Sender thread active");
-			// get message from outgoing
-			Message message = outgoing.poll();
-			if (message != null) {				
-				try (Socket clientSocket = new Socket(message.getSender(), new Port().getPort())) {
-					System.out.println("sending message to " + clientSocket);
-					ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
-					// send the message to the client
-					out.writeObject(message);
+		private class Session implements Runnable {
+			private Socket soc;
+			private ObjectOutputStream out = null;
+			private ObjectInputStream in = null;
+
+
+			//session bounded queue
+			private Queue<Message> outbound = new ArrayDeque<>();
+			private Queue<Message> inbound = new ArrayDeque<>();
+			private synchronized void addQueue(Queue<Message> queue, Message message) {
+		        queue.add(message);
+		        queue.notify();
+		    }
+
+			private synchronized Message popQueue(Queue<Message> queue) {
+		        return queue.poll();
+		    }
+
+			public Session(Socket s){
+				this.soc = s;
+				try {
+					System.out.println("Server Session innit'd");
+					this.out = new ObjectOutputStream(soc.getOutputStream());
+					this.in = new ObjectInputStream(soc.getInputStream());
+				} catch (EOFException e) { 
+					System.out.println("Connection closed by the client: " + e.getMessage()); 
 				} catch (IOException e) {
+					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
-		}
-	}
-	
-	// purpose: get message from incoming queue, process them
-	// add them to the outgoing queue
-	public class ServerProcessor implements Runnable {
-
-		@Override
-		public void run() {
-			// get the message
-			// while incoming queue has items
-			while (!incoming.isEmpty()){
-				Message message = incoming.poll();
-				
-				// process the message in a separate thread
-				
-				// add a new message for client to the
-				// outgoing queue
-				if (message != null) {				
-					outgoing.add(message);
-				}
-				// put this in thread as well ^^
+			
+			@Override
+			public void run() {
+				System.out.println("Connection started by the client: ");
+				new Thread(new ListenSession()).start();
+				new Thread(new ProcessSession()).start();
+				new Thread(new SenderSession()).start();
 			}
-		}
-	}
+			
+			//Start: listen for session
+			private class ListenSession implements Runnable {
+				@Override
+				public void run() {
+					try {
+						//keep getting end of stream error
+						while(!soc.isClosed()) {
+							//System.out.println("Listening loop");
+								Message bufferM = (Message) in.readObject();
+								System.out.println("Hear a message!");
+								new Thread(new Listen(bufferM)).start();
+						}
+					} catch (ClassNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+				//listen...
+				private class Listen implements Runnable {
+					private Message msg;
+					
+					public Listen(Message m) {
+						this.msg = m;
+					}
+					
+					@Override
+					public void run() {
+						synchronized (inbound) {
+							addQueue(inbound, msg);
+						}
+					}
+				} //end scope of Listen
+			} //end scope of sessionListen
+			
+			//Start: process for session
+			private class ProcessSession implements Runnable {
+				@Override
+				public void run() {
+					while(true) {
+						Message buffer;
+						synchronized (inbound) { 
+							while (inbound.isEmpty()) { 
+								try {
+									inbound.wait();
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+								} // Wait until there's something in the queue } buffer = popQueue(outbound); // Retrieve the message }
+							}
+							buffer = popQueue(inbound);
+							System.out.println("progress loop");
+							new Thread(new Process(buffer)).start();
+						}
+					}	
+				}
+				
+				private class Process implements Runnable {
+					private Message msg;
+					public Process(Message m) {
+						this.msg = m;
+					}
+					//for msg coming in that doesnt fit the designed case, it would simply be drop
+					@Override
+					public void run() {
+						switch (msg.getType()) {
+					    case LOGIN:
+					        login();
+					        break;
+					    case TEXT:
+					    	text();
+					        break;
+					    case LOGOUT:
+					    	logout();
+					        break;
+					    default:
+					    	break;
+						}
+						
+						synchronized (outbound) {
+							addQueue(outbound, msg);
+						}
+					}
+					
+					public void login() {
+						this.msg = new Message("SUCCESS", MessageType.LOGIN);
+					}
+					
+					public void text() {
+						String buffer = this.msg.getMessage().toUpperCase();
+						this.msg = new Message(buffer, MessageType.TEXT);
+					}
+					
+					public void logout() {
+						this.msg = new Message("SUCCESS", MessageType.LOGOUT);						
+					}
+				
+				}//end scope process
+				
+			} //end scope processSession
+			
+			//Start: session sender
+			private class SenderSession implements Runnable {
+
+				@Override
+				public void run() {
+					System.out.println("start sender thread.");
+					try {
+						while(true) {
+							Message buffer;
+							synchronized (outbound) { 
+								while (outbound.isEmpty()) { 
+									try {
+										outbound.wait();
+									} catch (InterruptedException e) {
+										e.printStackTrace();
+									} // Wait until there's something in the queue } buffer = popQueue(outbound); // Retrieve the message }
+								}
+							}
+								buffer = popQueue(outbound);
+								System.out.println("Sending loop");
+								out.writeObject(buffer);
+								out.flush();
+								System.out.println("Sent message");
+						} //end while out
+					} catch (IOException e) {
+
+					}
+					
+				}
+				
+			}//end session sender scope
+			
+		} //end scope of session thread
+		
+    }//end scope of innitport thread
 }
