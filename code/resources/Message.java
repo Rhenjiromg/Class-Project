@@ -5,14 +5,19 @@ import java.io.Serializable;
 public class Message implements Serializable {
     private static int counter = 0;
     private String message;
-    private int ID;
+    private String ID;
     private MessageType type;
     private String sender;
     private String receiver;
+    
+    public Message(MessageType type) {
+        this.ID = String.valueOf(++counter);
+        this.type = type;
+    }
 
     public Message(String message, MessageType type) {
         this.message = message;
-        this.ID = ++counter;
+        this.ID = String.valueOf(++counter);
         this.type = type;
     }
 
@@ -20,16 +25,18 @@ public class Message implements Serializable {
         return this.type;
     }
 
-    public int getID() {
+    public String getID() {
         return this.ID;
     }
 
     public String[] getMessage() {
-        if (sumCheck()) {
-            return this.getList();
-        } else {
-            return new String[0];
-        }
+    	// commented out for TESTING
+//        if (sumCheck()) {
+//            return this.getList();
+//        } else {
+//            return new String[0];
+//        }
+    	return this.getList();
     }
 
     public String getSender() {
