@@ -191,12 +191,12 @@ public class Client {
 						this.msg = m;
 					}
 					
-					//for msg coming in that doesnt fit the designed case, it would simply be drop
+					//for msg coming in that doesn't fit the designed case, it would simply be drop
 					@Override
 					public void run() {
 						switch (msg.getType()) {
 					    case VERIFICATION:
-//					        login();
+					        login();
 					        break;
 					    case SUCCESS:
 					    	System.out.println("Message Sent By Server: ");
@@ -214,13 +214,12 @@ public class Client {
 					}
 					
 					//Check to establish basic handshake, once that is done we got a session and constantly send txt until logout bool is true
-//					public void login() {
-//						if (msg.getMessage().equals("SUCCESS")) {
-//							System.out.println("Log in Success");
-//							Handshake = true;
-//						}
-//						
-//					}
+					public void login() {
+						if (msg.getType().equals(MessageType.SUCCESS)) {
+							System.out.println("Log in Success");
+							Handshake = true;
+						}
+					}
 //
 //					
 //					public void text() {
