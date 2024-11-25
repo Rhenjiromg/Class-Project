@@ -1,7 +1,5 @@
 package resources;
 
-import resources.Time;
-
 public class Account {
 	
 	private final String accountID;
