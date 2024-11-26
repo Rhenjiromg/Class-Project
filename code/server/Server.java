@@ -1,10 +1,13 @@
-package hw5;
+package server;
 
 import java.io.*;
 import java.net.*;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
+
+import resources.Message;
+import resources.MessageType;
 
 
 public class Server {
@@ -65,7 +68,6 @@ public class Server {
 				} catch (EOFException e) { 
 					System.out.println("Connection closed by the client: " + e.getMessage()); 
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -90,11 +92,7 @@ public class Server {
 								System.out.println("Hear a message!");
 								new Thread(new Listen(bufferM)).start();
 						}
-					} catch (ClassNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
+					} catch (ClassNotFoundException | IOException e) {
 						e.printStackTrace();
 					}
 				}
@@ -146,35 +144,34 @@ public class Server {
 					@Override
 					public void run() {
 						switch (msg.getType()) {
-					    case LOGIN:
-					        login();
-					        break;
-					    case TEXT:
-					    	text();
-					        break;
-					    case LOGOUT:
-					    	logout();
+					    case VERIFICATION:
+					    	verification();
+					    	
+					    	// send SUCCESS message
+					    	synchronized (outbound) {
+								addQueue(outbound, new Message("Yo what's up Client!", MessageType.SUCCESS));
+							}
 					        break;
 					    default:
 					    	break;
 						}
 						
-						synchronized (outbound) {
-							addQueue(outbound, msg);
+//						synchronized (outbound) {
+//							addQueue(outbound, new Message("Yo what's up Client!", MessageType.SUCCESS));
+//						}
+					}
+					
+					public void verification() {
+						System.out.println("Server Recieved verification message: ");
+						String[] m = msg.getMessage();
+						if (m != null && m.length > 0) {
+						    for (String x : m) {
+						        System.out.print(x);
+						    }
+						} else {
+						    System.out.println("Message is empty or null.");
 						}
-					}
-					
-					public void login() {
-						this.msg = new Message("SUCCESS", MessageType.LOGIN);
-					}
-					
-					public void text() {
-						String buffer = this.msg.getMessage().toUpperCase();
-						this.msg = new Message(buffer, MessageType.TEXT);
-					}
-					
-					public void logout() {
-						this.msg = new Message("SUCCESS", MessageType.LOGOUT);						
+						return;
 					}
 				
 				}//end scope process

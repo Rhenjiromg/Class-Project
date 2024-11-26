@@ -4,13 +4,19 @@ package resources;
  * @params: Arglength => Length of expected length of the argument.
  */
 public enum MessageType {
-    VERIFICATION(0),
+    LOGOUT(0),
+	VERIFICATION(0),
     DEPOSIT(0),
     WITHDRAW(0),
     TRANSFER(0),
     TRANSACTION_HISTORY(0),
     ERROR(0),
-    SUCCESS(0);
+    ACCOUNT_INFO(0),
+    SAVING(0),
+    ADD_USER(0),
+    CREATE_ACCOUNT(0),
+    DEACTIVATE_ACCOUNT(0),
+    ADD_USER_TO_EXISTING_ACCOUNT(0);
 
     private final int argLength;
 

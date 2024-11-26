@@ -1,4 +1,4 @@
-package account;
+package resources;
 
 public class CheckingAccount extends Account {
 	private final double maintenanceFee = 5.0;

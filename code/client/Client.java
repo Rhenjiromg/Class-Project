@@ -2,7 +2,8 @@ package client;
 
 import java.io.*;
 import java.net.*;
-
+import resources.Message;
+import resources.MessageType;
 import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.Scanner;
@@ -22,7 +23,7 @@ public class Client {
 	
 	//NOTE: same with server, this first thread can be made into the start method for client/server
 	public void start() { //the reason why this look like this is because i made threads first then mod for client/server
-			new Thread(new InnitPort()).start();	
+		new Thread(new InnitPort()).start();	
 	}
 	
 	private class InnitPort implements Runnable {
@@ -71,7 +72,7 @@ public class Client {
 			@Override
 			public void run() {
 				//innit session with a log in attempt, load it onto outbound queue to get ready to fire
-				Message login = new Message(MessageType.LOGIN);
+				Message login = new Message(MessageType.VERIFICATION);
 				synchronized (outbound) {
 					addQueue(outbound, login);
 				}
@@ -91,7 +92,7 @@ public class Client {
 					senderThread.join(); 
 				} catch (InterruptedException e) {
 					e.printStackTrace(); 
-					}
+				}
 	
 				System.out.println("error: threads exit prematurely");
 			}
@@ -106,11 +107,7 @@ public class Client {
 							Message bufferM = (Message) in.readObject();
 							new Thread(new Listen(bufferM)).start();
 						}
-					} catch (ClassNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
+					} catch (ClassNotFoundException | IOException e) {
 						e.printStackTrace();
 					}
 
@@ -141,7 +138,7 @@ public class Client {
 				
 				@Override
 				public void run() {
-					new Thread(new ConsoleUI()).start();
+					new Thread(new GUI()).start();
 					System.out.println("start process thread.");
 					while(true) {
 						Message buffer;
@@ -159,99 +156,98 @@ public class Client {
 					}	
 				}
 				
-				 private class ConsoleUI implements Runnable {
-				        @Override
-				        public void run() {
-				            while (!Logout) {
-				            	if (!Handshake) {
-				                    //log in msg success from server is the condition of handshake
-				            		//until that is met this condition will keep this console ui blocked and unable to be shown to user.
-				                    try {
-				                        Thread.sleep(100); // Avoid busy-waiting
-				                    } catch (InterruptedException e) {
-				                        e.printStackTrace();
-				                    }
-				                    continue;
-				                }
-				                System.out.print("Enter text to send to the server: \n");
-				                String userInput = scanner.nextLine();
-				                Message msg;
-
-				                if (userInput.equalsIgnoreCase("logout")) {
-				                    msg = new Message("", MessageType.LOGOUT);
-				                } else {
-				                    msg = new Message(userInput, MessageType.TEXT);
-				                }
-
-				                synchronized (outbound) {
-				                    addQueue(outbound, msg);
-				                }
-				            }
-				            scanner.close();
-				        }
-				    }
+				private class GUI implements Runnable {
+					@Override
+					public void run() {
+					    while (!Logout) {
+					    	if (!Handshake) {
+					            //log in msg success from server is the condition of handshake
+								//until that is met this condition will keep this console ui blocked and unable to be shown to user.
+								try {
+								    Thread.sleep(100); // Avoid busy-waiting
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+								}
+								continue;
+							}
+					    	
+					    	// Take user input using GUI
+					    	
+//			                System.out.print("Enter text to send to the server: \n");
+//			                String userInput = scanner.nextLine();
+						
+						    synchronized (outbound) {
+						        addQueue(outbound, new Message("EY YO Server!!!!!!", MessageType.VERIFICATION));
+						    }
+				    	}
+						scanner.close();
+					} // end run()
+				} // end GUI
 				
 				private class Process implements Runnable {
 					private Message msg;
+					
 					public Process(Message m) {
 						this.msg = m;
 					}
-					//for msg coming in that doesnt fit the designed case, it would simply be drop
+					
+					//for msg coming in that doesn't fit the designed case, it would simply be drop
 					@Override
 					public void run() {
 						switch (msg.getType()) {
-					    case LOGIN:
+					    case VERIFICATION:
 					        login();
 					        break;
-					    case TEXT:
-					    	text();
-					        break;
-					    case LOGOUT:
-					    	logout();
-					        break;
+					    case SUCCESS:
+					    	System.out.println("Message Sent By Server: ");
+					    	String[] m = msg.getMessage();
+					    	if (m != null && m.length > 0) {
+					    	    for (String x : m) {
+					    	        System.out.print(x);
+					    	    }
+					    	} else {
+					    	    System.out.println("Message is empty or null.");
+					    	}
 					    default:
 					    	break;
-					    	//this default just gonna ignore bad msg. This thread only generate msg to server if logged in so addqueue is in login case
 						}
 					}
 					
 					//Check to establish basic handshake, once that is done we got a session and constantly send txt until logout bool is true
 					public void login() {
-						if (msg.getMessage().equals("SUCCESS")) {
+						if (msg.getType().equals(MessageType.SUCCESS)) {
 							System.out.println("Log in Success");
 							Handshake = true;
 						}
-						
 					}
-
-					
-					public void text() {
-						if (msg.getMessage().equals("SUCCESS")) {
-							System.out.println("Server response: " + msg.getMessage());
-						}
-					}
-					
-					public void logout() {
-						if (msg.getMessage().equals("SUCCESS")) {
-							Logout = true;
-							try { if (in != null) { 
-								in.close(); 
-								} 
-							if (out != null) { 
-								out.close(); 
-								}
-							if (soc != null && !soc.isClosed()) { 
-								soc.close(); 
-								} 
-							}
-							catch (IOException e) { e.printStackTrace(); // Handle exceptions properly } }
-						}
-					}
-				
-				}//end scope process
-				
+//
+//					
+//					public void text() {
+//						if (msg.getMessage().equals("SUCCESS")) {
+//							System.out.println("Server response: " + msg.getMessage());
+//						}
+//					}
+//					
+//					public void logout() {
+//						if (msg.getType().equals(MessageType.LOGOUT)) {
+//							Logout = true;
+//							try {
+//								if (in != null)
+//									in.close(); 
+//								
+//								if (out != null) 
+//									out.close();
+//								
+//								if (soc != null && !soc.isClosed())
+//									soc.close(); 
+//							}
+//							catch (IOException e) { 
+//								e.printStackTrace(); // Handle exceptions properly } }
+//							}
+//						}
+//					}
+				} //end scope process 
 			} //end scope processSession
-		}
 			
 			//Start: session sender
 			private class SenderSession implements Runnable {

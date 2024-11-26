@@ -1,3 +1,6 @@
+package resources;
+
+import client.Operator;
 import java.util.ArrayList;
 
 public class User extends Operator{
