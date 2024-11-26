@@ -1,6 +1,5 @@
 package resources;
 
-import client.Operator;
 import java.util.ArrayList;
 
 public class User extends Operator{
@@ -8,11 +7,24 @@ public class User extends Operator{
 
     public User(String name, String password){
         super(name, password);
+        ID = "A0" + ID;
         accounts = new ArrayList<String>();
+    }
+
+    public User(String n, String id, String pass, String s, ArrayList<String> acc){
+        super(n, id, pass, s);
+        accounts = acc;
     }
 
     public boolean Authorize(String acc){
         return accounts.contains(acc);
+    }
+
+    public ArrayList<String> filePrep(){
+        ArrayList<String> data = super.filePrep();
+        for(String i : accounts){
+            data.add(i);
+        }
     }
 
 }

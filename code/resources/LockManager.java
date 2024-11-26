@@ -15,7 +15,7 @@ public class LockManager {
     }
 
     // Return StampedLock instead of Lock
-    public StampedLock getLock(String filePath) {
+    private StampedLock getLock(String filePath) {
         return lockMap.computeIfAbsent(filePath, path -> new StampedLock());
         //if the key filePath is present, 
         //return its value, 
@@ -28,6 +28,17 @@ public class LockManager {
     public long getWriteLock(String filePath) {
         StampedLock lock = getLock(filePath);
         return lock.writeLock();
+    }
+
+    //get optimist stamp
+    public long getOptimist(String filePath) {
+        StampedLock lock = getLock(filePath);
+        return lock.tryOptimisticRead();
+    }
+
+    public boolean validateStamp(String filePath, long stamp){
+        StampedLock lock = getLock(filePath);
+        return lock.validate(stamp);
     }
 
     // read lock

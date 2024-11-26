@@ -1,60 +1,74 @@
 package resources;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.ArrayList;
 
 public class SavingAccount extends Account {
 	private final double penalty = 5.0;
 	private final int withdrawalLimit = 6;
-	private double intrestRate;
-	private int numberOfWithdrawals;
-	
-	SavingAccount() {
-		numberOfWithdrawals = 0;
-		setBalance(0.0);
-		intrestRate = 0.1;
+	private double intrestRate = 0.1; //this is hardcode for now
+	private int numberOfWithdrawals = 0;
+
+	SavingAccount(String ID, String bal, String date, String date2, String num) {
+		super(ID, bal, date, date2);
+		numberOfWithdrawals = Integer.valueOf(num);
 	}
-	
-	
-	SavingAccount(double balance) {
-		numberOfWithdrawals = 0;
-		setBalance(balance);
-		intrestRate = 0.1;
-	}
-	
-	
-	public void withdraw(double withdrawlAmount) {
-		super.withdraw(withdrawlAmount);
-		++numberOfWithdrawals;
+
+	private void withdrawLimiter(){
 		if (numberOfWithdrawals >= withdrawalLimit) {
-			double b = getBalance();
-			setBalance(b -= penalty); // minus $5
+			if( balance >= penalty){
+				balance -= penalty;
+			}
+			else{
+				balance = 0.0;
+			}
+			numberOfWithdrawals = 0;
 		}
+	}
+	
+	
+	public boolean withdraw(double withdrawlAmount) {
+		boolean success = super.withdraw(withdrawlAmount);
+		++numberOfWithdrawals;
+		withdrawLimiter();
+		return success;
 	}
 	
 	public void deposit(double amount) {
 		super.deposit(amount);
 	}
 	
-	public void transferFunds(Account targetAccount) {
-		super.transferFunds(targetAccount);
+	public boolean transferFunds(Account targetAccount, double bal) {
+		boolean success = super.transferFunds(targetAccount, bal);
+		++numberOfWithdrawals;
+		withdrawLimiter();
+		return success;
 	}
 	
 	
 	public void applyInrest() {
-		String[] creationDate = super.getCreationDate().split(" ");
-		String[] currentDate = super.getCurrentDate().split(" ");
-		
-		// if it's the same day and month of the next year
-		// apply the interest to the balance
-		if (creationDate[0].equals(currentDate[0]) 
-				&& creationDate[1].equals(currentDate[1]) 
-				&& creationDate[2].equals(String.valueOf(Integer.valueOf(currentDate[2]) + 1))) {
-			double b = getBalance();
-			setBalance(b * (1 + intrestRate));
-		}
+		LocalDate current = LocalDate.now();
+		int yearDiff = Period.between(lastCheck, current).getYears();
+		lastCheck = lastCheck.plusYears(yearDiff);
+		//this way we can keep track of the last cycle of interest that we applied
+
+		for (int i = yearDiff ; i > 0 ; i--) {
+			balance = balance * (1 + intrestRate);
+		}	
 	}
+	
 	
 	
 	public double getIntrestRate() {
 		return intrestRate;
+	}
+
+	public ArrayList<String> filePrep(){
+		// Prepare the data for file storage 
+		ArrayList<String> data = super.filePrep();
+		data.add(String.valueOf(penalty)); 
+		data.add(String.valueOf(numberOfWithdrawals)); 
+		return data;
 	}
 	
 	
