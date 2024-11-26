@@ -5,13 +5,15 @@ package resources;
  */
 public enum MessageType {
     LOGOUT(0),
-	VERIFICATION(0),
+    VERIFICATION(0),
     DEPOSIT(0),
     WITHDRAW(0),
     TRANSFER(0),
     TRANSACTION_HISTORY(0),
     ERROR(0),
-    SUCCESS(0);
+    SUCCESS(0),
+    LOGIN(0),
+    CHECKBALANCE(0);
 
     private final int argLength;
 
