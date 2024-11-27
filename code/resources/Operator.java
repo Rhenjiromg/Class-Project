@@ -1,49 +1,46 @@
 package resources;
 
+import java.util.ArrayList;
+
 public class Operator {
-    private static int counter = 0;
+    protected String name;
+    protected String ID;
+    private static int count = 0;
+    protected String password;
+    protected UserState state;
 
-    private String Name;
-    private String ID;
-    private String Password;
-    private UserState State;
-
-    public Operator(String name, String password) {
-        this.Password = password;
-        this.Name = name;
-        this.State = UserState.NEW;
-        this.ID = Integer.toString(++counter);
+    Operator(String n, String pass){
+        this.name = n;
+        this.ID = String.valueOf(++count);
+        this.password = pass;
+        this.state = UserState.OPEN;
     }
 
-    public Operator(String name, String password, String ID) {
-        this.Password = password;
-        this.Name = name;
-        this.State = UserState.OPEN;
+    Operator(String n, String pass, String ID, String e){
+        this.name = n;
         this.ID = ID;
+        this.password = pass;
+        this.state = UserState.valueOf(e);
     }
 
-    public boolean Authenticate(String Password) {
-        return this.Password.equals(Password);
+    public boolean Authenticate(String ID, String pass){
+        if (ID.equals(this.ID) && pass.equals(this.password)){
+            return true;
+        }
+        return false;
     }
 
-    public String getName() {
-        return Name;
+    protected ArrayList<String> filePrep(){
+		// Prepare the data for file storage 
+		ArrayList<String> data = new ArrayList<>(); 
+		data.add(this.name); 
+		data.add(this.ID); 
+		data.add(this.password); 
+		data.add(this.state.toString()); 
+		return data;
+	} 
+    
+    public String getID(){
+        return this.ID;
     }
-
-    public String getId() {
-        return ID;
-    }
-
-    public String getPassword() {
-        return Password;
-    }
-
-    public UserState getState() {
-        return State;
-    }
-
-    public void setUserState(UserState state) {
-        this.State = state;
-    }
-
 }
