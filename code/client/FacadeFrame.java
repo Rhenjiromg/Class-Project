@@ -37,20 +37,32 @@ public class FacadeFrame {
 		}
 	}
 
+	private void sendMessage(MessageType type) {
+		try (Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
+				ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream())) {
+			Message message = new Message("", type);
+			message.setSender(sender);
+			message.setReceiver(receiver);
+			out.writeObject(message);
+			out.flush();
+
+			System.out.println("Message sent successfully!");
+		} catch (Exception e) {
+			System.err.println("Error sending message: " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
 	public void login(String credentials, String password) {
 		String loginCredentials = credentials + "," + password;
 		sendMessage(loginCredentials, MessageType.LOGIN);
 	}
 
-	public void checkBalance(String accountNumber) {
-		sendMessage(accountNumber, MessageType.CHECKBALANCE);
-	}
-
 	public void logout() {
-		sendMessage("logout", MessageType.LOGOUT);
+		sendMessage(MessageType.LOGOUT);
 	}
 
-	public void deposit(float amount) {
+	public void deposit(double amount) {
 		String deposit = sender + "," + amount;
 		sendMessage(deposit, MessageType.DEPOSIT);
 	}
@@ -59,13 +71,13 @@ public class FacadeFrame {
 		sendMessage(sender, MessageType.TRANSACTION_HISTORY);
 	}
 
-	public void transfer(String destination, float amount) {
+	public void transfer(String destination, double amount) {
 		String message = destination + "," + amount;
 		sendMessage(message, MessageType.TRANSFER);
 	}
 
-	public void withDraw(Float amount) {
-		String message = amount.toString();
+	public void withDraw(double amount) {
+		String message = Double.toString(amount);
 		sendMessage(message, MessageType.WITHDRAW);
 	}
 
@@ -80,7 +92,7 @@ public class FacadeFrame {
 
 	public void createAccount(String password, String userCredentials) {
 		String message = password + "," + userCredentials;
-		sendMessage(sender, MessageType.CREATE_ACCOUNT);
+		sendMessage(message, MessageType.CREATE_ACCOUNT);
 	}
 
 	public void deactivateAccount(String accountNumber) {
@@ -94,6 +106,6 @@ public class FacadeFrame {
 
 	/** Unsure about this */
 	public void verify() {
-		sendMessage(sender, MessageType.VERIFICATION);
+		sendMessage(MessageType.VERIFICATION);
 	}
 }
