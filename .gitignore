@@ -10,3 +10,4 @@
 /.metadata/
 .project
 .classpath
+*.log

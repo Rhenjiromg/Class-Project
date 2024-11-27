@@ -1,14 +1,16 @@
 package resources;
 
-import resources.Time;
+import java.time.LocalDate;
+import java.util.ArrayList;
 
+//represented in file as {accID + " " + balance + " " + creationDate}
 public class Account {
 	
-	private final String accountID;
-	private static int count;
-	private Time time; // custom time class check Time.java
-	private Boolean isActive;
-	private double balance;
+	protected final String accountID;
+	protected static int count = 0;
+	protected double balance;
+	protected LocalDate creationDate;
+	protected LocalDate lastCheck;
 	
 	// read use cases SRS
 	// if you think there's a logical issue
@@ -17,68 +19,75 @@ public class Account {
 	// if it's too big of a change.
 	
 	
-	// Account constructor, 
+	// Account constructor, for create new account
 	Account() {
 		accountID = Integer.toString(++count);
-		time = new Time();
+
+		creationDate = LocalDate.now();
 		setBalance(0);
+		this.lastCheck = creationDate;
 	}
 	
 	
-	// implement this function
-//	Account(/*secondary constructor with arguments*/) {
-//		// 
-//	}
+	// Acc constructor for creat acc from file
+	Account(String ID, String bal, String date, String date2) {
+		this.accountID = ID;
+		this.balance = Double.valueOf(bal);
+		this.creationDate = LocalDate.parse(date);
+		this.lastCheck = LocalDate.parse(date2);
+		
+	}
 	
 	
 	protected void deposit(double amount) {
-		// update the balance to amount
+		//log
+		this.balance += amount;
+		
 	}
 	
 	
-	protected void withdraw(double amount) {
-		// subtract from balance
+	protected boolean withdraw(double amount) {
+		//log
+		if (!overdraft(amount)){
+			this.balance -= amount;
+			return true;
+		}
+		else {
+			return false;
+		}
+
 	}
 	
 	
-	protected void closeAccount() {
+	protected boolean closeAccount() {
 		// change account state
-		// for later: probably delete .txt
+		// for later: probably delete .txt //we dont have to worry about this
 	}
 	
 	
-	protected void transferFunds(Account targetAccount) {
-		//
+	protected boolean transferFunds(Account targetAccount, double amount) {
+		//log
+		if (!overdraft(amount)){
+			this.balance -= amount;
+			targetAccount.balance += amount;
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 	
+	protected boolean overdraft(double amount){
+		if (amount > this.balance){
+			return true;
+		}
+		return false;
+	}
 	
 	public String getAccountID() {
 		return accountID;
 	}
 	
-	
-	public Boolean getIsActive() {
-		return isActive;
-	}
-	
-	
-	public void setIsActive(Boolean isActive) {
-		this.isActive = isActive;
-	}
-	
-	
-	public String getCreationDate() {
-		return time.getCreationDate();
-	}
-	
-	
-	public String getCurrentTime() {
-		return time.getCurrentTime();
-	}
-	
-	public String getCurrentDate() {
-		return time.getCurrentDate();
-	}
 
 
 	public double getBalance() {
@@ -88,5 +97,15 @@ public class Account {
 
 	public void setBalance(double balance) {
 		this.balance = balance;
+	}
+
+	protected ArrayList<String> filePrep(){
+		// Prepare the data for file storage 
+		ArrayList<String> data = new ArrayList<>(); 
+		data.add(accountID); 
+		data.add(String.valueOf(balance)); 
+		data.add(creationDate.toString());
+		data.add(lastCheck.toString()); 
+		return data;
 	}
 }
