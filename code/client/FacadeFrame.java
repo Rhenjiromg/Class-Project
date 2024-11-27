@@ -11,7 +11,7 @@ import resources.MessageType;
 
 public class FacadeFrame {
 	private static final String SERVER_ADDRESS = "IP HERE";
-	private static final int SERVER_PORT = 00;
+	private static final int SERVER_PORT = 31415;
 	/** change with actual Port */
 	private String sender;
 	private String receiver;
@@ -43,11 +43,11 @@ public class FacadeFrame {
 	}
 
 	public void checkBalance(String accountNumber) {
-		sendMessage("AccountNumber", MessageType.CHECKBALANCE);
+		sendMessage(accountNumber, MessageType.CHECKBALANCE);
 	}
 
 	public void logout() {
-		sendMessage("Logout Message", MessageType.LOGOUT);
+		sendMessage("logout", MessageType.LOGOUT);
 	}
 
 	public void deposit(float amount) {
@@ -67,6 +67,29 @@ public class FacadeFrame {
 	public void withDraw(Float amount) {
 		String message = amount.toString();
 		sendMessage(message, MessageType.WITHDRAW);
+	}
+
+	public void addUser(String userID, String accountID) {
+		String message = userID + "," + accountID;
+		sendMessage(message, MessageType.ADD_USER);
+	}
+
+	public void accountInfo(String accountNumber) {
+		sendMessage(accountNumber, MessageType.ACCOUNT_INFO);
+	}
+
+	public void createAccount(String password, String userCredentials) {
+		String message = password + "," + userCredentials;
+		sendMessage(sender, MessageType.CREATE_ACCOUNT);
+	}
+
+	public void deactivateAccount(String accountNumber) {
+		sendMessage(accountNumber, MessageType.DEACTIVATE_ACCOUNT);
+	}
+
+	public void addUserToExisting(String userID, String accountID) {
+		String message = userID + "," + accountID;
+		sendMessage(message, MessageType.ADD_USER_TO_EXISTING_ACCOUNT);
 	}
 
 	/** Unsure about this */
