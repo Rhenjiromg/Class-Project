@@ -1,13 +1,15 @@
 package client;
 
-import java.io.*;
-import java.net.*;
-import resources.Message;
-import resources.MessageType;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.Scanner;
 
+import resources.Message;
+import resources.MessageType;
 
 public class Client {
  //test with local host, will have to change if i test with vm. This field must be known out of code

@@ -138,6 +138,8 @@ public class Server {
 				private class Process implements Runnable {
 					//TODO: mount facade here
 					private Message msg;
+					private ServerFacade serverFacade;
+					
 					public Process(Message m) {
 						this.msg = m;
 					}
@@ -145,38 +147,67 @@ public class Server {
 					@Override
 					public void run() {
 						switch (msg.getType()) {
-					    case VERIFICATION:
-					    	verification();
-					    	
-					    	// send SUCCESS message
-					    	synchronized (outbound) {
-								addQueue(outbound, new Message("Yo what's up Client!", MessageType.SUCCESS));
-							}
-					        break;
-					    default:
-					    	break;
+							case LOGOUT:
+								
+								// If logout request is sent, end the session.
+								
+								sendMessage(MessageType.SUCCESS);
+								break;
+						    case VERIFICATION: // login
+						    	// if user has this account let them in
+						    	if (serverFacade.processCredentials(msg.getID())) {						    		
+						    		sendMessage(MessageType.SUCCESS);
+						    	} else {
+						    		sendMessage(MessageType.ERROR);
+						    	}
+						        break;
+						    case DEPOSIT:
+						    	//          returns Message                account ID           amount
+						    	sendMessage(serverFacade.depositAmount(msg.getMessage()[0], msg.getMessage()[1]));
+						    	break;
+						    case WITHDRAW:
+						    	//          returns Message                account ID           amount
+						    	sendMessage(serverFacade.withdrawAmount(msg.getMessage()[0], msg.getMessage()[1]));
+						    	break;
+						    case TRANSFER:
+					            //          returns Message                 account ID           target account ID    amount to transfer
+						    	sendMessage(serverFacade.transferAmount(msg.getMessage()[0], msg.getMessage()[1], msg.getMessage()[2]));
+						    	break;
+						    default:
+						    	// drop message by default
+						    	break;
 						}
-						
-//						synchronized (outbound) {
-//							addQueue(outbound, new Message("Yo what's up Client!", MessageType.SUCCESS));
-//						}
 					}
 					
-					public void verification() {
-						System.out.println("Server Recieved verification message: ");
-						String[] m = msg.getMessage();
-						if (m != null && m.length > 0) {
-						    for (String x : m) {
-						        System.out.print(x);
-						    }
-						} else {
-						    System.out.println("Message is empty or null.");
+					// way to send message to client
+					private void sendMessage(MessageType mt) {
+						synchronized (outbound) {
+							addQueue(outbound, new Message(mt));
 						}
-						return;
 					}
+					
+					
+					private void sendMessage(Message m) {
+						synchronized (outbound) {
+							addQueue(outbound, m);
+						}
+					}
+					
+					// TEST function
+//					public void verification() {
+//						System.out.println("Server Recieved verification message: ");
+//						String[] m = msg.getMessage();
+//						if (m != null && m.length > 0) {
+//						    for (String x : m) {
+//						        System.out.print(x);
+//						    }
+//						} else {
+//						    System.out.println("Message is empty or null.");
+//						}
+//						return;
+//					}
 				
 				}//end scope process
-				
 			} //end scope processSession
 			
 			//Start: session sender

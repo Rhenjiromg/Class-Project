@@ -39,14 +39,14 @@ public class Account {
 	}
 	
 	
-	protected void deposit(double amount) {
+	public void deposit(double amount) {
 		//log
 		this.balance += amount;
 		
 	}
 	
 	
-	protected boolean withdraw(double amount) {
+	public boolean withdraw(double amount) {
 		//log
 		if (!overdraft(amount)){
 			this.balance -= amount;
@@ -59,13 +59,14 @@ public class Account {
 	}
 	
 	
-	protected boolean closeAccount() {
+	public boolean closeAccount() {
+		return false; // temporary placeholder
 		// change account state
 		// for later: probably delete .txt //we dont have to worry about this
 	}
 	
 	
-	protected boolean transferFunds(Account targetAccount, double amount) {
+	public boolean transferFunds(Account targetAccount, double amount) {
 		//log
 		if (!overdraft(amount)){
 			this.balance -= amount;
@@ -89,7 +90,6 @@ public class Account {
 	}
 	
 
-
 	public double getBalance() {
 		return balance;
 	}
@@ -99,7 +99,7 @@ public class Account {
 		this.balance = balance;
 	}
 
-	protected ArrayList<String> filePrep(){
+	public ArrayList<String> filePrep(){
 		// Prepare the data for file storage 
 		ArrayList<String> data = new ArrayList<>(); 
 		data.add(accountID); 
