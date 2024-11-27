@@ -25,6 +25,27 @@ public class User extends Operator{
         for(String i : accounts){
             data.add(i);
         }
+        return data;
+    }
+
+    public ArrayList<String> getInfo(){
+        ArrayList<String> data = super.getInfo();
+        for(String i : accounts){
+            data.add(i);
+        }
+        return data;
+    }
+
+    public ArrayList<String> getAccList(){
+        return accounts;
+    }
+
+    public String[] getAcc(){
+        ArrayList<String> data = new ArrayList<>();
+        for(String i : accounts){
+            data.add(i);
+        }
+        return data.toArray(String[0]);
     }
 
 }
