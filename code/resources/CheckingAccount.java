@@ -1,37 +1,38 @@
 package resources;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+
 public class CheckingAccount extends Account {
-	private final double maintenanceFee = 5.0;
+	private final double Fee = 5.0;
 	
 	
-	public CheckingAccount() {
-		setBalance(0);
+	CheckingAccount(String accountID, String balance, String creationDate, String lastDate) {
+		super(accountID, balance, creationDate, lastDate);
 	}
-	
-	public CheckingAccount(double balance) {
-		this.setBalance(balance);
-	}
-	
+
 	public void deposit(double amount) {
 		super.deposit(amount);
+		applyFee();
 	}
 	
-	public void withdraw(double amount) {
-		super.withdraw(amount);
+	public boolean withdraw(double amount) {
+		boolean success = super.withdraw(amount);
+		applyFee();
+		return success;
 	}
 	
-	public void transferFunds(Account targetAccount) {
-		super.transferFunds(targetAccount);
+	public boolean transferFunds(Account targetAccount, double bal) {
+		boolean success = super.transferFunds(targetAccount, bal);
+		applyFee();
+		return success;
 	}
 	
-	public void applyMaintenanceFee() {
-		String[] creationDate = super.getCreationDate().split(" ");
-		String[] currentDate = super.getCurrentDate().split(" ");
-		
-		// if the same date hits Ex: Nov 14, Dec 14
-		// deduct the maintenanceFee of $5
-		if (creationDate[1].equals(currentDate[1])) {
-			setBalance(getBalance() - maintenanceFee);
+	public void applyFee() {
+		if (this.balance < 100 && this.balance > 5){
+			this.balance -=  Fee;
 		}
 	}
+
+	//this will just inherit the account fileprep as fee is hardcoded
 }

@@ -136,6 +136,7 @@ public class Server {
 				}
 				
 				private class Process implements Runnable {
+					//TODO: mount facade here
 					private Message msg;
 					public Process(Message m) {
 						this.msg = m;
@@ -146,14 +147,19 @@ public class Server {
 						switch (msg.getType()) {
 					    case VERIFICATION:
 					    	verification();
+					    	
+					    	// send SUCCESS message
+					    	synchronized (outbound) {
+								addQueue(outbound, new Message("Yo what's up Client!", MessageType.SUCCESS));
+							}
 					        break;
 					    default:
 					    	break;
 						}
 						
-						synchronized (outbound) {
-							addQueue(outbound, new Message("Yo what's up Client!", MessageType.SUCCESS));
-						}
+//						synchronized (outbound) {
+//							addQueue(outbound, new Message("Yo what's up Client!", MessageType.SUCCESS));
+//						}
 					}
 					
 					public void verification() {

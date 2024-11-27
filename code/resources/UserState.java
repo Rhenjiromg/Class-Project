@@ -1,5 +1,6 @@
-package resources;
 
-enum UserState {
-    NEW, OPEN, CLOSED, ACTIVE, BANNED
+public enum UserState {
+OPEN,
+CLOSED,
+BANNED
 }
