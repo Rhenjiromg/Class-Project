@@ -1,12 +1,4 @@
-package  resources;
-/* A facade class (temporary for testing)
- * 
- * named FacadeFrame(Message) with 1 attribute Message and 1 method
- * aside from constructor that print out the content of the message passed,
- * AND also returns a message object that contains the data string
- * "test response" with enum type "Log in"
- * 
- * */
+package resources;
 
 public class MessageFacade {
 	String message = "test response.";

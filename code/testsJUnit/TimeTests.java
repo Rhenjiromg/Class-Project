@@ -1,9 +1,11 @@
 package testsJUnit;
 
-import resources.Time;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import resources.Time;
 
 class TimeTests {
 

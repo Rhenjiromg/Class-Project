@@ -7,13 +7,6 @@ import java.awt.GridLayout;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
-import javax.swing.border.EmptyBorder;
-
-import resources.Message;
-import resources.MessageType;
-import resources.Operator;
-import resources.User;
-
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -25,14 +18,20 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
+
+import resources.Account;
+import resources.Message;
+import resources.MessageType;
+import resources.Operator;
+import resources.User;
 
 // ADD ACCOUNT AND OPERATOR WHEN DONE.
 
 public class GUI {
 	private Operator op;
 	private Account acc;
-	Jbutton accountButtons;
+	JButton accountButtons;
 	private Queue<Message> outbound = new ArrayDeque<>();
 	String accID = ""; //this is where the accID is added to from displayScroll buttons (acc selector)
 
@@ -113,10 +112,10 @@ public class GUI {
 		
 			// if login pressed return text field values.
 			if (optionPane.getValue() == loginButton) { 
-				String username = usernameField.getText(); 
-				String password = new String(passwordField.getPassword());
+				String username = userNameField.getText(); 
+				String password = new String(passwordField.getText());
 				String data = username + " " + password; 
-				request = new Message(data, MessageType.Login);
+				request = new Message(data, MessageType.LOGIN);
 			} 
 		}
 		

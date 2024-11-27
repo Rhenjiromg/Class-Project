@@ -17,7 +17,8 @@ public enum MessageType {
     ADD_USER(0),
     CREATE_ACCOUNT(0),
     DEACTIVATE_ACCOUNT(0),
-    ADD_USER_TO_EXISTING_ACCOUNT(0);
+    ADD_USER_TO_EXISTING_ACCOUNT(0),
+    SUCCESS(0);
 
     private final int argLength;
 
