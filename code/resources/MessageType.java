@@ -4,6 +4,7 @@ package resources;
  * @params: Arglength => Length of expected length of the argument.
  */
 public enum MessageType {
+    LOGIN(0),
     LOGOUT(0),
 	VERIFICATION(0),
     DEPOSIT(0),

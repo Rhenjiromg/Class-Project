@@ -4,13 +4,17 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.util.ArrayDeque;
 import java.util.Queue;
 
 import javax.swing.border.EmptyBorder;
 
 import resources.Message;
 import resources.MessageType;
+import resources.Operator;
+import resources.User;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -21,13 +25,28 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 // ADD ACCOUNT AND OPERATOR WHEN DONE.
 
 public class GUI {
+	private Operator op;
+	private Account acc;
+	Jbutton accountButtons;
+	private Queue<Message> outbound = new ArrayDeque<>();
+	String accID = ""; //this is where the accID is added to from displayScroll buttons (acc selector)
+
+	private synchronized void addQueue(Queue<Message> queue, Message message) {
+		queue.add(message);
+		queue.notify();
+	}
+
+	private synchronized Message popQueue(Queue<Message> queue) {
+		return queue.poll();
+	}
 	
 	private final String[] userDisplay = {
-			"Account",
+			"Account Detail",
 			"Transaction History",
 			"Deposit",
 			"Withdraw",
@@ -49,7 +68,7 @@ public class GUI {
 	private JPanel displayPanel = new JPanel(new GridLayout(0, 1)); // for displaying information
 	
 	// returns String Array, array[0] = name, array[1] = password;
-	public String[] login() {
+	public Message login() {
 		JPanel panel = new JPanel(new GridLayout(2, 2, 5, 5));
 		JLabel userNameLabel = new JLabel("Username: "); 
 		JTextField userNameField = new JTextField(10); 
@@ -74,31 +93,39 @@ public class GUI {
 				null, 
 				new Object[]{loginButton, cancelButton}, loginButton); 
 		
-		// Open a dialog from the option pane 
-		JDialog dialog = optionPane.createDialog("Login Screen");
+		boolean isLogin;
+		Message request; 
+		while (!isLogin){
+			// Open a dialog from the option pane 
+			JDialog dialog = optionPane.createDialog("Login Screen");
 		
-		loginButton.addActionListener(e -> { 
-			optionPane.setValue(loginButton); // record login press
-			dialog.dispose(); 
-		}); 
+			loginButton.addActionListener(e -> { 
+				optionPane.setValue(loginButton); // record login press
+				dialog.dispose(); 
+			}); 
 		
-		cancelButton.addActionListener(e -> { 
-			optionPane.setValue(cancelButton); // record cancel press
-			dialog.dispose(); 
-		}); 
+			cancelButton.addActionListener(e -> { 
+				optionPane.setValue(cancelButton); // record cancel press
+				dialog.dispose(); 
+			}); 
 		
-		dialog.setVisible(true); 
+			dialog.setVisible(true); 
 		
-		// if login pressed return text field values.
-		if (optionPane.getValue() == loginButton) { 
-			return new String[]{userNameField.getText(), passwordField.getText()}; 
-		} 
+			// if login pressed return text field values.
+			if (optionPane.getValue() == loginButton) { 
+				String username = usernameField.getText(); 
+				String password = new String(passwordField.getPassword());
+				String data = username + " " + password; 
+				request = new Message(data, MessageType.Login);
+			} 
+		}
 		
-		return new String[]{"", ""}; // return array of 2 empty strings if canceled.
+		
+		return request;
 	}
 	
 	
-	public void userDisplay(Queue<Message> outbound) {
+	public void userDisplay() {
 		JFrame frame = new JFrame("User Display");
 		frame.setSize(800, 800);
 		
@@ -111,27 +138,31 @@ public class GUI {
 		
 		JPanel buttonPanel = new JPanel(new GridLayout(userDisplay.length, 0)); // for buttons
 		
+		// displayInfoPanel in scroll-able form (updated by client)
+		// userInfo in scroll-able form (updated by client)
+		JScrollPane displayScroll = getScrollableDisplayPanel(op, accID);
+		JScrollPane userInfoScroll = getScrollableInfoPanel(op);
+
 		// Add Buttons to button Panel with Action Listener
-		for (String option: userDisplay) {
-			JButton button = new JButton(option);
+		accountButtons = new JButton[userDisplay.length];
+		for (int i = 0; i < userDisplay.length; i++) { 
+			String option = userDisplay[i]; 
+			JButton button = new JButton(option); 
+			accountButtons[i] = button; //store button in array for global reference
+			button.setEnabled(false); // Initially disabled 
 			button.addActionListener(e -> {
-				methodCaller(option, outbound);
+				methodCaller(option, request);
 			});
 			button.setFont(new Font("Courier New", Font.BOLD, 15));
 			button.setPreferredSize(new Dimension(250, 50));
 			buttonPanel.add(button);
 		}
 		
-		// displayInfoPanel in scroll-able form (updated by client)
-		// userInfo in scroll-able form (updated by client)
-		JScrollPane displayScroll = getScrollableDisplayPanel();
-		JScrollPane userInfoScroll = getScrollableUserPanel();
-		
 		mainButtonPanel.add(buttonPanel); // panel for button panel (for sizing purposes)
 		
-		mainPanel.add(mainButtonPanel); // left
-		mainPanel.add(displayScroll); // center
-		mainPanel.add(userInfoScroll); // right
+		mainPanel.add(mainButtonPanel); // left 0
+		mainPanel.add(displayScroll); // center 1
+		mainPanel.add(userInfoScroll); // right 2
 		
 		frame.add(mainPanel);
 		
@@ -140,8 +171,8 @@ public class GUI {
 		frame.setVisible(true); // make visible
 	}
 	
-	
-	public void superUserDisplay(Queue<Message> outbound) {
+	//TODO: superGUI not done, need revise
+	public void superUserDisplay() {
 		JFrame frame = new JFrame("Super User Display");
 		frame.setSize(950, 800);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -154,7 +185,8 @@ public class GUI {
 		for (String option: superUserDisplay) {
 			JButton button = new JButton(option);
 			button.addActionListener(e -> {
-				methodCaller(option, outbound);
+				Message m;
+				methodCaller(option, request);
 			});
 			button.setFont(new Font("Courier New", Font.BOLD, 15));
 			button.setPreferredSize(new Dimension(300, 50));
@@ -163,8 +195,8 @@ public class GUI {
 		
 		// displayInfoPanel in scroll-able form (updated by client)
 		// userInfo in scroll-able form (updated by client)
-		JScrollPane displayScroll = getScrollableDisplayPanel();
-		JScrollPane userInfoScroll = getScrollableUserPanel();
+		JScrollPane displayScroll = getScrollableDisplayPanel(op.getAccount());
+		JScrollPane userInfoScroll = getScrollableInfoPanel();
 		
 		mainButtonPanel.add(buttonPanel); // panel for button panel (for sizing purposes)
 		
@@ -179,60 +211,86 @@ public class GUI {
 		frame.setVisible(true); // make visible
 	}
 	
-// SOME FUNCTIONS NEED MERGING, REPETITIVE CODE
-	private void methodCaller(String s, Queue<Message> outbound) {
-		switch (s) {
-			case "Account":
-				// send request to server
-				// info will be displayed by client using setDisplayPanelInfo() and setuserPanelInfo()
-				
-				// display account info already sent by the server
-				outbound.add(new Message(MessageType.ACCOUNT_INFO));
-				break;
-			case "Transaction History":
-				// send request to server
-				// info will be displayed by client using setDisplayPanelInfo() and setuserPanelInfo()
-				outbound.add(new Message(MessageType.TRANSACTION_HISTORY));
-				break;
-			case "Deposit":
-				outbound.add(new Message(deposit(), MessageType.DEPOSIT));
-				break;
-			case "Withdraw":
-				outbound.add(new Message(withdraw(), MessageType.WITHDRAW));
-				break;
-			case "Transfer":
-				outbound.add(new Message(transfer(), MessageType.TRANSFER));
-				break;
-				
-			// ---------------------------- Super User ----------------------------
-			case "Add User":
-				
-				// change Login to Sign up.
-				String[] s5 = login();
-				outbound.add(new Message(s5[0] + s5[1], MessageType.ADD_USER));
-				break;
-				
-// MERGE ACCOUNT FUNCTIONS INTO 1.
-			case "Create Account":
-				outbound.add(new Message(createAccount(), MessageType.CREATE_ACCOUNT));
-				break;
-			case "Deactivate Account":
-				outbound.add(new Message(deleteAccount(), MessageType.DEACTIVATE_ACCOUNT));
-				break;
-			case "Add User to Existing Account":
-				
-				// changes need to be made
-				outbound.add(new Message(createAccount(), MessageType.ADD_USER_TO_EXISTING_ACCOUNT));
-				break;
-			case "Check User":
-				// Ask superUser: which user's account they want access?
-				// open up user Display for that account.
-				userDisplay(outbound);
-				break;
-			case "Make me Millionaire":
-				displayMillionDollars();
-				break;
-		}
+		
+	// SOME FUNCTIONS NEED MERGING, REPETITIVE CODE
+	//TODO: handle cancels
+		private void methodCaller(String s, String r) {
+			data = op.getID() + "," + r;
+			condition = s;
+			String buffer;
+			switch (condition) {
+				case "Account Detail":
+					// send request to server
+					// info will be displayed by client using setDisplayPanelInfo() and setuserPanelInfo()
+					
+					// display account info already sent by the server
+					outbound.addQueue(new Message(data, MessageType.ACCOUNT_INFO));
+					break;
+				case "Transaction History":
+					// send request to server
+					// info will be displayed by client using setDisplayPanelInfo() and setuserPanelInfo()
+					outbound.addQueue(new Message(data, MessageType.TRANSACTION_HISTORY));
+					break;
+				case "Deposit":
+					buffer = deposit();
+					if (!buffer.equals("")){
+						data += buffer;
+						Message result = new Message(data, MessageType.DEPOSIT);
+						outbound.addQueue(result);
+						break;
+					}
+					//else diposit cancel
+					break;
+				case "Withdraw":
+					buffer = withdraw();
+					if (!buffer.equals("")){
+						data += buffer;
+						Message result = new Message(data, MessageType.WITHDRAW);
+						outbound.addQueue(result);
+						break;
+					}
+					break;
+				case "Transfer":
+					buffer = transfer();
+					if (!buffer.equals("")){
+						data += buffer;
+						Message result = new Message(data, MessageType.TRANSFER);
+						outbound.addQueue(result);
+						break;
+					}
+					break;
+					
+				//TODO: CONT FIXING LATER
+				// ---------------------------- Super User ----------------------------
+				case "Add User":
+					
+					// change Login to Sign up.
+					String[] s5 = login();
+					outbound.addQueue(new Message(s5[0] + s5[1], MessageType.ADD_USER));
+					break;
+					
+	// MERGE ACCOUNT FUNCTIONS INTO 1.
+				case "Create Account":
+					outbound.addQueue(new Message(createAccount(), MessageType.CREATE_ACCOUNT));
+					break;
+				case "Deactivate Account":
+					outbound.addQueue(new Message(deleteAccount(), MessageType.DEACTIVATE_ACCOUNT));
+					break;
+				case "Add User to Existing Account":
+					
+					// changes need to be made
+					outbound.addQueue(new Message(createAccount(), MessageType.ADD_USER_TO_EXISTING_ACCOUNT));
+					break;
+				case "Check User":
+					// Ask superUser: which user's account they want access?
+					// open up user Display for that account.
+					userDisplay(outbound);
+					break;
+				case "Make me Millionaire":
+					displayMillionDollars();
+					break;
+			}
+		
 	}
 	
 	
@@ -468,7 +526,7 @@ public class GUI {
 	
 	
 	private void displayMillionDollars() {
-		String[] s = {"Balance: ", "$ 1,000,000"}; 
+		String[] s = {"Balance: ","$ 1,000,000"}; 
 		setDisplayPanelInfo(s);
 	}
 	
@@ -482,39 +540,114 @@ public class GUI {
 			infoArea.append(x);
 			infoArea.append("\n");
 		}
-		displayPanel.add(infoArea);
+		
+		// Assuming displayPanel is a container (like a JPanel), you might add the JScrollPane to it:
+		displayPanel.removeAll();  // Remove any existing components from displayPanel
+		displayPanel.add(scrollPane);  // Add the updated scrollable infoArea to the panel
+		displayPanel.revalidate(); // Revalidate the layout to reflect changes
+		displayPanel.repaint();    // Repaint the panel to show the updated content
 	}
 	
 	
 	// Updates the user info
 	public void setUserPanelInfo(String[] s) {
-		// text area for writing user info
-		JTextArea infoArea = new JTextArea(10, 10);
-		
-		for (String x: s) {
-			infoArea.append(x);
-			infoArea.append("\n");
-		}
-		userInfo.add(infoArea);
+		JScrollPane displayScroll = getScrollableDisplayPanel(op, request);
 	}
 	
 	
-	private JScrollPane getScrollableUserPanel() {
-		JScrollPane scrollPane = new JScrollPane(userInfo);
+	private JScrollPane getScrollableInfoPanel(Operator op) {
+		String[] data = op.getInfo().toArray(String[0]);
+
+		userInfo.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS)); // Add the data to the panel 
+		for (String info : data) { 
+			JLabel label = new JLabel(info); 
+			userInfo.add(label); 
+			userInfo.add(Box.createRigidArea(new Dimension(0, 5))); // Add spacing between labels 
+			} // Create a scroll pane to wrap the panel 
+		JScrollPane scrollPane = new JScrollPane(infoPanel);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(20); // increase scroll speed
 		scrollPane.setBorder(new EmptyBorder(10, 0, 10, 10));
 		return scrollPane;
 	}
 	
-	
-	private JScrollPane getScrollableDisplayPanel() {
-		JScrollPane scrollPane = new JScrollPane(displayPanel);
+	private JScrollPane getScrollableInfoPanel(Account acc) {
+		String[] data = acc.getInfo().toArray(String[0]);
+
+		userInfo.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS)); // Add the data to the panel 
+		for (String info : data) { 
+			JLabel label = new JLabel(info); 
+			userInfo.add(label); 
+			userInfo.add(Box.createRigidArea(new Dimension(0, 5))); // Add spacing between labels 
+			} // Create a scroll pane to wrap the panel 
+		JScrollPane scrollPane = new JScrollPane(infoPanel);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(20); // increase scroll speed
-		scrollPane.setBorder(new EmptyBorder(10, 10, 10, 0));
+		scrollPane.setBorder(new EmptyBorder(10, 0, 10, 10));
 		return scrollPane;
 	}
+	
+	private JScrollPane getScrollableDisplayPanel(User op, String req) {
+		String[] data = op.getAcc();
+		 displayPanel.setLayout(new BoxLayout(displayPanel, BoxLayout.Y_AXIS));
+		  // Vertical layout 
+		  // Add buttons to the existing display panel 
+		  for (String option : data) { 
+			JButton button = new JButton(option); 
+
+			button.addActionListener(e -> {
+				// Handle the button, pass the accountID to string req!
+				req = option;
+				for (JButton but : accountButtons) {
+					but.setEnabled(true); // Enable each button now that we selected an account to reference
+				}
+			});
+			displayPanel.add(button); displayPanel.add(Box.createRigidArea(new Dimension(0, 5))); 
+			// Add spacing between buttons 
+		} // Create a scroll pane to wrap the panel 
+		JScrollPane scrollPane = new JScrollPane(displayPanel); 
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED); 
+		scrollPane.getVerticalScrollBar().setUnitIncrement(20); // Increase scroll speed 
+		scrollPane.setBorder(new EmptyBorder(10, 10, 10, 0)); 
+		return scrollPane;
+	}
+
+	//TODO: THIS IS HANDLE TO UPDATE FROM OUT OF CLASS
+	//caller need to make a user object with the new updated list of accounts before calling
+	public void updateAccountList(User u) {
+
+		String[] accs = newReq.split(",");
+		// Remove the old JScrollPanes
+		mainPanel.remove(1);  // Removing the center JScrollPane (displayScroll)
+		
+		// Create updated JScrollPanes with new content
+		JScrollPane updatedDisplayScroll = getScrollableDisplayPanel(u, accID);
+	
+		// Add the new JScrollPanes
+		mainPanel.add(updatedDisplayScroll, 1); // Add to center position (index 1)
+	
+		// Revalidate and repaint to ensure the UI is updated
+		mainPanel.revalidate();
+		mainPanel.repaint();
+	}
+	
+	//caller need to make an account type object with the new updated list of accounts before calling
+	public void updateAccount(String newRequest) {
+		// Remove the old JScrollPanes
+		mainPanel.remove(2);  // Removing the right JScrollPane (userInfoScroll)
+		
+		// Create updated JScrollPanes with new content
+		JScrollPane updatedUserInfoScroll = getScrollableInfoPanel(acc);
+	
+		// Add the new JScrollPanes
+		mainPanel.add(updatedUserInfoScroll, 2); // Add to right position (index 2)
+	
+		// Revalidate and repaint to ensure the UI is updated
+		mainPanel.revalidate();
+		mainPanel.repaint();
+	}
+	
+	//NOTE:AS OF RIGHT NOW GUI DOESNT IMPLEMENT SMART HANDLE FOR CONFLICT UPDATES YET
 }
 
 

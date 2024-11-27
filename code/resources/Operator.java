@@ -31,6 +31,7 @@ public class Operator {
     }
 
     protected ArrayList<String> filePrep(){
+
 		// Prepare the data for file storage 
 		ArrayList<String> data = new ArrayList<>(); 
 		data.add(this.name); 
@@ -39,7 +40,15 @@ public class Operator {
 		data.add(this.state.toString()); 
 		return data;
 	} 
-    
+    public ArrayList<String> getInfo(){
+		// Prepare the data for GUI display 
+		ArrayList<String> data = new ArrayList<>(); 
+		data.add(this.name); 
+		data.add(this.ID); 
+		data.add(this.state.toString()); 
+		return data;
+	} 
+
     public String getID(){
         return this.ID;
     }
