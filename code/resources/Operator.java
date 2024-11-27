@@ -30,7 +30,8 @@ public class Operator {
         return false;
     }
 
-    public ArrayList<String> filePrep(){
+    protected ArrayList<String> filePrep(){
+
 		// Prepare the data for file storage 
 		ArrayList<String> data = new ArrayList<>(); 
 		data.add(this.name); 
@@ -39,7 +40,6 @@ public class Operator {
 		data.add(this.state.toString()); 
 		return data;
 	} 
-    
     public ArrayList<String> getInfo(){
 		// Prepare the data for GUI display 
 		ArrayList<String> data = new ArrayList<>(); 

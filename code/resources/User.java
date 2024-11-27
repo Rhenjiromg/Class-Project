@@ -25,6 +25,7 @@ public class User extends Operator{
         for(String i : accounts){
             data.add(i);
         }
+
         return data;
     }
 
@@ -46,6 +47,7 @@ public class User extends Operator{
             data.add(i);
         }
         return data.toArray(String[0]);
+
     }
 
 }
