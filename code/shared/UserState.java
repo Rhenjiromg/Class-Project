@@ -1,4 +1,4 @@
-package resources;
+package shared;
 
 public enum UserState {
 	OPEN,

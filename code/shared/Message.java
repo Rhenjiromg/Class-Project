@@ -1,4 +1,4 @@
-package resources;
+package shared;
 
 import java.io.Serializable;
 
@@ -21,7 +21,11 @@ public class Message implements Serializable {
         this.type = type;
     }
 
-    public MessageType getType() {
+    public Message() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public MessageType getType() {
         return this.type;
     }
 

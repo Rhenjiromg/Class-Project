@@ -1,4 +1,4 @@
-package resources;
+package shared;
 
 import java.util.ArrayList;
 
@@ -20,7 +20,7 @@ public class Operator {
         this.name = n;
         this.ID = ID;
         this.password = pass;
-        this.state = UserState.valueOf(e);
+        this.state = UserState.valueOf(null, e);
     }
 
     public boolean Authenticate(String ID, String pass){

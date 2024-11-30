@@ -6,8 +6,7 @@ import java.net.*;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
-import resources.Message;
-import resources.MessageType;
+import shared.*;
 
 
 public class Server {

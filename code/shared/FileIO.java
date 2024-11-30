@@ -1,4 +1,4 @@
-package resources;
+package shared;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -74,7 +74,7 @@ public class FileIO {
             String creationDate = reader.readLine(); // 3rd line - Creation Date
             String lastDate = reader.readLine(); // Fourth line - last Date
             if(pattern.matcher(accountID).find()){//saving
-                String withdrawalCount = reader.readLine();
+                String withdrawalCount = reader.readLine(); //5th
                 account = new SavingAccount(accountID, balance, creationDate, lastDate, withdrawalCount);
             } else if(pattern2.matcher(accountID).find()){//checking
                 account = new CheckingAccount(accountID, balance, creationDate, lastDate);
@@ -97,14 +97,12 @@ public class FileIO {
                 String balance = reader.readLine(); // Third line - Balance
                 String state = reader.readLine(); // Fourth line - State
                 if(pattern.matcher(accountID).find()){//saving
-                    String withdrawalCount = reader.readLine();
-                    String interestRate = reader.readLine();
-                // TODO: add to this later to reflect the actual constructor + convert string to proper args
-                    account = new SavingAccount();
+                	String withdrawalCount = reader.readLine(); //5th
+                    account = new SavingAccount(accountID, balance, creationDate, lastDate, withdrawalCount);
                 } else if(pattern2.matcher(accountID).find()){//checking
                     String maintenantFee = reader.readLine();
                 // TODO: add to this later to reflect the actual constructor + convert string to proper args
-                    account = new CheckingAccount();
+                    account = new CheckingAccount(accountID, balance, creationDate, lastDate);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -154,14 +152,13 @@ public class FileIO {
                 String password = reader.readLine(); // Third line - Password
                 String state = reader.readLine(); // Fourth line - State
                 if(pattern.matcher(id).find()){
-                    String buffer;
-                    for (String element : op.getAccount()) { //write the whole account table
-                        buffer = reader.readLine();
-                        list.add(buffer);
-                    } // Write each element on a new line
-                    String[] accounts = list.toArray(new String[0]);
-                    //TODO: add proper construcotr when we did that modify
-                    operator = new User();
+                	ArrayList<String> buffer;
+                    String line; 
+                    while ((line = reader.readLine()) != null) { 
+                        buffer.add(line);
+                    }
+                    
+                    operator = new User(name, id, password, state, buffer);
                 }else{
                     //TODO: add proper construcotr when we did that modify
                     operator = new SuperUser();

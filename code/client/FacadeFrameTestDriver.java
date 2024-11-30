@@ -1,6 +1,6 @@
 package client;
 
-import resources.MessageFacade;
+import shared.MessageFacade;
 
 /* Driver to test facade */
 public class FacadeFrameTestDriver {
