@@ -9,14 +9,14 @@ public class Operator {
     protected String password;
     protected UserState state;
 
-    Operator(String n, String pass){
+    public Operator(String n, String pass){
         this.name = n;
         this.ID = String.valueOf(++count);
         this.password = pass;
         this.state = UserState.OPEN;
     }
 
-    Operator(String n, String pass, String ID, String e){
+    public Operator(String n, String pass, String ID, String e){
         this.name = n;
         this.ID = ID;
         this.password = pass;

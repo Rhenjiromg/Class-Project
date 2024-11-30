@@ -12,15 +12,8 @@ public class Account {
 	protected LocalDate creationDate;
 	protected LocalDate lastCheck;
 	
-	// read use cases SRS
-	// if you think there's a logical issue
-	// be creative, solve it and tell us
-	// on discord, or call out the issue
-	// if it's too big of a change.
-	
-	
 	// Account constructor, for create new account
-	Account() {
+	public Account() {
 		accountID = Integer.toString(++count);
 
 		creationDate = LocalDate.now();
@@ -30,7 +23,7 @@ public class Account {
 	
 	
 	// Acc constructor for creat acc from file
-	Account(String ID, String bal, String date, String date2) {
+	public Account(String ID, String bal, String date, String date2) {
 		this.accountID = ID;
 		this.balance = Double.valueOf(bal);
 		this.creationDate = LocalDate.parse(date);

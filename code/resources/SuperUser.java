@@ -1,12 +1,19 @@
-public class SuperUser {
+package resources;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.regex.Pattern;
+
+public class SuperUser extends Operator{
     private String name;
     private String ID;
     private String password;
-
+    private FileIO fileIO;
 
     public SuperUser(String name, String password) {
         this.name = name;
         this.password = password;
+        
         Account acc = new Account();
         User u = new User();
         
@@ -29,7 +36,7 @@ public class SuperUser {
 		Operator op = null;
 
 		try {
-			op = readOperator("U" + userID + ".txt");
+			op = fileIO.readOperator("U" + userID + ".txt");
 			//Check if account exists.
 			if(op.getAccList().contains(accID)) {
 				//Remove the account from the user's list
@@ -51,7 +58,7 @@ public class SuperUser {
 
 		try {
 			//Saved the updated user data to the txt
-			writeOperator("U" + userID, op);
+			fileIO.writeOperator("U" + userID, op);
 			System.out.println("Updates have been made to " + userID + "'s files.");
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -76,7 +83,7 @@ public class SuperUser {
 
         try {
       /* Call readOperator to attempt to get data from file */
-           op = readOperator("U" + userID + ".txt"); 
+           op = fileIO.readOperator("U" + userID + ".txt"); 
 
         //Check if account and user already exist
         if(user.getAccList().contains(accID)) {
@@ -103,7 +110,7 @@ public class SuperUser {
     }
 
     try { 
-        writeOperator("U" + userID, op);
+    	fileIO.writeOperator("U" + userID, op);
         System.out.println("User has been saved.");
     } catch (IOException e) {
         e.printStackTrace();
@@ -124,13 +131,13 @@ public class SuperUser {
 
         //Add the account to the user object
         user.addAccount(ID); 
-        FileIO.writeAccount(acc);
+        fileIO.writeAccount(acc.getAccountID() + ".txt", acc);
 
         System.out.println("Opening an account." + name + " " + password);
     }
 
-    //For the Junit tests
+    //For the JUnit tests
     public String getName() {return name;}
     public String getPassword() {return password;}
-    public getID() {return ID;}
+    public String getID() {return ID;}
 }

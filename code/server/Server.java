@@ -153,9 +153,9 @@ public class Server {
 								
 								sendMessage(MessageType.SUCCESS);
 								break;
-						    case VERIFICATION: // login
+						    case LOGIN: // login
 						    	// if user has this account let them in
-						    	if (serverFacade.processCredentials(msg.getID())) {						    		
+						    	if (serverFacade.autherize(msg.getID())) {						    		
 						    		sendMessage(MessageType.SUCCESS);
 						    	} else {
 						    		sendMessage(MessageType.ERROR);
@@ -173,6 +173,25 @@ public class Server {
 					            //          returns Message                 account ID           target account ID    amount to transfer
 						    	sendMessage(serverFacade.transferAmount(msg.getMessage()[0], msg.getMessage()[1], msg.getMessage()[2]));
 						    	break;
+							case TRANSACTION_HISTORY:
+								
+								//          returns Message                     account ID
+								sendMessage(serverFacade.transactionHistory(msg.getMessage()[0]));
+								break;
+							case ADD_USER:
+								//                       account ID           super user ID        user name            password
+								sendMessage(serverFacade.addUser(msg.getMessage()[0], msg.getMessage()[1], msg.getMessage()[2], msg.getMessage()[3]));
+								break;
+							case CREATE_ACCOUNT:
+								
+                                //		                                   account ID           super user ID
+								sendMessage(serverFacade.createAccount(msg.getMessage()[0], msg.getMessage()[1]));
+								break;
+							case DEACTIVATE_ACCOUNT:
+								
+		                        //                                             account ID           super user ID
+								sendMessage(serverFacade.deactivateAccount(msg.getMessage()[0], msg.getMessage()[1]));
+								break;
 						    default:
 						    	// drop message by default
 						    	break;
@@ -192,21 +211,6 @@ public class Server {
 							addQueue(outbound, m);
 						}
 					}
-					
-					// TEST function
-//					public void verification() {
-//						System.out.println("Server Recieved verification message: ");
-//						String[] m = msg.getMessage();
-//						if (m != null && m.length > 0) {
-//						    for (String x : m) {
-//						        System.out.print(x);
-//						    }
-//						} else {
-//						    System.out.println("Message is empty or null.");
-//						}
-//						return;
-//					}
-				
 				}//end scope process
 			} //end scope processSession
 			

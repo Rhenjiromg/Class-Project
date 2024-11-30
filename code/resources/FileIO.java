@@ -5,10 +5,18 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.StampedLock;
 import java.util.regex.*;
+
+// "A0" saving
+// "A1" checking
+// "U0" user
+
 
 //filler method call within this facade right now
 public class FileIO {
@@ -16,8 +24,6 @@ public class FileIO {
 
     public void writeAccount(String filePath, Account acc) {
         long writeStamp = lockManager.getWriteLock(filePath); //use handle to get lock for write
-        Pattern pattern = Pattern.compile("^A0");//saving
-        Pattern pattern2 = Pattern.compile("^A1");//checking
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, false))) {
             //this is pretty much pseudo code for planning and demonstration
@@ -35,7 +41,6 @@ public class FileIO {
 
     public void writeOperator(String filePath, Operator op){
         long writeStamp = lockManager.getWriteLock(filePath); //get lock
-        Pattern pattern = Pattern.compile("^U0");//user
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, false))) {
             //this is pretty much pseudo code for planning and demonstration
@@ -172,10 +177,11 @@ public class FileIO {
     }
 
     //Write Log
-    //example: if this is call inside a server facade method for account, logname will be account.getID 
-    private void writeLog(String logname, String status){
+    //example: if this is call inside a server facade method for account, logname will be account.getID
+    //                          accountID       decided by user
+    public void writeLog(String logname, String status){
         
-        Time time;
+        Time time = new Time();
         String logPath = "L" + logname + ".txt";
         String log = time.getCurrentTime() + ": " + status;
 
@@ -188,6 +194,20 @@ public class FileIO {
         } finally {
             lockManager.releaseLock(writeStamp, logPath); // Release the write lock
         }
+    }
+    
+    //                           accountID
+    public String readLog(String logname) {
+    	String logPath = "L" + logname;
+    	String fileContent = null;
+    	
+    	try { 
+    		Path filePath = Paths.get(logPath); // get file path
+    		fileContent = Files.readString(filePath); // put file contents in fileContent as a string
+    	} catch (IOException e) { 
+    		e.printStackTrace();
+    	}
+        return fileContent;
     }
 }
 

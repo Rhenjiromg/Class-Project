@@ -48,4 +48,8 @@ public class User extends Operator{
         }
         return data.toArray(new String[0]);
     }
+    
+    public void addAccount(String account) {
+    	accounts.add(account);
+    }
 }
