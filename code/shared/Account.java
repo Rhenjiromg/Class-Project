@@ -1,4 +1,4 @@
-package resources;
+package shared;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -59,6 +59,7 @@ public class Account {
 	}
 	
 	
+<<<<<<< HEAD:code/resources/Account.java
 	public boolean closeAccount() {
 		return false; // temporary placeholder
 		// change account state
@@ -67,6 +68,9 @@ public class Account {
 	
 	
 	public boolean transferFunds(Account targetAccount, double amount) {
+=======
+	protected boolean transferFunds(Account targetAccount, double amount) {
+>>>>>>> 2e524382b4d4bc83681bc408d6ad9ee940df57f4:code/shared/Account.java
 		//log
 		if (!overdraft(amount)){
 			this.balance -= amount;

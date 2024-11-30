@@ -1,4 +1,4 @@
-package resources;
+package shared;
 
 import java.util.ArrayList;
 
@@ -47,5 +47,9 @@ public class User extends Operator{
             data.add(i);
         }
         return data.toArray(new String[0]);
+<<<<<<< HEAD:code/resources/User.java
+=======
+
+>>>>>>> 2e524382b4d4bc83681bc408d6ad9ee940df57f4:code/shared/User.java
     }
 }

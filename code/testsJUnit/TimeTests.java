@@ -1,7 +1,12 @@
 package testsJUnit;
 
+<<<<<<< HEAD
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+=======
+import shared.Time;
+import static org.junit.jupiter.api.Assertions.*;
+>>>>>>> 2e524382b4d4bc83681bc408d6ad9ee940df57f4
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

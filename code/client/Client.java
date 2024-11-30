@@ -1,15 +1,28 @@
 package client;
 
+<<<<<<< HEAD
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+=======
+import java.io.*;
+import java.net.*;
+import shared.Message;
+import shared.MessageType;
+>>>>>>> 2e524382b4d4bc83681bc408d6ad9ee940df57f4
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Queue;
 import java.util.Scanner;
 
+<<<<<<< HEAD
 import resources.Message;
 import resources.MessageType;
+=======
+import javax.swing.SwingUtilities;
+
+>>>>>>> 2e524382b4d4bc83681bc408d6ad9ee940df57f4
 
 public class Client {
  //test with local host, will have to change if i test with vm. This field must be known out of code
@@ -45,11 +58,13 @@ public class Client {
 			private Socket soc;
 			private ObjectOutputStream out;
 			private ObjectInputStream in;
-
+			private GUI gui;
+			private boolean session = true; //get logout to set this to false? or gui on window exit
+			private boolean handshake = false; //true on login message 
 			
 			//queues here so its socket bounded
-			private Queue<Message> outbound = new ArrayDeque<>();
-			private Queue<Message> inbound = new ArrayDeque<>();
+			private Queue<Message> outbound = new ArrayDeque<Message>();
+			private Queue<Message> inbound = new ArrayDeque<Message>();
 			private synchronized void addQueue(Queue<Message> queue, Message message) {
 		        queue.add(message);
 		        queue.notify();
@@ -98,6 +113,17 @@ public class Client {
 	
 				System.out.println("error: threads exit prematurely");
 			}
+
+
+			//Start: GUI thread
+			private class GUIsession implements Runnable {
+				@Override
+				public void run() {
+					Message msg = gui.login();
+					addQueue(outbound, msg);
+				}
+			}
+
 			
 			//Start: listen for session
 			private class ListenSession implements Runnable {
@@ -158,33 +184,6 @@ public class Client {
 					}	
 				}
 				
-				private class GUI implements Runnable {
-					@Override
-					public void run() {
-					    while (!Logout) {
-					    	if (!Handshake) {
-					            //log in msg success from server is the condition of handshake
-								//until that is met this condition will keep this console ui blocked and unable to be shown to user.
-								try {
-								    Thread.sleep(100); // Avoid busy-waiting
-								} catch (InterruptedException e) {
-									e.printStackTrace();
-								}
-								continue;
-							}
-					    	
-					    	// Take user input using GUI
-					    	
-//			                System.out.print("Enter text to send to the server: \n");
-//			                String userInput = scanner.nextLine();
-						
-						    synchronized (outbound) {
-						        addQueue(outbound, new Message("EY YO Server!!!!!!", MessageType.VERIFICATION));
-						    }
-				    	}
-						scanner.close();
-					} // end run()
-				} // end GUI
 				
 				private class Process implements Runnable {
 					private Message msg;
@@ -196,20 +195,35 @@ public class Client {
 					//for msg coming in that doesn't fit the designed case, it would simply be drop
 					@Override
 					public void run() {
+						String[] buffer;
+						ArrayList<String> bList = ArrayList<String>();
+						Operator opbuffer;
+						Account accbuffer;
 						switch (msg.getType()) {
-					    case VERIFICATION:
-					        login();
+						//this way only when log in is success then we show display?
+					    case LOGIN:
+							
+							buffer = msg.getMessage();
+							if (buffer[1].charAt(1) == '0'){ //user
+								
+								for (int i = 4; i < buffer.length; i++){
+									bList.add(buffer[i]);
+								}
+								opbuffer = User(buffer[0], buffer[1], buffer[2], buffer[3], bList);
+							} else {
+								opbuffer = superUser(buffer[0], buffer[1], buffer[2], buffer[3]);
+							}
+							gui.userDisplay(opbuffer, outbound);
 					        break;
-					    case SUCCESS:
-					    	System.out.println("Message Sent By Server: ");
-					    	String[] m = msg.getMessage();
-					    	if (m != null && m.length > 0) {
-					    	    for (String x : m) {
-					    	        System.out.print(x);
-					    	    }
+						//try to run this, see if it can update the acc on gui while still display
+					    case ACCOUNT_INFO:
+					    	buffer = msg.getMessage();
+					    	if (buffer[1].charAt(1) == '0'){  //saving
+					    	    accbuffer = SavingAccount(buffer[0], buffer[1], bufer[2], buffer[3], buffer[4]);
 					    	} else {
-					    	    System.out.println("Message is empty or null.");
+					    	    accbuffer = CheckingAccount(buffer[0], buffer[1], bufer[2], buffer[3]);
 					    	}
+							gui.updateAccount(accbuffer);
 					    default:
 					    	break;
 						}

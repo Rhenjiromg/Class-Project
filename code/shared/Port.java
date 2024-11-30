@@ -1,4 +1,4 @@
-package resources;
+package shared;
 
 public class Port {
 	private final int port = 31415;
