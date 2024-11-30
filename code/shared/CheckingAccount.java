@@ -1,4 +1,4 @@
-package resources;
+package shared;
 
 public class CheckingAccount extends Account {
 	private final double Fee = 5.0;

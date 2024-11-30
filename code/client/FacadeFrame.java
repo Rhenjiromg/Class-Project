@@ -1,5 +1,6 @@
 package client;
 
+<<<<<<< HEAD
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import resources.Message;
@@ -8,6 +9,9 @@ import resources.MessageType;
 /**
  * This is assuming theres a listener in client.
  */
+=======
+import shared.MessageFacade;
+>>>>>>> 2e524382b4d4bc83681bc408d6ad9ee940df57f4
 
 public class FacadeFrame {
 	private static final String SERVER_ADDRESS = "IP HERE";
@@ -16,9 +20,8 @@ public class FacadeFrame {
 	private String sender;
 	private String receiver;
 
-	public FacadeFrame(String sender, String receiver) {
+	public FacadeFrame(String sender) {
 		this.sender = sender;
-		this.receiver = receiver;
 	}
 
 	private void sendMessage(String messageContent, MessageType type) {
@@ -67,11 +70,11 @@ public class FacadeFrame {
 		sendMessage(deposit, MessageType.DEPOSIT);
 	}
 
-	public void checkTransactionHistory() {
-		sendMessage(sender, MessageType.TRANSACTION_HISTORY);
+	public void checkTransactionHistory(String accNumber) {
+		sendMessage(accNumber, MessageType.TRANSACTION_HISTORY);
 	}
 
-	public void transfer(String destination, double amount) {
+	public void doTransfer(String destination, double amount) {
 		String message = destination + "," + amount;
 		sendMessage(message, MessageType.TRANSFER);
 	}

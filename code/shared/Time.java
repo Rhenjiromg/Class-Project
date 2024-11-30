@@ -1,4 +1,4 @@
-package resources;
+package shared;
 
 import java.util.Date;
 
