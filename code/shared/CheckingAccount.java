@@ -1,4 +1,4 @@
-package resources;
+package shared;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

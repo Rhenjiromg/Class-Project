@@ -1,6 +1,6 @@
 package client;
 
-import resources.MessageFacade;
+import shared.MessageFacade;
 
 public class FacadeFrame {
 	MessageFacade msg;

@@ -2,8 +2,8 @@ package client;
 
 import java.io.*;
 import java.net.*;
-import resources.Message;
-import resources.MessageType;
+import shared.Message;
+import shared.MessageType;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Queue;

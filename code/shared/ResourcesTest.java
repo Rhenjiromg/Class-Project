@@ -1,5 +1,5 @@
 //always include this to be able to use it. 
-package resources;
+package shared;
 
 public class ResourcesTest {
     public static void testGetResources(){

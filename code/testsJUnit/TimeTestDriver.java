@@ -1,6 +1,6 @@
 package testsJUnit;
 
-import resources.Time;
+import shared.Time;
 
 public class TimeTestDriver {
 	public static void main(String args[]) {

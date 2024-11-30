@@ -1,4 +1,4 @@
-package  resources;
+package  shared;
 /* A facade class (temporary for testing)
  * 
  * named FacadeFrame(Message) with 1 attribute Message and 1 method

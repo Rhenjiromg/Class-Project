@@ -1,4 +1,4 @@
-package resources;
+package shared;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -59,12 +59,6 @@ public class Account {
 	}
 	
 	
-	protected boolean closeAccount() {
-		// change account state
-		// for later: probably delete .txt //we dont have to worry about this
-	}
-	
-	
 	protected boolean transferFunds(Account targetAccount, double amount) {
 		//log
 		if (!overdraft(amount)){
@@ -99,7 +93,7 @@ public class Account {
 		this.balance = balance;
 	}
 
-	protected ArrayList<String> filePrep(){
+	public ArrayList<String> filePrep(){
 		// Prepare the data for file storage 
 		ArrayList<String> data = new ArrayList<>(); 
 		data.add(accountID); 

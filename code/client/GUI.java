@@ -9,10 +9,7 @@ import java.util.Queue;
 
 import javax.swing.border.EmptyBorder;
 
-import resources.Message;
-import resources.MessageType;
-import resources.Operator;
-import resources.User;
+import shared.*;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -32,10 +29,13 @@ import javax.swing.SwingUtilities;
 public class GUI {
 	private Operator op;
 	private Account acc;
-	Jbutton accountButtons;
+	JButton[] accountButtons;
 	private Queue<Message> outbound;
 	String accID = ""; //this is where the accID is added to from displayScroll buttons (acc selector)
+	boolean isLogin = false;
+	String request;
 
+	
 	private synchronized void addQueue(Queue<Message> queue, Message message) {
 		queue.add(message);
 		queue.notify();
@@ -68,11 +68,13 @@ public class GUI {
 	// add operator, user
 	// add account
 	
-	private JPanel userInfo = new JPanel(); // for displaying user information
+	private JPanel mainPanel = new JPanel(new GridLayout(1, 3));
+	private JPanel infoPanel = new JPanel(); // for displaying user information
 	private JPanel displayPanel = new JPanel(new GridLayout(0, 1)); // for displaying information
 	
 	// returns String Array, array[0] = name, array[1] = password;
 	public Message login() {
+		Message handshake = new Message();
 		JPanel panel = new JPanel(new GridLayout(2, 2, 5, 5));
 		JLabel userNameLabel = new JLabel("Username: "); 
 		JTextField userNameField = new JTextField(10); 
@@ -97,8 +99,6 @@ public class GUI {
 				null, 
 				new Object[]{loginButton, cancelButton}, loginButton); 
 		
-		boolean isLogin;
-		Message request; 
 		while (!isLogin){
 			// Open a dialog from the option pane 
 			JDialog dialog = optionPane.createDialog("Login Screen");
@@ -117,15 +117,15 @@ public class GUI {
 		
 			// if login pressed return text field values.
 			if (optionPane.getValue() == loginButton) { 
-				String username = usernameField.getText(); 
-				String password = new String(passwordField.getPassword());
+				String username = userNameField.getText(); 
+				String password = new String(passwordField.getText());
 				String data = username + " " + password; 
-				request = new Message(data, MessageType.LOGIN);
+				handshake = new Message(data, MessageType.LOGIN);
 			} 
 		}
 		
 		
-		return request;
+		return handshake;
 	}
 	
 	
@@ -145,8 +145,8 @@ public class GUI {
 		JPanel buttonPanel = new JPanel(new GridLayout(userDisplay.length, 0)); // for buttons
 		
 		// displayInfoPanel in scroll-able form (updated by client)
-		// userInfo in scroll-able form (updated by client)
-		JScrollPane displayScroll = getScrollableDisplayPanel(op, accID);
+		// infoPanel in scroll-able form (updated by client)
+		JScrollPane displayScroll = getScrollableDisplayPanel(op);
 		JScrollPane userInfoScroll = getScrollableInfoPanel(op);
 
 		// Add Buttons to button Panel with Action Listener
@@ -183,8 +183,6 @@ public class GUI {
 		frame.setSize(950, 800);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		JPanel mainPanel = new JPanel(new GridLayout(1, 3)); // main Panel
-		
 		JPanel mainButtonPanel = new JPanel();
 		JPanel buttonPanel = new JPanel(new GridLayout(superUserDisplay.length, 0)); // for buttons
 		
@@ -199,7 +197,8 @@ public class GUI {
 		}
 		
 		// displayInfoPanel in scroll-able form (updated by client)
-		// userInfo in scroll-able form (updated by client)
+		// infoPanel in scroll-able form (updated by client)
+		//TODO: revamp su display method!
 		JScrollPane displayScroll = getScrollableDisplayPanel(op.getAccount());
 		JScrollPane userInfoScroll = getScrollableInfoPanel();
 		
@@ -220,10 +219,9 @@ public class GUI {
 	// SOME FUNCTIONS NEED MERGING, REPETITIVE CODE
 	//TODO: handle cancels
 		private void methodCaller(String s, String r) {
-			data = op.getID() + "," + r;
-			condition = s;
+			String data = op.getID() + "," + r;
 			String buffer;
-			switch (condition) {
+			switch (s) {
 				case "Account Detail":
 					// send request to server
 					// info will be displayed by client using setDisplayPanelInfo() and setuserPanelInfo()
@@ -289,7 +287,7 @@ public class GUI {
 				case "Check User":
 					// Ask superUser: which user's account they want access?
 					// open up user Display for that account.
-					userDisplay(outbound);
+					userDisplay(user, outbound); //TODO:hook from su to u, need revamp
 					break;
 				case "Make me Millionaire":
 					displayMillionDollars();
@@ -548,7 +546,7 @@ public class GUI {
 		
 		// Assuming displayPanel is a container (like a JPanel), you might add the JScrollPane to it:
 		displayPanel.removeAll();  // Remove any existing components from displayPanel
-		displayPanel.add(scrollPane);  // Add the updated scrollable infoArea to the panel
+		displayPanel.add(infoArea);  // Add the updated scrollable infoArea to the panel
 		displayPanel.revalidate(); // Revalidate the layout to reflect changes
 		displayPanel.repaint();    // Repaint the panel to show the updated content
 	}
@@ -556,18 +554,18 @@ public class GUI {
 	
 	// Updates the user info
 	public void setUserPanelInfo(String[] s) {
-		JScrollPane displayScroll = getScrollableDisplayPanel(op, request);
+		JScrollPane displayScroll = getScrollableDisplayPanel(op);
 	}
 	
-	
-	private JScrollPane getScrollableInfoPanel(Operator op) {
-		String[] data = op.getInfo().toArray(String[0]);
 
-		userInfo.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS)); // Add the data to the panel 
+	private JScrollPane getScrollableInfoPanel(Operator op) {
+		String[] data = op.getInfo().toArray(new String[0]);
+
+		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS)); // Add the data to the panel 
 		for (String info : data) { 
 			JLabel label = new JLabel(info); 
-			userInfo.add(label); 
-			userInfo.add(Box.createRigidArea(new Dimension(0, 5))); // Add spacing between labels 
+			infoPanel.add(label); 
+			infoPanel.add(Box.createRigidArea(new Dimension(0, 5))); // Add spacing between labels 
 			} // Create a scroll pane to wrap the panel 
 		JScrollPane scrollPane = new JScrollPane(infoPanel);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -577,13 +575,13 @@ public class GUI {
 	}
 	
 	private JScrollPane getScrollableInfoPanel(Account acc) {
-		String[] data = acc.getInfo().toArray(String[0]);
+		String[] data = acc.filePrep().toArray(new String[0]);
 
-		userInfo.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS)); // Add the data to the panel 
+		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS)); // Add the data to the panel 
 		for (String info : data) { 
 			JLabel label = new JLabel(info); 
-			userInfo.add(label); 
-			userInfo.add(Box.createRigidArea(new Dimension(0, 5))); // Add spacing between labels 
+			infoPanel.add(label); 
+			infoPanel.add(Box.createRigidArea(new Dimension(0, 5))); // Add spacing between labels 
 			} // Create a scroll pane to wrap the panel 
 		JScrollPane scrollPane = new JScrollPane(infoPanel);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -592,8 +590,13 @@ public class GUI {
 		return scrollPane;
 	}
 	
-	private JScrollPane getScrollableDisplayPanel(User op, String req) {
-		String[] data = op.getAcc();
+	private JScrollPane getScrollableDisplayPanel(Operator op2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	private JScrollPane getScrollableDisplayPanel(User op2) {
+		String[] data = op2.getAcc();
 		 displayPanel.setLayout(new BoxLayout(displayPanel, BoxLayout.Y_AXIS));
 		  // Vertical layout 
 		  // Add buttons to the existing display panel 
@@ -602,7 +605,7 @@ public class GUI {
 
 			button.addActionListener(e -> {
 				// Handle the button, pass the accountID to string req!
-				req = option;
+				request = option;
 				for (JButton but : accountButtons) {
 					but.setEnabled(true); // Enable each button now that we selected an account to reference
 				}
@@ -622,12 +625,12 @@ public class GUI {
 	public void updateAccountList(User u) {
 		op = u;
 
-		String[] accs = newReq.split(",");
+		String[] accs = u.getAcc();
 		// Remove the old JScrollPanes
 		mainPanel.remove(1);  // Removing the center JScrollPane (displayScroll)
 		
 		// Create updated JScrollPanes with new content
-		JScrollPane updatedDisplayScroll = getScrollableDisplayPanel(u, accID);
+		JScrollPane updatedDisplayScroll = getScrollableDisplayPanel(u, accID); //TODO:fix later, involve method fixing
 	
 		// Add the new JScrollPanes
 		mainPanel.add(updatedDisplayScroll, 1); // Add to center position (index 1)

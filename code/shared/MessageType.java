@@ -1,4 +1,4 @@
-package resources;
+package shared;
 
 /**
  * @params: Arglength => Length of expected length of the argument.
