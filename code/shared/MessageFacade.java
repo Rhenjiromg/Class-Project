@@ -1,11 +1,4 @@
-<<<<<<< HEAD
 package shared;
-=======
-<<<<<<< HEAD:code/resources/MessageFacade.java
-package resources;
-=======
-package  shared;
->>>>>>> a9b181cafc03fa0189c27d6fdd36a38ce4333388
 /* A facade class (temporary for testing)
  * 
  * named FacadeFrame(Message) with 1 attribute Message and 1 method
@@ -14,10 +7,6 @@ package  shared;
  * "test response" with enum type "Log in"
  * 
  * */
-<<<<<<< HEAD
-=======
->>>>>>> 2e524382b4d4bc83681bc408d6ad9ee940df57f4:code/shared/MessageFacade.java
->>>>>>> a9b181cafc03fa0189c27d6fdd36a38ce4333388
 
 public class MessageFacade {
 	String message = "test response.";

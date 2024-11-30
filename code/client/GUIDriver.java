@@ -2,16 +2,8 @@ package client;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
-<<<<<<< HEAD
-
-<<<<<<< HEAD
 import shared.Message;
-=======
-import resources.Message;
-=======
 import shared.Message;
->>>>>>> 2e524382b4d4bc83681bc408d6ad9ee940df57f4
->>>>>>> a9b181cafc03fa0189c27d6fdd36a38ce4333388
 
 public class GUIDriver {
 
