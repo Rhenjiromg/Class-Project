@@ -51,8 +51,8 @@ public class Client {
 			private boolean handshake = false; //true on login message 
 			
 			//queues here so its socket bounded
-			private Queue<Message> outbound = new ArrayDeque<>();
-			private Queue<Message> inbound = new ArrayDeque<>();
+			private Queue<Message> outbound = new ArrayDeque<Message>();
+			private Queue<Message> inbound = new ArrayDeque<Message>();
 			private synchronized void addQueue(Queue<Message> queue, Message message) {
 		        queue.add(message);
 		        queue.notify();
