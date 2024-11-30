@@ -69,7 +69,7 @@ public class FileIO {
             String creationDate = reader.readLine(); // 3rd line - Creation Date
             String lastDate = reader.readLine(); // Fourth line - last Date
             if(pattern.matcher(accountID).find()){//saving
-                String withdrawalCount = reader.readLine();
+                String withdrawalCount = reader.readLine(); //5th
                 account = new SavingAccount(accountID, balance, creationDate, lastDate, withdrawalCount);
             } else if(pattern2.matcher(accountID).find()){//checking
                 account = new CheckingAccount(accountID, balance, creationDate, lastDate);

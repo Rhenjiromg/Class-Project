@@ -33,7 +33,7 @@ public class GUI {
 	private Operator op;
 	private Account acc;
 	Jbutton accountButtons;
-	private Queue<Message> outbound = new ArrayDeque<>();
+	private Queue<Message> outbound;
 	String accID = ""; //this is where the accID is added to from displayScroll buttons (acc selector)
 
 	private synchronized void addQueue(Queue<Message> queue, Message message) {
@@ -43,6 +43,10 @@ public class GUI {
 
 	private synchronized Message popQueue(Queue<Message> queue) {
 		return queue.poll();
+	}
+
+	public void setOp(Operator o){
+
 	}
 	
 	private final String[] userDisplay = {
@@ -116,7 +120,7 @@ public class GUI {
 				String username = usernameField.getText(); 
 				String password = new String(passwordField.getPassword());
 				String data = username + " " + password; 
-				request = new Message(data, MessageType.Login);
+				request = new Message(data, MessageType.LOGIN);
 			} 
 		}
 		
@@ -125,7 +129,9 @@ public class GUI {
 	}
 	
 	
-	public void userDisplay() {
+	
+	public void userDisplay(Operator o, Queue<Message> queue) {
+		op = o;
 		JFrame frame = new JFrame("User Display");
 		frame.setSize(800, 800);
 		
@@ -185,7 +191,6 @@ public class GUI {
 		for (String option: superUserDisplay) {
 			JButton button = new JButton(option);
 			button.addActionListener(e -> {
-				Message m;
 				methodCaller(option, request);
 			});
 			button.setFont(new Font("Courier New", Font.BOLD, 15));
@@ -224,7 +229,7 @@ public class GUI {
 					// info will be displayed by client using setDisplayPanelInfo() and setuserPanelInfo()
 					
 					// display account info already sent by the server
-					outbound.addQueue(new Message(data, MessageType.ACCOUNT_INFO));
+					addQueue(outbound, new Message(data, MessageType.ACCOUNT_INFO));
 					break;
 				case "Transaction History":
 					// send request to server
@@ -236,7 +241,7 @@ public class GUI {
 					if (!buffer.equals("")){
 						data += buffer;
 						Message result = new Message(data, MessageType.DEPOSIT);
-						outbound.addQueue(result);
+						addQueue(outbound, result);
 						break;
 					}
 					//else diposit cancel
@@ -246,7 +251,7 @@ public class GUI {
 					if (!buffer.equals("")){
 						data += buffer;
 						Message result = new Message(data, MessageType.WITHDRAW);
-						outbound.addQueue(result);
+						addQueue(outbound, result);
 						break;
 					}
 					break;
@@ -255,7 +260,7 @@ public class GUI {
 					if (!buffer.equals("")){
 						data += buffer;
 						Message result = new Message(data, MessageType.TRANSFER);
-						outbound.addQueue(result);
+						addQueue(outbound, result);
 						break;
 					}
 					break;
@@ -265,21 +270,21 @@ public class GUI {
 				case "Add User":
 					
 					// change Login to Sign up.
-					String[] s5 = login();
-					outbound.addQueue(new Message(s5[0] + s5[1], MessageType.ADD_USER));
+					Message result = login();
+					addQueue(outbound, result);
 					break;
 					
 	// MERGE ACCOUNT FUNCTIONS INTO 1.
 				case "Create Account":
-					outbound.addQueue(new Message(createAccount(), MessageType.CREATE_ACCOUNT));
+					addQueue(outbound, new Message(createAccount(), MessageType.CREATE_ACCOUNT));
 					break;
 				case "Deactivate Account":
-					outbound.addQueue(new Message(deleteAccount(), MessageType.DEACTIVATE_ACCOUNT));
+					addQueue(outbound, new Message(deleteAccount(), MessageType.DEACTIVATE_ACCOUNT));
 					break;
 				case "Add User to Existing Account":
 					
 					// changes need to be made
-					outbound.addQueue(new Message(createAccount(), MessageType.ADD_USER_TO_EXISTING_ACCOUNT));
+					addQueue(outbound, new Message(createAccount(), MessageType.ADD_USER_TO_EXISTING_ACCOUNT));
 					break;
 				case "Check User":
 					// Ask superUser: which user's account they want access?
@@ -615,6 +620,7 @@ public class GUI {
 	//TODO: THIS IS HANDLE TO UPDATE FROM OUT OF CLASS
 	//caller need to make a user object with the new updated list of accounts before calling
 	public void updateAccountList(User u) {
+		op = u;
 
 		String[] accs = newReq.split(",");
 		// Remove the old JScrollPanes
@@ -632,7 +638,8 @@ public class GUI {
 	}
 	
 	//caller need to make an account type object with the new updated list of accounts before calling
-	public void updateAccount(String newRequest) {
+	public void updateAccount(Account a) {
+		acc = a;
 		// Remove the old JScrollPanes
 		mainPanel.remove(2);  // Removing the right JScrollPane (userInfoScroll)
 		
