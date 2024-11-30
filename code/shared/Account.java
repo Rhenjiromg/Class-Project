@@ -52,10 +52,29 @@ public class Account {
 		}
 
 	}
+<<<<<<< HEAD
 
 	protected boolean transferFunds(Account targetAccount, double amount) {
 		// log
 		if (!overdraft(amount)) {
+=======
+	
+	
+<<<<<<< HEAD:code/resources/Account.java
+	public boolean closeAccount() {
+		return false; // temporary placeholder
+		// change account state
+		// for later: probably delete .txt //we dont have to worry about this
+	}
+	
+	
+	public boolean transferFunds(Account targetAccount, double amount) {
+=======
+	protected boolean transferFunds(Account targetAccount, double amount) {
+>>>>>>> 2e524382b4d4bc83681bc408d6ad9ee940df57f4:code/shared/Account.java
+		//log
+		if (!overdraft(amount)){
+>>>>>>> a9b181cafc03fa0189c27d6fdd36a38ce4333388
 			this.balance -= amount;
 			targetAccount.balance += amount;
 			return true;

@@ -1,5 +1,6 @@
 package client;
 
+<<<<<<< HEAD
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import shared.Message;
@@ -8,6 +9,9 @@ import shared.MessageType;
 /**
  * This is assuming theres a listener in client.
  */
+=======
+import shared.MessageFacade;
+>>>>>>> 2e524382b4d4bc83681bc408d6ad9ee940df57f4
 
 public class FacadeFrame {
 	private static final String SERVER_ADDRESS = "IP HERE";

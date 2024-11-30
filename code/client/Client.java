@@ -6,9 +6,11 @@ import shared.Message;
 import shared.MessageType;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.ArrayList;
 import java.util.Queue;
 import java.util.Scanner;
-
+import shared.Message;
+import shared.MessageType;
 import javax.swing.SwingUtilities;
 
 public class Client {
