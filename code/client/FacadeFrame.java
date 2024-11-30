@@ -85,10 +85,6 @@ public class FacadeFrame {
 		sendMessage(message, MessageType.ADD_USER);
 	}
 
-	public void accountInfo(String accountNumber) {
-		sendMessage(accountNumber, MessageType.ACCOUNT_INFO);
-	}
-
 	public void createAccount(String password, String userCredentials) {
 		String message = password + "," + userCredentials;
 		sendMessage(message, MessageType.CREATE_ACCOUNT);
@@ -98,10 +94,6 @@ public class FacadeFrame {
 		sendMessage(accountNumber, MessageType.DEACTIVATE_ACCOUNT);
 	}
 
-	public void addUserToExisting(String userID, String accountID) {
-		String message = userID + "," + accountID;
-		sendMessage(message, MessageType.ADD_USER_TO_EXISTING_ACCOUNT);
-	}
 
 	/** Unsure about this */
 	public void verify() {
