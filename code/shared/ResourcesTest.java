@@ -2,7 +2,7 @@
 package shared;
 
 public class ResourcesTest {
-    public static void testGetResources(){
-        System.out.println("Hello from resources");
+    public static void testGetResources() {
+        System.out.println("Hello from shared");
     }
 }

@@ -26,11 +26,11 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import resources.Account;
-import resources.Message;
-import resources.MessageType;
-import resources.Operator;
-import resources.User;
+import shared.Account;
+import shared.Message;
+import shared.MessageType;
+import shared.Operator;
+import shared.User;
 
 // ADD ACCOUNT AND OPERATOR WHEN DONE.
 
