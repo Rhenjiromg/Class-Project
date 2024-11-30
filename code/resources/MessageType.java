@@ -6,7 +6,7 @@ package resources;
 public enum MessageType {
     LOGIN(0),
     LOGOUT(0),
-	VERIFICATION(0),
+    VERIFICATION(0),
     DEPOSIT(0),
     WITHDRAW(0),
     TRANSFER(0),
