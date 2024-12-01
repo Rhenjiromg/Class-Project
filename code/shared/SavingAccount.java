@@ -8,8 +8,13 @@ public class SavingAccount extends Account {
 	private final int withdrawalLimit = 6;
 	private double intrestRate = 0.1; //this is hardcode for now
 	private int numberOfWithdrawals = 0;
+	
+	public SavingAccount() {
+		super();
+		accountID = "A0" + accountID;
+	}
 
-	SavingAccount(String ID, String bal, String date, String date2, String num) {
+	public SavingAccount(String ID, String bal, String date, String date2, String num) {
 		super(ID, bal, date, date2);
 		numberOfWithdrawals = Integer.valueOf(num);
 	}

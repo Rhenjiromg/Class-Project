@@ -7,7 +7,7 @@ public class User extends Operator {
 
     public User(String name, String password) {
         super(name, password);
-        ID = "A0" + ID;
+        ID = "U0" + ID;
         accounts = new ArrayList<String>();
     }
 
