@@ -137,6 +137,8 @@ public class Server {
 				private class Process implements Runnable {
 					//TODO: mount facade here
 					private Message msg;
+					private ServerFacade serverFacade;
+					
 					public Process(Message m) {
 						this.msg = m;
 					}
@@ -144,38 +146,71 @@ public class Server {
 					@Override
 					public void run() {
 						switch (msg.getType()) {
-					    case VERIFICATION:
-					    	verification();
-					    	
-					    	// send SUCCESS message
-					    	synchronized (outbound) {
-								addQueue(outbound, new Message("Yo what's up Client!", MessageType.SUCCESS));
-							}
-					        break;
-					    default:
-					    	break;
+							case LOGOUT:
+								
+								// If logout request is sent, end the session.
+								
+								sendMessage(MessageType.SUCCESS);
+								break;
+						    case LOGIN: // login
+						    	// if user has this account let them in
+						    	if (serverFacade.autherize(msg.getID())) {						    		
+						    		sendMessage(MessageType.SUCCESS);
+						    	} else {
+						    		sendMessage(MessageType.ERROR);
+						    	}
+						        break;
+						    case DEPOSIT:
+						    	//          returns Message                account ID           amount
+						    	sendMessage(serverFacade.depositAmount(msg.getMessage()[0], msg.getMessage()[1]));
+						    	break;
+						    case WITHDRAW:
+						    	//          returns Message                account ID           amount
+						    	sendMessage(serverFacade.withdrawAmount(msg.getMessage()[0], msg.getMessage()[1]));
+						    	break;
+						    case TRANSFER:
+					            //          returns Message                 account ID           target account ID    amount to transfer
+						    	sendMessage(serverFacade.transferAmount(msg.getMessage()[0], msg.getMessage()[1], msg.getMessage()[2]));
+						    	break;
+							case TRANSACTION_HISTORY:
+								
+								//          returns Message                     account ID
+								sendMessage(serverFacade.transactionHistory(msg.getMessage()[0]));
+								break;
+							case ADD_USER:
+								//                       account ID           super user ID        user name            password
+								sendMessage(serverFacade.addUser(msg.getMessage()[0], msg.getMessage()[1], msg.getMessage()[2], msg.getMessage()[3]));
+								break;
+							case CREATE_ACCOUNT:
+								
+                                //		                                   account ID           super user ID
+								sendMessage(serverFacade.createAccount(msg.getMessage()[0], msg.getMessage()[1]));
+								break;
+							case DEACTIVATE_ACCOUNT:
+								
+		                        //                                             account ID           super user ID
+								sendMessage(serverFacade.deactivateAccount(msg.getMessage()[0], msg.getMessage()[1]));
+								break;
+						    default:
+						    	// drop message by default
+						    	break;
 						}
-						
-//						synchronized (outbound) {
-//							addQueue(outbound, new Message("Yo what's up Client!", MessageType.SUCCESS));
-//						}
 					}
 					
-					public void verification() {
-						System.out.println("Server Recieved verification message: ");
-						String[] m = msg.getMessage();
-						if (m != null && m.length > 0) {
-						    for (String x : m) {
-						        System.out.print(x);
-						    }
-						} else {
-						    System.out.println("Message is empty or null.");
+					// way to send message to client
+					private void sendMessage(MessageType mt) {
+						synchronized (outbound) {
+							addQueue(outbound, new Message(mt));
 						}
-						return;
 					}
-				
+					
+					
+					private void sendMessage(Message m) {
+						synchronized (outbound) {
+							addQueue(outbound, m);
+						}
+					}
 				}//end scope process
-				
 			} //end scope processSession
 			
 			//Start: session sender

@@ -1,8 +1,5 @@
 package shared;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-
 public class CheckingAccount extends Account {
 	private final double Fee = 5.0;
 	
