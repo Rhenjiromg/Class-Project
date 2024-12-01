@@ -6,7 +6,7 @@ import java.util.ArrayList;
 //represented in file as {accID + " " + balance + " " + creationDate}
 public class Account {
 
-	protected final String accountID;
+	protected String accountID;
 	protected static int count = 0;
 	protected double balance;
 	protected LocalDate creationDate;

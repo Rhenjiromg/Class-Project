@@ -202,8 +202,8 @@ public class GUI {
 		// displayInfoPanel in scroll-able form (updated by client)
 		// infoPanel in scroll-able form (updated by client)
 		// TODO: revamp su display method!
-		JScrollPane displayScroll = getScrollableDisplayPanel(op.getAccount());
-		JScrollPane userInfoScroll = getScrollableInfoPanel();
+		JScrollPane displayScroll = getScrollableDisplayPanel(op);
+		JScrollPane userInfoScroll = getScrollableInfoPanel(op);
 
 		mainButtonPanel.add(buttonPanel); // panel for button panel (for sizing purposes)
 
@@ -235,7 +235,7 @@ public class GUI {
 				// send request to server
 				// info will be displayed by client using setDisplayPanelInfo() and
 				// setuserPanelInfo()
-				outbound.addQueue(new Message(data, MessageType.TRANSACTION_HISTORY));
+				addQueue(outbound, new Message(data, MessageType.TRANSACTION_HISTORY));
 				break;
 			case "Deposit":
 				buffer = deposit();
@@ -621,14 +621,11 @@ public class GUI {
 	// caller need to make a user object with the new updated list of accounts
 	// before calling
 	public void updateAccountList(User u) {
-		op = u;
-
-		String[] accs = u.getAcc();
 		// Remove the old JScrollPanes
 		mainPanel.remove(1); // Removing the center JScrollPane (displayScroll)
 
 		// Create updated JScrollPanes with new content
-		JScrollPane updatedDisplayScroll = getScrollableDisplayPanel(u, accID); // TODO:fix later, involve method fixing
+		JScrollPane updatedDisplayScroll = getScrollableDisplayPanel(u); // TODO:fix later, involve method fixing
 
 		// Add the new JScrollPanes
 		mainPanel.add(updatedDisplayScroll, 1); // Add to center position (index 1)
