@@ -9,14 +9,10 @@ import java.util.ArrayList;
 import java.util.Queue;
 import java.util.Scanner;
 
-import shared.Account;
-import shared.CheckingAccount;
-import shared.Message;
-import shared.MessageType;
-import shared.Operator;
-import shared.SavingAccount;
-import shared.SuperUser;
-import shared.User;
+import shared.*;
+import javax.swing.SwingUtilities;
+
+
 
 public class Client {
 	// test with local host, will have to change if i test with vm. This field must
@@ -74,6 +70,9 @@ public class Client {
 
 			public Session(Socket s) {
 				this.soc = s;
+				//pass queue to gui by reference
+				gui = new GUI(outbound);
+				
 				try {
 					this.out = new ObjectOutputStream(soc.getOutputStream());
 					this.in = new ObjectInputStream(soc.getInputStream());
@@ -92,6 +91,8 @@ public class Client {
 					addQueue(outbound, login);
 				}
 				// this is a client only feature
+				Message msg = gui.login();
+				addQueue(outbound, msg);
 
 				Thread listenThread = new Thread(new ListenSession());
 				Thread processThread = new Thread(new ProcessSession());
@@ -110,15 +111,6 @@ public class Client {
 				}
 
 				System.out.println("error: threads exit prematurely");
-			}
-
-			// Start: GUI thread
-			private class GUIsession implements Runnable {
-				@Override
-				public void run() {
-					Message msg = gui.login();
-					addQueue(outbound, msg);
-				}
 			}
 
 			// Start: listen for session
@@ -156,9 +148,6 @@ public class Client {
 
 			// Start: process for session
 			private class ProcessSession implements Runnable {
-				private boolean Logout = false;
-				private Scanner scanner = new Scanner(System.in);
-				private boolean Handshake = false;
 
 				@Override
 				public void run() {
@@ -205,12 +194,15 @@ public class Client {
 									bList.add(buffer[i]);
 								}
 								opbuffer = new User(buffer[0], buffer[1], buffer[2], buffer[3], bList);
+								gui.userDisplay((User) opbuffer);
 							} else {
 								opbuffer = new SuperUser(buffer[0], buffer[1], buffer[2], buffer[3]);
+								gui.superUserDisplay((SuperUser) opbuffer);
 							}
-							gui.userDisplay(opbuffer, outbound);
+							
 					        break;
 						//try to run this, see if it can update the acc on gui while still display
+					        
 					    case ACCOUNT_INFO:
 					    	buffer = msg.getMessage();
 					    	if (buffer[1].charAt(1) == '0'){  //saving
@@ -226,12 +218,8 @@ public class Client {
 
 					// Check to establish basic handshake, once that is done we got a session and
 					// constantly send txt until logout bool is true
-					public void login() {
-						if (msg.getType().equals(MessageType.SUCCESS)) {
-							System.out.println("Log in Success");
-							Handshake = true;
-						}
-					}
+					
+					
 					//
 					//
 					// public void text() {
