@@ -6,7 +6,6 @@ import shared.Message;
 import shared.MessageType;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.ArrayList;
 import java.util.Queue;
 import java.util.Scanner;
 import shared.*;
@@ -205,6 +204,7 @@ public class Client {
 							gui.userDisplay(opbuffer, outbound);
 					        break;
 						//try to run this, see if it can update the acc on gui while still display
+					        
 					    case ACCOUNT_INFO:
 					    	buffer = msg.getMessage();
 					    	if (buffer[1].charAt(1) == '0'){  //saving

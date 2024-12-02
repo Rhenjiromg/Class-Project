@@ -85,7 +85,7 @@ public class ServerFacade {
 		if (canWithdraw) {
 			return new Message(result, MessageType.SUCCESS);
 		} else {
-			return new Message(result, MessageType.ERROR);
+			return new Message("WITHDRAW", MessageType.ERROR);
 		}
 	}
 

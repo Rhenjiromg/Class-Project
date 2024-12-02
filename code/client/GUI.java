@@ -49,10 +49,6 @@ public class GUI {
 		queue.notify();
 	}
 
-	private synchronized Message popQueue(Queue<Message> queue) {
-		return queue.poll();
-	}
-
 	public void setOp(Operator o) {
 
 	}
@@ -65,11 +61,12 @@ public class GUI {
 			"Transfer",
 			"Make me Millionaire"
 	};
+	
 	private final String[] superUserDisplay = {
 			"Add User",
 			"Create Account",
 			"Deactivate Account",
-			"Add User to Existing Account",
+			"Add Account to User",
 			"Check User"
 	};
 
@@ -623,7 +620,7 @@ public class GUI {
 	// TODO: THIS IS HANDLE TO UPDATE FROM OUT OF CLASS
 	// caller need to make a user object with the new updated list of accounts
 	// before calling
-	public void updateAccountList(User u) {
+	public void updateUser(User u) {
 		SwingUtilities.invokeLater(() -> {
 			// Remove the old JScrollPanes
 			mainPanel.remove(1); // Removing the center JScrollPane (displayScroll)
