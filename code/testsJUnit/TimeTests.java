@@ -1,9 +1,10 @@
-package testsJUnitimport shared.Time;
-import static org.junit.jupiter.api.Assertions.*;
+package testsJUnit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import shared.Time;
 
 class TimeTests {
 

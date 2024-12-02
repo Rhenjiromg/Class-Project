@@ -52,4 +52,12 @@ public class Operator {
     public String getID(){
         return this.ID;
     }
+    
+    public void setState(String s) {
+    	state = UserState.valueOf(s);
+    }
+    
+    public String getState() {
+    	return String.valueOf(state);
+    }
 }

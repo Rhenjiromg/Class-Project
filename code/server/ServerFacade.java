@@ -46,7 +46,7 @@ public class ServerFacade {
 			}
 		}
 
-		return new Message(result, MessageType.SUCCESS);
+		return new Message(result, MessageType.DEPOSIT);
 	}
 
 	public Message withdrawAmount(String accountID, String amount) {
@@ -83,7 +83,7 @@ public class ServerFacade {
 		}
 
 		if (canWithdraw) {
-			return new Message(result, MessageType.SUCCESS);
+			return new Message(result, MessageType.WITHDRAW);
 		} else {
 			return new Message("WITHDRAW", MessageType.ERROR);
 		}
@@ -137,18 +137,18 @@ public class ServerFacade {
 		}
 		
 		if (canTransfer) {
-			return new Message(result, MessageType.SUCCESS);
+			return new Message(result, MessageType.TRANSFER);
 		} else {
-			return new Message(result, MessageType.ERROR);
+			return new Message("TRANSFER", MessageType.ERROR);
 		}
 	}
 
 	public Message transactionHistory(String accountID) {
 		if (!autherize(accountID)) {
 			fileIO.writeLog(accountID, "Unauthorized access attempt.");
-			return new Message(MessageType.ERROR);
+			return new Message("TRANSACTION_HISTORY", MessageType.ERROR);
 		}
-		return new Message(fileIO.readLog(accountID), MessageType.SUCCESS);
+		return new Message(fileIO.readLog(accountID), MessageType.TRANSACTION_HISTORY);
 	}
 
 	// this function adds the user to a the specified account, if the user already exists it returns an error message
@@ -164,12 +164,12 @@ public class ServerFacade {
 		
 		if (u.Authorize(accountID)) {
 			// if user already has the account
-			return new Message(MessageType.ERROR);
+			return new Message("ADD_USER", MessageType.ERROR);
 		}
 		
 		u.addAccount(accountID); // else update user account list
 		fileIO.writeOperator(accountID + ".txt", u); // update operator text file
-		return new Message(MessageType.SUCCESS);
+		return new Message(MessageType.ADD_USER);
 	}
 	
 	public Message createAccount(String accountID, String superUserID) {
@@ -177,12 +177,12 @@ public class ServerFacade {
 		// if function not called by super user
 		if ('1' != superUserID.charAt(1)) {
 			fileIO.writeLog(superUserID, "Attempt made by non super user");
-			return new Message(MessageType.ERROR);
+			return new Message("CREATE_ACCOUNT", MessageType.ERROR);
 		}
 		
 		Account a = new Account();
 		fileIO.writeAccount(a.getAccountID() + ".txt", a);
-		return new Message(MessageType.SUCCESS);
+		return new Message(MessageType.CREATE_ACCOUNT);
 	}
 	
 	public Message deactivateAccount(String accountID, String superUserID) {
@@ -190,11 +190,11 @@ public class ServerFacade {
 		// if function not called by super user
 		if ('1' != superUserID.charAt(1)) {
 			fileIO.writeLog(superUserID, "Attempt made by non super user");
-			return new Message(MessageType.ERROR);
+			return new Message("DEACTIVATE_ACCOUNT", MessageType.ERROR);
 		}
 		
 		// find the account and delete that file
 		// or change the state of account to inactive
-		return new Message(MessageType.SUCCESS);
+		return new Message(MessageType.DEACTIVATE_ACCOUNT);
 	}
 }
