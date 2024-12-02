@@ -1,4 +1,4 @@
-package resources;
+package shared;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -10,43 +10,27 @@ public class SuperUser extends Operator{
     private String password;
     private FileIO fileIO;
 
-    public SuperUser(String name, String password) {
-        this.name = name;
-        this.password = password;
-        
-        Account acc = new Account();
-        User u = new User();
-        
+    //cannot create new superUser, must alr exist on database; simulate corporate assigned credential
+    //this constructor from read from file only
+    public SuperUser(String n, String id, String pass, String s) {
+        super(n, id, pass, s);
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setID(String ID) {
-        this.ID = ID;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-
-    public void deleteAccount(String userID, String accID) {
-		Operator op = null;
+    public void deleteAccount(String userID, String accID) throws Exception {
+		User user = null;
 
 		try {
-			op = fileIO.readOperator("U" + userID + ".txt");
+			user = (User) fileIO.readOperator(userID + ".txt");
 			//Check if account exists.
-			if(op.getAccList().contains(accID)) {
+			if(user.getAccList().contains(accID)) {
 				//Remove the account from the user's list
-				op.removeAccount(accID);
-				System.out.println(accID + "deleted from user.");
+				user.getAccList().remove(accID);
+				//System.out.println(accID + "deleted from user.");
 
 			}
 			else {
 				//In case user doesn't exist. Throw this message.
-				throw new UnauthorizedAccessException(accID + "does not exist for user " + userID + ".");
+				throw new Exception(accID + "does not exist for user " + userID + ".");
 			}
 		} catch(FileNotFoundException e) {
 			//file for user not was not found
@@ -56,21 +40,17 @@ public class SuperUser extends Operator{
 			return;
 		}
 
-		try {
-			//Saved the updated user data to the txt
-			fileIO.writeOperator("U" + userID, op);
-			System.out.println("Updates have been made to " + userID + "'s files.");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		//Saved the updated user data to the txt
+		fileIO.writeOperator(userID + ".txt", user);
+		System.out.println("Updates have been made to " + userID + "'s files.");
 	}
 
     public void addPerson(String userID, String accID) {
        //Added logic
-        Pattern pattern = Pattern.compile("^A0");
-        Pattern pattern2 = Pattern.complie("^A1");
+//        Pattern pattern = Pattern.compile("^A0"); // never used
+//        Pattern pattern2 = Pattern.compile("^A1"); // never used
 
-        Operator op = null; 
+        User user; 
         /* 1. call readUser to get a user from the file, use the condition of filename("U" + userID
          * in a try catch or an if clause, so that if the file doesn't exist then we call
          * the user constructor to create a new user instead.
@@ -81,56 +61,42 @@ public class SuperUser extends Operator{
          * 3. call writeUser to save the change to file 
         ) */
 
-        try {
-      /* Call readOperator to attempt to get data from file */
-           op = fileIO.readOperator("U" + userID + ".txt"); 
+        /* Call readOperator to attempt to get data from file */
+		user = (User) fileIO.readOperator(userID + ".txt"); 
 
-        //Check if account and user already exist
-        if(user.getAccList().contains(accID)) {
-            //user already exists and an account already exists
-            System.out.println("The user and account already exist.");
-        }
-        else {
-            //If not, add to account.
-            op.addAccount(accID);
-        }
-           
-    } catch (FileNotFoundException e) {
-      /* The file was not found so create a new user */
+		    //Check if account and user already exist
+		if(user.getAccList().contains(accID)) {
+		    //user already exists and an account already exists
+		    System.out.println("The user and account already exist.");
+		}
+		else {
+		    //If not, add to account.
+			user.getAccList().add(accID);
+		}
 
-      op = new User(name, password); //call the user constructor
-
-      /* Where addAccount/removeAccount will be */
-      op.addAccount(accID);
-
-      System.out.println("File was not found... New user created.");
-    } catch (IOException e) { //Error message
-        e.printStackTrace();
-        return;
-    }
-
-    try { 
-    	fileIO.writeOperator("U" + userID, op);
-        System.out.println("User has been saved.");
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
+		 /* The file was not found so create a new user
+	       * This case should be controlled and call creat new user request by server facade
+	       * Or ideally block by GUI, return pop up that user is no longer available. */
+		fileIO.writeOperator(userID + ".txt", user);
+		System.out.println("User has been saved.");
 }
-    public void openAccount() {
-        Account acc = new Account();
+    
+    public void openAccount(User user) {
+        Account acc = null;
         Pattern pattern = Pattern.compile("^A0");
-        Pattern pattern2 = Pattern.complie("^A1");
+        Pattern pattern2 = Pattern.compile("^A1");
 
         //Figure out if its a savings or a checkings
         if(pattern.matcher(ID).find()) {
-            SavingAccount acc = new SavingAccount();
+             acc = new SavingAccount();
         }
         else if(pattern2.matcher(ID).find()) {
-            CheckingAccount acc = new CheckingAccount();
+            acc = new CheckingAccount();
         }
 
         //Add the account to the user object
         user.addAccount(ID); 
+        fileIO.writeOperator(user.getID()+ ".txt", user);
         fileIO.writeAccount(acc.getAccountID() + ".txt", acc);
 
         System.out.println("Opening an account." + name + " " + password);

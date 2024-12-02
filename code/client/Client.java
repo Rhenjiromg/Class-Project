@@ -1,17 +1,22 @@
 package client;
 
-import java.io.*;
-import java.net.*;
-import shared.Message;
-import shared.MessageType;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.ArrayList;
 import java.util.Queue;
 import java.util.Scanner;
+
+import shared.Account;
+import shared.CheckingAccount;
 import shared.Message;
 import shared.MessageType;
-import javax.swing.SwingUtilities;
+import shared.Operator;
+import shared.SavingAccount;
+import shared.SuperUser;
+import shared.User;
 
 public class Client {
 	// test with local host, will have to change if i test with vm. This field must
@@ -157,7 +162,6 @@ public class Client {
 
 				@Override
 				public void run() {
-					new Thread(new GUI()).start();
 					System.out.println("start process thread.");
 					while (true) {
 						Message buffer;
@@ -187,7 +191,7 @@ public class Client {
 					@Override
 					public void run() {
 						String[] buffer;
-						ArrayList<String> bList = ArrayList<String>();
+						ArrayList<String> bList = new ArrayList<String>();
 						Operator opbuffer;
 						Account accbuffer;
 						switch (msg.getType()) {
@@ -200,9 +204,9 @@ public class Client {
 								for (int i = 4; i < buffer.length; i++){
 									bList.add(buffer[i]);
 								}
-								opbuffer = User(buffer[0], buffer[1], buffer[2], buffer[3], bList);
+								opbuffer = new User(buffer[0], buffer[1], buffer[2], buffer[3], bList);
 							} else {
-								opbuffer = superUser(buffer[0], buffer[1], buffer[2], buffer[3]);
+								opbuffer = new SuperUser(buffer[0], buffer[1], buffer[2], buffer[3]);
 							}
 							gui.userDisplay(opbuffer, outbound);
 					        break;
@@ -210,9 +214,9 @@ public class Client {
 					    case ACCOUNT_INFO:
 					    	buffer = msg.getMessage();
 					    	if (buffer[1].charAt(1) == '0'){  //saving
-					    	    accbuffer = SavingAccount(buffer[0], buffer[1], bufer[2], buffer[3], buffer[4]);
+					    	    accbuffer = new SavingAccount(buffer[0], buffer[1], buffer[2], buffer[3], buffer[4]);
 					    	} else {
-					    	    accbuffer = CheckingAccount(buffer[0], buffer[1], bufer[2], buffer[3]);
+					    	    accbuffer = new CheckingAccount(buffer[0], buffer[1], buffer[2], buffer[3]);
 					    	}
 							gui.updateAccount(accbuffer);
 					    default:

@@ -10,8 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.StampedLock;
-import java.util.regex.*;
+import java.util.regex.Pattern;
 
 // "A0" saving
 // "A1" checking
@@ -91,18 +90,19 @@ public class FileIO {
         if (!lockManager.validateStamp(filePath, stamp)){
             long readLock = lockManager.getReadLock(filePath);
             try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-                // Read the account details from the file
+            	// Read the account details from the file
                 String accountID = reader.readLine(); //ID read
-                String creationDate = reader.readLine(); // Second line - Creation Date
-                String balance = reader.readLine(); // Third line - Balance
-                String state = reader.readLine(); // Fourth line - State
+                String balance = reader.readLine(); // 2nd line - Balance
+                String creationDate = reader.readLine(); // 3rd line - Creation Date
+                String lastDate = reader.readLine(); // Fourth line - last Date
                 if(pattern.matcher(accountID).find()){//saving
-                	String withdrawalCount = reader.readLine(); //5th
+                    String withdrawalCount = reader.readLine(); //5th
                     account = new SavingAccount(accountID, balance, creationDate, lastDate, withdrawalCount);
                 } else if(pattern2.matcher(accountID).find()){//checking
-                    String maintenantFee = reader.readLine();
-                // TODO: add to this later to reflect the actual constructor + convert string to proper args
                     account = new CheckingAccount(accountID, balance, creationDate, lastDate);
+                }
+                else{//not an account!
+                    
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -118,8 +118,6 @@ public class FileIO {
     public Operator readOperator(String filePath) {
         long stamp = lockManager.getOptimist(filePath); //get optimist long for reference
         Operator operator = null;
-        List<String> list = new ArrayList<>();
-
         Pattern pattern = Pattern.compile("^U0");//user
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
@@ -129,7 +127,7 @@ public class FileIO {
             String password = reader.readLine(); // Third line - Password
             String state = reader.readLine(); // Fourth line - State
             if(pattern.matcher(id).find()){
-                ArrayList<String> buffer;
+                ArrayList<String> buffer = new ArrayList<String>();
                 String line; 
                 while ((line = reader.readLine()) != null) { 
                     buffer.add(line);
@@ -138,7 +136,7 @@ public class FileIO {
                 operator = new User(name, id, password, state, buffer);
             }else{
                 //TODO: add proper construcotr when we did that modify
-                operator = new SuperUser();
+                operator = new SuperUser(name, id, password, state);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -152,7 +150,7 @@ public class FileIO {
                 String password = reader.readLine(); // Third line - Password
                 String state = reader.readLine(); // Fourth line - State
                 if(pattern.matcher(id).find()){
-                	ArrayList<String> buffer;
+                	ArrayList<String> buffer = new ArrayList<String>();
                     String line; 
                     while ((line = reader.readLine()) != null) { 
                         buffer.add(line);
@@ -161,7 +159,7 @@ public class FileIO {
                     operator = new User(name, id, password, state, buffer);
                 }else{
                     //TODO: add proper construcotr when we did that modify
-                    operator = new SuperUser();
+                	 operator = new SuperUser(name, id, password, state);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
