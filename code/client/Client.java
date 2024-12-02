@@ -1,22 +1,13 @@
 package client;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Queue;
 import java.util.Scanner;
 
-import shared.Account;
-import shared.CheckingAccount;
-import shared.Message;
-import shared.MessageType;
-import shared.Operator;
-import shared.SavingAccount;
-import shared.SuperUser;
-import shared.User;
+import shared.*;
 
 public class Client {
 	// test with local host, will have to change if i test with vm. This field must
@@ -52,17 +43,15 @@ public class Client {
 		}
 
 		private class Session implements Runnable {
+			private GUI gui;
 			private Socket soc;
 			private ObjectOutputStream out;
 			private ObjectInputStream in;
-			private GUI gui;
-			private boolean session = true; // get logout to set this to false? or gui on window exit
-			private boolean handshake = false; // true on login message
 
-			// queues here so its socket bounded
-			private Queue<Message> outbound = new ArrayDeque<Message>();
-			private Queue<Message> inbound = new ArrayDeque<Message>();
-
+			
+			//queues here so its socket bounded
+			private Queue<Message> outbound = new ArrayDeque<>();
+			private Queue<Message> inbound = new ArrayDeque<>();
 			private synchronized void addQueue(Queue<Message> queue, Message message) {
 				queue.add(message);
 				queue.notify();
@@ -74,6 +63,9 @@ public class Client {
 
 			public Session(Socket s) {
 				this.soc = s;
+				//pass queue to gui by reference
+				gui = new GUI(outbound);
+				
 				try {
 					this.out = new ObjectOutputStream(soc.getOutputStream());
 					this.in = new ObjectInputStream(soc.getInputStream());
@@ -85,13 +77,11 @@ public class Client {
 
 			@Override
 			public void run() {
-				// innit session with a log in attempt, load it onto outbound queue to get ready
-				// to fire
-				Message login = new Message(MessageType.VERIFICATION);
-				synchronized (outbound) {
-					addQueue(outbound, login);
-				}
 				// this is a client only feature
+				Message msg = gui.login();
+				synchronized (outbound) {
+					addQueue(outbound, msg);
+				}
 
 				Thread listenThread = new Thread(new ListenSession());
 				Thread processThread = new Thread(new ProcessSession());
@@ -112,16 +102,9 @@ public class Client {
 				System.out.println("error: threads exit prematurely");
 			}
 
-			// Start: GUI thread
-			private class GUIsession implements Runnable {
-				@Override
-				public void run() {
-					Message msg = gui.login();
-					addQueue(outbound, msg);
-				}
-			}
 
 			// Start: listen for session
+
 			private class ListenSession implements Runnable {
 				@Override
 				public void run() {
@@ -156,9 +139,6 @@ public class Client {
 
 			// Start: process for session
 			private class ProcessSession implements Runnable {
-				private boolean Logout = false;
-				private Scanner scanner = new Scanner(System.in);
-				private boolean Handshake = false;
 
 				@Override
 				public void run() {
@@ -179,7 +159,7 @@ public class Client {
 						}
 					}
 				}
-
+				
 				private class Process implements Runnable {
 					private Message msg;
 
@@ -205,12 +185,14 @@ public class Client {
 									bList.add(buffer[i]);
 								}
 								opbuffer = new User(buffer[0], buffer[1], buffer[2], buffer[3], bList);
+								gui.userDisplay((User) opbuffer);
 							} else {
 								opbuffer = new SuperUser(buffer[0], buffer[1], buffer[2], buffer[3]);
+								gui.superUserDisplay((SuperUser) opbuffer);
 							}
-							gui.userDisplay(opbuffer, outbound);
 					        break;
 						//try to run this, see if it can update the acc on gui while still display
+					        
 					    case ACCOUNT_INFO:
 					    	buffer = msg.getMessage();
 					    	if (buffer[1].charAt(1) == '0'){  //saving
@@ -226,12 +208,8 @@ public class Client {
 
 					// Check to establish basic handshake, once that is done we got a session and
 					// constantly send txt until logout bool is true
-					public void login() {
-						if (msg.getType().equals(MessageType.SUCCESS)) {
-							System.out.println("Log in Success");
-							Handshake = true;
-						}
-					}
+					
+					
 					//
 					//
 					// public void text() {

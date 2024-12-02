@@ -16,11 +16,11 @@ public class Operator {
         this.state = UserState.OPEN;
     }
 
-    public Operator(String n, String pass, String ID, String e){
+    public Operator(String n, String ID, String pass, String e){
         this.name = n;
         this.ID = ID;
         this.password = pass;
-        this.state = UserState.valueOf(null, e);
+        this.state = UserState.valueOf(e.toUpperCase());
     }
 
     public boolean Authenticate(String ID, String pass){
@@ -30,7 +30,7 @@ public class Operator {
         return false;
     }
 
-    protected ArrayList<String> filePrep(){
+    public ArrayList<String> filePrep(){
 
 		// Prepare the data for file storage 
 		ArrayList<String> data = new ArrayList<>(); 
@@ -40,6 +40,7 @@ public class Operator {
 		data.add(this.state.toString()); 
 		return data;
 	} 
+
     public ArrayList<String> getInfo(){
 		// Prepare the data for GUI display 
 		ArrayList<String> data = new ArrayList<>(); 
@@ -47,7 +48,14 @@ public class Operator {
 		data.add(this.ID); 
 		data.add(this.state.toString()); 
 		return data;
-	} 
+	}
+    
+    public boolean authen(String p) {
+    	if( p.equals(this.password)) {
+    		return true;
+    	}
+    	return false;
+    }
 
     public String getID(){
         return this.ID;

@@ -22,6 +22,7 @@ public class FileIO {
     private final LockManager lockManager = LockManager.getInstance();
 
     public void writeAccount(String filePath, Account acc) {
+    	filePath = "code/" + filePath;
         long writeStamp = lockManager.getWriteLock(filePath); //use handle to get lock for write
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, false))) {
@@ -39,6 +40,7 @@ public class FileIO {
     }
 
     public void writeOperator(String filePath, Operator op){
+    	filePath = "code/" + filePath;
         long writeStamp = lockManager.getWriteLock(filePath); //get lock
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, false))) {
@@ -58,6 +60,7 @@ public class FileIO {
 
     // Read Account
     public Account readAccount(String filePath) {
+    	filePath = "code/" + filePath;
 
         long stamp = lockManager.getOptimist(filePath); //get optimist long for reference
         Account account = null;
@@ -116,6 +119,7 @@ public class FileIO {
 
     // Read Operator
     public Operator readOperator(String filePath) {
+    	//filePath = "code/" + filePath;
         long stamp = lockManager.getOptimist(filePath); //get optimist long for reference
         Operator operator = null;
         Pattern pattern = Pattern.compile("^U0");//user
@@ -177,7 +181,7 @@ public class FileIO {
     public void writeLog(String logname, String status){
         
         Time time = new Time();
-        String logPath = "L" + logname + ".txt";
+        String logPath = "code/L" + logname + ".txt";
         String log = time.getCurrentTime() + ": " + status;
 
         long writeStamp = lockManager.getWriteLock(logPath);

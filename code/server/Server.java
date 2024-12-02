@@ -44,6 +44,7 @@ public class Server {
 			private Socket soc;
 			private ObjectOutputStream out = null;
 			private ObjectInputStream in = null;
+			private ServerFacade serverFacade = new ServerFacade();
 
 
 			//session bounded queue
@@ -137,7 +138,6 @@ public class Server {
 				private class Process implements Runnable {
 					//TODO: mount facade here
 					private Message msg;
-					private ServerFacade serverFacade;
 					
 					public Process(Message m) {
 						this.msg = m;
@@ -145,6 +145,7 @@ public class Server {
 					//for msg coming in that doesnt fit the designed case, it would simply be drop
 					@Override
 					public void run() {
+						Message buffer;
 						switch (msg.getType()) {
 							case LOGOUT:
 								
@@ -154,11 +155,9 @@ public class Server {
 								break;
 						    case LOGIN: // login
 						    	// if user has this account let them in
-						    	if (serverFacade.autherize(msg.getID())) {						    		
-						    		sendMessage(MessageType.SUCCESS);
-						    	} else {
-						    		sendMessage(MessageType.ERROR);
-						    	}
+						    	sendMessage(serverFacade.login(msg));
+						    	
+						    	
 						        break;
 						    case DEPOSIT:
 						    	//          returns Message                account ID           amount
