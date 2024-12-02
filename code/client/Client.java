@@ -9,7 +9,6 @@ import java.util.Scanner;
 
 import shared.*;
 
-
 public class Client {
 	// test with local host, will have to change if i test with vm. This field must
 	// be known out of code
@@ -160,7 +159,6 @@ public class Client {
 						}
 					}
 				}
-				
 				
 				private class Process implements Runnable {
 					private Message msg;
