@@ -4,6 +4,9 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayDeque;
@@ -37,12 +40,13 @@ import shared.User;
 
 public class GUI {
 	private Operator op;
+	
 	private Account acc;
-	JButton[] accountButtons;
+	private JButton[] accountButtons;
 	private Queue<Message> outbound;
-	String accID = ""; // this is where the accID is added to from displayScroll buttons (acc selector)
+	private String accID = ""; // this is where the accID is added to from displayScroll buttons (acc selector)
 	boolean isLogin = false;
-	String request;
+	private SuperUser su;
 
 	private synchronized void addQueue(Queue<Message> queue, Message message) {
 		queue.add(message);
@@ -77,6 +81,8 @@ public class GUI {
 	private JPanel mainSUPanel = new JPanel(new GridLayout(1, 3));
 	private JPanel infoPanel = new JPanel(); // for displaying user information
 	private JPanel displayPanel = new JPanel(new GridLayout(0, 1)); // for displaying information
+	private JFrame userFrame = new JFrame("User Display");
+	private JFrame suFrame = new JFrame("Super User Display");
 
 	// returns String Array, array[0] = name, array[1] = password;
 	public Message login() {
@@ -135,12 +141,29 @@ public class GUI {
 
 	public void userDisplay(User user) {
 		op = user; //this to allow SU to work on a user after log in to that user. Since op is shared
-		JFrame frame = new JFrame("User Display");
-		frame.setSize(800, 800);
+		
+		
+		userFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); 
+		// Prevent default close behavior 
+		// Add a window listener to handle the close event 
+		userFrame.addWindowListener((WindowListener) new WindowAdapter() { 
+			@Override 
+			public void windowClosing(WindowEvent e) { 
+				op = null;
+				if (suFrame != null && suFrame.isVisible()) { 
+					suFrame.dispose(); // Close the SuperUserFrame
+					superUserDisplay(su); //reopen, simulating a refresh, as now teller no longer work on old client
+				} 
+				userFrame.dispose(); // Close the UserFrame
+			}
+		});
+			
+		
+		userFrame.setSize(800, 800);
 
 		// dispose it if super user calls it
 		// frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		userFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		mainUserPanel = new JPanel(new GridLayout(1, 3)); // main Panel
 		JPanel mainButtonPanel = new JPanel();
@@ -160,7 +183,7 @@ public class GUI {
 			accountButtons[i] = button; // store button in array for global reference
 			button.setEnabled(false); // Initially disabled
 			button.addActionListener(e -> {
-				methodCaller(option, request);
+				methodCaller(option, accID);
 			});
 			button.setFont(new Font("Courier New", Font.BOLD, 15));
 			button.setPreferredSize(new Dimension(250, 50));
@@ -173,17 +196,17 @@ public class GUI {
 		mainUserPanel.add(displayScroll); // center 1
 		mainUserPanel.add(userInfoScroll); // right 2
 
-		frame.add(mainUserPanel);
+		userFrame.add(mainUserPanel);
 
-		frame.setLocationRelativeTo(null); // center
-		frame.setVisible(true); // make visible
+		userFrame.setLocationRelativeTo(null); // center
+		userFrame.setVisible(true); // make visible
 	}
 
 	// TODO: superGUI not done, need revise
 	public void superUserDisplay(SuperUser SU) {
-		JFrame frame = new JFrame("Super User Display");
-		frame.setSize(950, 800);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		su = SU; //bandaid hack for closing userpanel
+		suFrame.setSize(950, 800);
+		suFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JPanel mainButtonPanel = new JPanel();
 		JPanel buttonPanel = new JPanel(new GridLayout(superUserDisplay.length, 0)); // for buttons
@@ -191,7 +214,7 @@ public class GUI {
 		for (String option : superUserDisplay) {
 			JButton button = new JButton(option);
 			button.addActionListener(e -> {
-				methodCaller(option, request);
+				methodCaller(option, accID);
 			});
 			button.setFont(new Font("Courier New", Font.BOLD, 15));
 			button.setPreferredSize(new Dimension(300, 50));
@@ -210,10 +233,10 @@ public class GUI {
 		mainSUPanel.add(displayScroll); // center
 		mainSUPanel.add(userInfoScroll); // right
 
-		frame.add(mainSUPanel);
+		suFrame.add(mainSUPanel);
 
-		frame.setLocationRelativeTo(null); // center
-		frame.setVisible(true); // make visible
+		suFrame.setLocationRelativeTo(null); // center
+		suFrame.setVisible(true); // make visible
 	}
 
 	// SOME FUNCTIONS NEED MERGING, REPETITIVE CODE
@@ -601,7 +624,7 @@ public class GUI {
 	
 				button.addActionListener(e -> {
 					// Handle the button, pass the accountID to string req!
-					request = option;
+					accID = option;
 					for (JButton but : accountButtons) {
 						but.setEnabled(true); // Enable each button now that we selected an account to reference
 					}
