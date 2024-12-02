@@ -251,20 +251,26 @@ public class GUI {
 				// setuserPanelInfo()
 
 				// display account info already sent by the server
-				addQueue(outbound, new Message(data, MessageType.ACCOUNT_INFO));
+				synchronized (outbound) {
+					addQueue(outbound, new Message(data, MessageType.ACCOUNT_INFO));
+				}
 				break;
 			case "Transaction History":
 				// send request to server
 				// info will be displayed by client using setDisplayPanelInfo() and
 				// setuserPanelInfo()
-				addQueue(outbound, new Message(data, MessageType.TRANSACTION_HISTORY));
+				synchronized (outbound) {
+					addQueue(outbound, new Message(data, MessageType.TRANSACTION_HISTORY));
+				}
 				break;
 			case "Deposit":
 				buffer = deposit();
 				if (!buffer.equals("")) {
 					data += buffer;
 					Message result = new Message(data, MessageType.DEPOSIT);
-					addQueue(outbound, result);
+					synchronized (outbound) {
+						addQueue(outbound, result);
+					}
 					break;
 				}
 				// else diposit cancel
@@ -274,7 +280,9 @@ public class GUI {
 				if (!buffer.equals("")) {
 					data += buffer;
 					Message result = new Message(data, MessageType.WITHDRAW);
-					addQueue(outbound, result);
+					synchronized (outbound) {
+						addQueue(outbound, result);
+					}
 					break;
 				}
 				break;
@@ -283,7 +291,9 @@ public class GUI {
 				if (!buffer.equals("")) {
 					data += buffer;
 					Message result = new Message(data, MessageType.TRANSFER);
-					addQueue(outbound, result);
+					synchronized (outbound) {
+						addQueue(outbound, result);
+					}
 					break;
 				}
 				break;
@@ -293,15 +303,21 @@ public class GUI {
 			case "Add User":
 				// this way we get a login screen to log into user and open user display, also .
 				Message result = login();
-				addQueue(outbound, result);
+				synchronized (outbound) {
+					addQueue(outbound, result);
+				}
 				break;
 
 			// MERGE ACCOUNT FUNCTIONS INTO 1.
 			case "Add Account":
-				addQueue(outbound, new Message(createAccount(), MessageType.CREATE_ACCOUNT));
+				synchronized (outbound) {
+					addQueue(outbound, new Message(createAccount(), MessageType.CREATE_ACCOUNT));
+				}
 				break;
 			case "Deactivate Account":
-				addQueue(outbound, new Message(deleteAccount(), MessageType.DEACTIVATE_ACCOUNT));
+				synchronized (outbound) {
+					addQueue(outbound, new Message(deleteAccount(), MessageType.DEACTIVATE_ACCOUNT));
+				}
 				break;
 			case "Deactivate User":
 				// Ask superUser: which user's account they want access?
