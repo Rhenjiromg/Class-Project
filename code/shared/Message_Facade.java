@@ -6,7 +6,7 @@
  * "test response" with enum type "Log in"
  * 
  * */
-
+package shared;
 public class Message_Facade {
 	String message = "test response.";
 	enum Message_type {

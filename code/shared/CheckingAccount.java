@@ -3,8 +3,12 @@ package shared;
 public class CheckingAccount extends Account {
 	private final double Fee = 5.0;
 	
+	public CheckingAccount() {
+		super();
+		accountID = "A1" + accountID;
+	}
 	
-	CheckingAccount(String accountID, String balance, String creationDate, String lastDate) {
+	public CheckingAccount(String accountID, String balance, String creationDate, String lastDate) {
 		super(accountID, balance, creationDate, lastDate);
 	}
 
