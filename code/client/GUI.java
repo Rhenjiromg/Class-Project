@@ -24,6 +24,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import shared.Account;
@@ -593,23 +594,25 @@ public class GUI {
 
 	private JScrollPane getScrollableDisplayPanel(User op2) {
 		String[] data = op2.getAcc();
-		displayPanel.setLayout(new BoxLayout(displayPanel, BoxLayout.Y_AXIS));
-		// Vertical layout
-		// Add buttons to the existing display panel
-		for (String option : data) {
-			JButton button = new JButton(option);
-
-			button.addActionListener(e -> {
-				// Handle the button, pass the accountID to string req!
-				request = option;
-				for (JButton but : accountButtons) {
-					but.setEnabled(true); // Enable each button now that we selected an account to reference
-				}
-			});
-			displayPanel.add(button);
-			displayPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-			// Add spacing between buttons
-		} // Create a scroll pane to wrap the panel
+		SwingUtilities.invokeLater(() -> {
+			displayPanel.setLayout(new BoxLayout(displayPanel, BoxLayout.Y_AXIS));
+			// Vertical layout
+			// Add buttons to the existing display panel
+			for (String option : data) {
+				JButton button = new JButton(option);
+	
+				button.addActionListener(e -> {
+					// Handle the button, pass the accountID to string req!
+					request = option;
+					for (JButton but : accountButtons) {
+						but.setEnabled(true); // Enable each button now that we selected an account to reference
+					}
+				});
+				displayPanel.add(button);
+				displayPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+				// Add spacing between buttons
+			} // Create a scroll pane to wrap the panel
+		});	
 		JScrollPane scrollPane = new JScrollPane(displayPanel);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(20); // Increase scroll speed
@@ -621,49 +624,40 @@ public class GUI {
 	// caller need to make a user object with the new updated list of accounts
 	// before calling
 	public void updateAccountList(User u) {
-		// Remove the old JScrollPanes
-		mainPanel.remove(1); // Removing the center JScrollPane (displayScroll)
-
-		// Create updated JScrollPanes with new content
-		JScrollPane updatedDisplayScroll = getScrollableDisplayPanel(u); // TODO:fix later, involve method fixing
-
-		// Add the new JScrollPanes
-		mainPanel.add(updatedDisplayScroll, 1); // Add to center position (index 1)
-
-		// Revalidate and repaint to ensure the UI is updated
-		mainPanel.revalidate();
-		mainPanel.repaint();
+		SwingUtilities.invokeLater(() -> {
+			// Remove the old JScrollPanes
+			mainPanel.remove(1); // Removing the center JScrollPane (displayScroll)
+	
+			// Create updated JScrollPanes with new content
+			JScrollPane updatedDisplayScroll = getScrollableDisplayPanel(u); // TODO:fix later, involve method fixing
+	
+			// Add the new JScrollPanes
+			mainPanel.add(updatedDisplayScroll, 1); // Add to center position (index 1)
+	
+			// Revalidate and repaint to ensure the UI is updated
+			mainPanel.revalidate();
+			mainPanel.repaint();
+		});	
 	}
 
 	// caller need to make an account type object with the new updated list of
 	// accounts before calling
 	public void updateAccount(Account a) {
-		acc = a;
-		// Remove the old JScrollPanes
-		mainPanel.remove(2); // Removing the right JScrollPane (userInfoScroll)
+		SwingUtilities.invokeLater(() -> {
+			acc = a;
+			// Remove the old JScrollPanes
+			mainPanel.remove(2); // Removing the right JScrollPane (userInfoScroll)
 
-		// Create updated JScrollPanes with new content
-		JScrollPane updatedUserInfoScroll = getScrollableInfoPanel(acc);
+			// Create updated JScrollPanes with new content
+			JScrollPane updatedUserInfoScroll = getScrollableInfoPanel(acc);
 
-		// Add the new JScrollPanes
-		mainPanel.add(updatedUserInfoScroll, 2); // Add to right position (index 2)
+			// Add the new JScrollPanes
+			mainPanel.add(updatedUserInfoScroll, 2); // Add to right position (index 2)
 
-		// Revalidate and repaint to ensure the UI is updated
-		mainPanel.revalidate();
-		mainPanel.repaint();
+			// Revalidate and repaint to ensure the UI is updated
+			mainPanel.revalidate();
+			mainPanel.repaint();
+		});
 	}
 
-	// NOTE:AS OF RIGHT NOW GUI DOESNT IMPLEMENT SMART HANDLE FOR CONFLICT UPDATES
-	// YET
-
-	private String getIP() {
-		String IP = "";
-		try {
-			InetAddress inetAddress = InetAddress.getLocalHost();
-			IP = inetAddress.getHostAddress();
-		} catch (UnknownHostException e) {
-			System.err.println("Unable to get IP address: " + e.getMessage());
-		}
-		return IP;
-	}
 }
