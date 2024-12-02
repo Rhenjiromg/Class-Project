@@ -10,8 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.StampedLock;
-import java.util.regex.*;
+import java.util.regex.Pattern;
 
 // "A0" saving
 // "A1" checking
@@ -119,8 +118,6 @@ public class FileIO {
     public Operator readOperator(String filePath) {
         long stamp = lockManager.getOptimist(filePath); //get optimist long for reference
         Operator operator = null;
-        List<String> list = new ArrayList<>();
-
         Pattern pattern = Pattern.compile("^U0");//user
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {

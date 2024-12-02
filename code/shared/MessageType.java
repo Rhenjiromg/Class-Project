@@ -15,8 +15,7 @@ public enum MessageType {
     CREATE_ACCOUNT(0),
     DEACTIVATE_ACCOUNT(0),
     ERROR(0),
-    SUCCESS(0), 
-    ACCOUNT_INFO(0);
+    SUCCESS(0);
 
     private final int argLength;
 

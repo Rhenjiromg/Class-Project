@@ -1,16 +1,22 @@
 package client;
 
-import java.io.*;
-import java.net.*;
-import shared.Message;
-import shared.MessageType;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.ArrayList;
 import java.util.Queue;
 import java.util.Scanner;
-import shared.*;
-import javax.swing.SwingUtilities;
+
+import shared.Account;
+import shared.CheckingAccount;
+import shared.Message;
+import shared.MessageType;
+import shared.Operator;
+import shared.SavingAccount;
+import shared.SuperUser;
+import shared.User;
 
 public class Client {
 	// test with local host, will have to change if i test with vm. This field must
