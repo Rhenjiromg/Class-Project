@@ -64,7 +64,7 @@ public class Message implements Serializable {
         return tempList.length == type.getArgLength();
     }
 
-    private String[] getList() {
+    public String[] getList() {
         if (message == null || message.isEmpty()) {
             return new String[0];
         }

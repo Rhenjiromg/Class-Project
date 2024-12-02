@@ -82,6 +82,7 @@ public class Client {
 				synchronized (outbound) {
 					addQueue(outbound, msg);
 				}
+
 				Thread listenThread = new Thread(new ListenSession());
 				Thread processThread = new Thread(new ProcessSession());
 				Thread senderThread = new Thread(new SenderSession());
