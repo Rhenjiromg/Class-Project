@@ -16,7 +16,7 @@ public class Operator {
         this.state = UserState.OPEN;
     }
 
-    public Operator(String n, String pass, String ID, String e){
+    public Operator(String n, String ID, String pass, String e){
         this.name = n;
         this.ID = ID;
         this.password = pass;
@@ -48,7 +48,14 @@ public class Operator {
 		data.add(this.ID); 
 		data.add(this.state.toString()); 
 		return data;
-	} 
+	}
+    
+    public boolean authen(String p) {
+    	if( p.equals(this.password)) {
+    		return true;
+    	}
+    	return false;
+    }
 
     public String getID(){
         return this.ID;

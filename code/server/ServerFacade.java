@@ -11,11 +11,34 @@ import shared.SavingAccount;
 import shared.User;
 
 public class ServerFacade {
+	private String userID;
+	private Message result;
+	public ServerFacade() {
+		
+	}
+	
+	public ServerFacade(String uID) {
+		userID = uID;
+	}
+	
 	FileIO fileIO = new FileIO();
 	
 	public Boolean autherize(String accountID) {
-		User u = (User) fileIO.readOperator(accountID + ".txt");
+		User u = (User) fileIO.readOperator(userID + ".txt");
 		return u.getAccList().contains(accountID);
+	}
+	
+	public Message login(Message m) {
+		String[] datas = m.getList();
+		userID = datas[0]; //keep for later, since we call login with every change of user we looking at anyway
+		User u = (User) fileIO.readOperator(datas[0] + ".txt");
+		if (u.authen(datas[1])) { //check password
+			String data = String.join(",", u.filePrep());
+			result = new Message(data, MessageType.LOGIN);
+			return result;
+		}
+		
+		return result = new Message(MessageType.LOGIN); //i guess we can have client recognized message string = null as failed request.
 	}
 
 	public Message depositAmount(String accountID, String amount) {

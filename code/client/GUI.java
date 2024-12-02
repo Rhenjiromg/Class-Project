@@ -111,7 +111,7 @@ public class GUI {
 				null,
 				new Object[] { loginButton, cancelButton }, loginButton);
 
-		while (!isLogin) {
+		
 			// Open a dialog from the option pane
 			JDialog dialog = optionPane.createDialog("Login Screen");
 
@@ -129,12 +129,12 @@ public class GUI {
 
 			// if login pressed return text field values.
 			if (optionPane.getValue() == loginButton) {
-				String username = userNameField.getText();
+				String username = userNameField.getText(); //this get the userID not user's name, to be clear!
 				String password = new String(passwordField.getText());
-				String data = username + " " + password;
+				String data = username + "," + password;
 				handshake = new Message(data, MessageType.LOGIN);
 			}
-		}
+		
 
 		return handshake;
 	}
