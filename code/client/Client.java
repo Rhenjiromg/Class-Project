@@ -8,7 +8,6 @@ import java.util.Queue;
 import java.util.Scanner;
 
 import shared.*;
-import javax.swing.SwingUtilities;
 
 
 public class Client {
@@ -79,16 +78,11 @@ public class Client {
 
 			@Override
 			public void run() {
-				// innit session with a log in attempt, load it onto outbound queue to get ready
-				// to fire
-				Message login = new Message(MessageType.VERIFICATION);
-				synchronized (outbound) {
-					addQueue(outbound, login);
-				}
 				// this is a client only feature
 				Message msg = gui.login();
-				addQueue(outbound, msg);
-
+				synchronized (outbound) {
+					addQueue(outbound, msg);
+				}
 				Thread listenThread = new Thread(new ListenSession());
 				Thread processThread = new Thread(new ProcessSession());
 				Thread senderThread = new Thread(new SenderSession());
@@ -166,33 +160,6 @@ public class Client {
 					}
 				}
 				
-				private class GUI implements Runnable {
-					@Override
-					public void run() {
-					    while (!Logout) {
-					    	if (!Handshake) {
-					            //log in msg success from server is the condition of handshake
-								//until that is met this condition will keep this console ui blocked and unable to be shown to user.
-								try {
-								    Thread.sleep(100); // Avoid busy-waiting
-								} catch (InterruptedException e) {
-									e.printStackTrace();
-								}
-								continue;
-							}
-					    	
-					    	// Take user input using GUI
-					    	
-//			                System.out.print("Enter text to send to the server: \n");
-//			                String userInput = scanner.nextLine();
-						
-						    synchronized (outbound) {
-						        addQueue(outbound, new Message("EY YO Server!!!!!!", MessageType.VERIFICATION));
-						    }
-				    	}
-						scanner.close();
-					} // end run()
-				} // end GUI
 				
 				private class Process implements Runnable {
 					private Message msg;
