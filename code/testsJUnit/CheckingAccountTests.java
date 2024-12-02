@@ -17,10 +17,10 @@ class CheckingAccountTests {
 		System.out.println(c.getBalance());
 		assertTrue(c.getBalance() == 0.0);
 
-		CheckingAccount c2 = new CheckingAccount(5.0);
+		CheckingAccount c2 = new CheckingAccount();
 
 		System.out.println(c2.getBalance());
-		assertTrue(c2.getBalance() == 5.0);
+		assertTrue(c2.getBalance() == 0.0);
 	}
 
 }

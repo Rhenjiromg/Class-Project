@@ -2,7 +2,6 @@ package shared;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 public class SuperUser extends Operator{
@@ -48,8 +47,8 @@ public class SuperUser extends Operator{
 
     public void addPerson(String userID, String accID) {
        //Added logic
-        Pattern pattern = Pattern.compile("^A0");
-        Pattern pattern2 = Pattern.compile("^A1");
+//        Pattern pattern = Pattern.compile("^A0"); // never used
+//        Pattern pattern2 = Pattern.compile("^A1"); // never used
 
         User user; 
         /* 1. call readUser to get a user from the file, use the condition of filename("U" + userID

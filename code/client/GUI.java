@@ -6,12 +6,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayDeque;
 import java.util.Queue;
-
-import javax.swing.border.EmptyBorder;
-
-import shared.*;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
