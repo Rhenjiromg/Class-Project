@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class SavingAccount extends Account {
 	private final double penalty = 5.0;
 	private final int withdrawalLimit = 6;
-	private double intrestRate = 0.1; //this is hardcode for now
+	private double interestRate = 0.1; //this is hardcode for now
 	private int numberOfWithdrawals = 0;
 	
 	public SavingAccount() {
@@ -58,14 +58,14 @@ public class SavingAccount extends Account {
 		//this way we can keep track of the last cycle of interest that we applied
 
 		for (int i = yearDiff ; i > 0 ; i--) {
-			balance = balance * (1 + intrestRate);
+			balance = balance * (1 + interestRate);
 		}	
 	}
 	
 	
 	
-	public double getIntrestRate() {
-		return intrestRate;
+	public double getInterestRate() {
+		return interestRate;
 	}
 
 	public ArrayList<String> filePrep(){
@@ -77,7 +77,7 @@ public class SavingAccount extends Account {
 	}
 	
 	
-	public void setIntrestRate(double newIntrestRate) {
-		this.intrestRate = newIntrestRate;
+	public void setInterestRate(double newInterestRate) {
+		this.interestRate = newInterestRate;
 	}
 }
