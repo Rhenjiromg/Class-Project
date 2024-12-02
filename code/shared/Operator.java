@@ -20,7 +20,7 @@ public class Operator {
         this.name = n;
         this.ID = ID;
         this.password = pass;
-        this.state = UserState.valueOf(null, e);
+        this.state = UserState.valueOf(e.toUpperCase());
     }
 
     public boolean Authenticate(String ID, String pass){
@@ -30,7 +30,7 @@ public class Operator {
         return false;
     }
 
-    protected ArrayList<String> filePrep(){
+    public ArrayList<String> filePrep(){
 
 		// Prepare the data for file storage 
 		ArrayList<String> data = new ArrayList<>(); 
@@ -40,6 +40,7 @@ public class Operator {
 		data.add(this.state.toString()); 
 		return data;
 	} 
+
     public ArrayList<String> getInfo(){
 		// Prepare the data for GUI display 
 		ArrayList<String> data = new ArrayList<>(); 
