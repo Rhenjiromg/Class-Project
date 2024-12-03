@@ -588,6 +588,12 @@ public class GUI {
 	*/
 
 	private JScrollPane getScrollableInfoPanel(Operator op) {
+		// Clear old info from the panel 
+		infoPanel.removeAll(); 
+		infoPanel.revalidate(); 
+		infoPanel.repaint(); 
+				
+		// Get new data
 		String[] data = op.getInfo().toArray(new String[0]);
 
 		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS)); // Add the data to the panel
@@ -604,6 +610,12 @@ public class GUI {
 	}
 
 	private JScrollPane getScrollableInfoPanel(Account acc) {
+		// Clear old info from the panel 
+		infoPanel.removeAll(); 
+		infoPanel.revalidate(); 
+		infoPanel.repaint(); 
+		
+		// Get new data
 		String[] data = acc.filePrep().toArray(new String[0]);
 
 		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS)); // Add the data to the panel
@@ -630,6 +642,12 @@ public class GUI {
 	}
 
 	private JScrollPane getScrollableDisplayPanel(User op2) {
+		// Clear old info from the panel 
+		displayPanel.removeAll(); 
+		displayPanel.revalidate(); 
+		displayPanel.repaint(); 
+				
+		// Get new data
 		String[] data = op2.getAcc();
 		SwingUtilities.invokeLater(() -> {
 			displayPanel.setLayout(new BoxLayout(displayPanel, BoxLayout.Y_AXIS));

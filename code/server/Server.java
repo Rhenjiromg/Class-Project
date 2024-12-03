@@ -156,7 +156,9 @@ public class Server {
 						    case LOGIN: // login
 						    	// if user has this account let them in
 						    	sendMessage(serverFacade.login(msg));
-						    	
+						    	break;
+						    case ACCOUNT_INFO:
+						    	sendMessage(serverFacade.getInfo(msg));
 						    	
 						        break;
 						    case DEPOSIT:
@@ -191,6 +193,7 @@ public class Server {
 								sendMessage(serverFacade.deactivateAccount(msg.getMessage()[0], msg.getMessage()[1]));
 								break;
 						    default:
+						    	sendMessage(MessageType.ERROR);
 						    	// drop message by default
 						    	break;
 						}

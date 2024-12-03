@@ -71,7 +71,6 @@ public class SavingAccount extends Account {
 	public ArrayList<String> filePrep(){
 		// Prepare the data for file storage 
 		ArrayList<String> data = super.filePrep();
-		data.add(String.valueOf(penalty)); 
 		data.add(String.valueOf(numberOfWithdrawals)); 
 		return data;
 	}
