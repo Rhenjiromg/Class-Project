@@ -23,7 +23,7 @@ public class FileIO {
     private final LockManager lockManager = LockManager.getInstance();
 
     public void writeAccount(String filePath, Account acc) {
-    	filePath = "code/" + filePath;
+    	//filePath = "code/" + filePath;
         long writeStamp = lockManager.getWriteLock(filePath); //use handle to get lock for write
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, false))) {

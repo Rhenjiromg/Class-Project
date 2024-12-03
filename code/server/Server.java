@@ -139,7 +139,7 @@ public class Server {
 					//TODO: mount facade here
 					private Message msg;
 					
-					public Process(Message m) {
+					public Process(Message m) { //Message data string: userID,accID,extra_info...,
 						this.msg = m;
 					}
 					//for msg coming in that doesnt fit the designed case, it would simply be drop
@@ -151,7 +151,7 @@ public class Server {
 								
 								// If logout request is sent, end the session.
 								
-								sendMessage(MessageType.SUCCESS);
+								sendMessage(MessageType.LOGOUT);
 								break;
 						    case LOGIN: // login
 						    	// if user has this account let them in
@@ -163,21 +163,21 @@ public class Server {
 						    	
 						        break;
 						    case DEPOSIT:
-						    	//          returns Message                account ID           amount
-						    	sendMessage(serverFacade.depositAmount(msg.getMessage()[0], msg.getMessage()[1]));
+						    	//          returns Message               
+						    	sendMessage(serverFacade.depositAmount(msg));
 						    	break;
 						    case WITHDRAW:
-						    	//          returns Message                account ID           amount
-						    	sendMessage(serverFacade.withdrawAmount(msg.getMessage()[0], msg.getMessage()[1]));
+						    	//          returns Message              
+						    	sendMessage(serverFacade.withdrawAmount(msg));
 						    	break;
 						    case TRANSFER:
-					            //          returns Message                 account ID           target account ID    amount to transfer
-						    	sendMessage(serverFacade.transferAmount(msg.getMessage()[0], msg.getMessage()[1], msg.getMessage()[2]));
+					            //          returns Message 
+						    	sendMessage(serverFacade.transferAmount(msg);
 						    	break;
 							case TRANSACTION_HISTORY:
 								
-								//          returns Message                     account ID
-								sendMessage(serverFacade.transactionHistory(msg.getMessage()[0]));
+								//          returns Message                     
+								sendMessage(serverFacade.transactionHistory(msg));
 								break;
 							case ADD_USER:
 								//                       account ID           super user ID        user name            password

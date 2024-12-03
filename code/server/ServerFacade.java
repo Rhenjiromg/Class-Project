@@ -8,6 +8,7 @@ import shared.FileIO;
 import shared.Message;
 import shared.MessageType;
 import shared.SavingAccount;
+import shared.SuperUser;
 import shared.User;
 
 public class ServerFacade {
@@ -26,21 +27,30 @@ public class ServerFacade {
 	
 	FileIO fileIO = new FileIO();
 	
-
-	public Boolean authorize(String accountID) {
+	public Boolean authorize(String accID) {
 		u = (User) fileIO.readOperator(userID + ".txt");
+		return u.getAccList().contains(accID);
 
-		return u.getAccList().contains(accountID);
 	}
 	
 	public Message login(Message m) {
 		String[] datas = m.getList();
 		userID = datas[0]; //keep for later, since we call login with every change of user we looking at anyway
-		User u = (User) fileIO.readOperator(datas[0] + ".txt");
-		if (u.authen(datas[1])) { //check password
-			String data = String.join(",", u.filePrep());
-			result = new Message(data, MessageType.LOGIN);
-			return result;
+		if (datas[0].charAt(1) == '1') {
+			SuperUser su = (SuperUser) fileIO.readOperator(datas[0] + ".txt");
+			if (su.authen(datas[1])) { //check password
+				String data = String.join(",", su.filePrep());
+				result = new Message(data, MessageType.LOGIN);
+				return result; //user
+			}
+		}
+		else {
+			u = (User) fileIO.readOperator(datas[0] + ".txt");
+			if (u.authen(datas[1])) { //check password
+				String data = String.join(",", u.filePrep());
+				result = new Message(data, MessageType.LOGIN);
+				return result; //superuser
+			}		
 		}
 		
 		return result = new Message(MessageType.LOGIN); //i guess we can have client recognized message string = null as failed request.
@@ -48,9 +58,12 @@ public class ServerFacade {
 
 	
 	public Message getInfo(Message m) {
-		String[] datas = m.getMessage();
+
+		String[] datas = m.getMessage(); //userID 0, accID 1, other info 2
 		if (!authorize(datas[1])) {
-			return result = new Message(String.join(",", u.filePrep()), MessageType.LOGIN); //use this to update user on gui in case there is a change to accList
+			fileIO.writeLog(userID, datas[1] + ": Unauthorized access attempt.");
+			return result = new Message(String.join(",", u.filePrep()), MessageType.UPDATEERROR); //use this to update user on gui in case there is a change to accList
+
 		}
 		else {
 			Account accBuf = fileIO.readAccount(datas[1] + ".txt");
@@ -59,143 +72,140 @@ public class ServerFacade {
 		}
 	}
 
+	public Message depositAmount(Message m) {
+		String[] datas = m.getMessage(); //userID 0, accID 1, other info 2
+		String buffer;
+		buffer = (String) datas[2]; 
+		if (!authorize(datas[1])) {
+			fileIO.writeLog(userID, datas[1] + ": Unauthorized access attempt.");
+			return result = new Message(String.join(",", u.filePrep()), MessageType.UPDATEERROR);
 
-	public Message depositAmount(String accountID, String amount) {
-
-		if (!authorize(accountID)) {
-			fileIO.writeLog(accountID, "Unauthorized access attempt.");
-			return new Message(MessageType.ERROR);
 		}
 		
 		Account a;
 
-		if ('0' == accountID.charAt(1)) { // savings
-			a = (SavingAccount) fileIO.readAccount(accountID + ".txt");
+		if ('0' == datas[1].charAt(1)) { // savings
+			a = (SavingAccount) fileIO.readAccount(datas[1] + ".txt");
 		} else {
-			a = (CheckingAccount) fileIO.readAccount(accountID + ".txt");
+			a = (CheckingAccount) fileIO.readAccount(datas[1] + ".txt");
 		}
 
-		a.deposit(Double.parseDouble(amount));
-		fileIO.writeAccount(accountID, a);
+		
+		a.deposit(Double.parseDouble(buffer));
+		fileIO.writeAccount(datas[1] + ".txt", a);
 
-		String result = "";
+		
 		ArrayList<String> arr = a.filePrep();
 
-		for (int x = 0; x < arr.size(); x++) {
-			result += arr.get(x);
-			if (!(x == arr.size() - 1)) {
-				result += ",";
-			}
-		}
+		String data = String.join(",", arr);
+		result = new Message(data, MessageType.DEPOSIT);
 
-		return new Message(result, MessageType.DEPOSIT);
+		return result;
 	}
+	//for withdraw ig all we do is log them down if overdraft and dont decrease it
+	public Message withdrawAmount(Message m) {
+		String[] datas = m.getMessage(); //userID 0, accID 1, other info 2 //userID 0, accID 1, other info 2
+		String buffer;
+		buffer = (String) datas[2]; 
+		if (!authorize(datas[1])) {
+			fileIO.writeLog(userID, datas[1] + ": Unauthorized access attempt.");
+			return result = new Message(String.join(",", u.filePrep()), MessageType.UPDATEERROR);
 
-	public Message withdrawAmount(String accountID, String amount) {
-		if (!authorize(accountID)) {
-			fileIO.writeLog(accountID, "Unauthorized access attempt.");
-			return new Message(MessageType.ERROR);
 		}
 		
 		Account a;
 
-		if ('0' == accountID.charAt(1)) { // savings
-			a = (SavingAccount) fileIO.readAccount(accountID + ".txt");
+		if ('0' == datas[1].charAt(1)) { // savings
+			a = (SavingAccount) fileIO.readAccount(datas[1] + ".txt");
 		} else {
-			a = (CheckingAccount) fileIO.readAccount(accountID + ".txt");
+			a = (CheckingAccount) fileIO.readAccount(datas[1] + ".txt");
 		}
 
-		Boolean canWithdraw = true;
+		ArrayList<String> arr = new ArrayList<String>();
 
 		// if can't withdraw, return error
-		if (!a.withdraw(Double.parseDouble(amount))) {
-			canWithdraw = false;
+		if (!a.withdraw(Double.parseDouble(buffer))) {
+			fileIO.writeLog(userID, datas[1] + ":Withdraw failed: overdraft.");
+			fileIO.writeLog(datas[1], "Withdraw failed: overdraft.");
 		}
-
-		fileIO.writeAccount(accountID, a);
-
-		String result = "";
-		ArrayList<String> arr = a.filePrep();
-
-		for (int x = 0; x < arr.size(); x++) {
-			result += arr.get(x);
-			if (!(x == arr.size() - 1)) {
-				result += ",";
-			}
+		else {
+			fileIO.writeAccount(datas[1] + ".txt", a);
+			fileIO.writeLog(userID, datas[1] + ":Withdraw success: " + buffer);
+			fileIO.writeLog(datas[1], "Withdraw success: " + buffer);
 		}
+		
+		 arr = a.filePrep();
 
-		if (canWithdraw) {
-			return new Message(result, MessageType.WITHDRAW);
-		} else {
-			return new Message("WITHDRAW", MessageType.ERROR);
-		}
+		String data = String.join(",", arr);
+		result = new Message(data, MessageType.WITHDRAW);
+		return result;
 	}
 
-	public Message transferAmount(String accountID, String targetAccountID, String amount) {
-		
-		if (!authorize(accountID)) {
-			fileIO.writeLog(accountID, "Unauthorized access attempt.");
-			return new Message(MessageType.ERROR);
+	public Message transferAmount(Message m) {
+		String[] datas = m.getMessage(); //userID 0, accID 1, accID2 2, other info 3
+		String buffer;
+		buffer = (String) datas[3]; 
+		if (!authorize(datas[1])) {
+			fileIO.writeLog(userID, datas[1] + ": Unauthorized access attempt.");
+			return result = new Message(String.join(",", u.filePrep()), MessageType.UPDATEERROR);
+
 		}
 		
 		// transfer function requires the target Account, the message needs to send
 		// the account id of the user and it's target account.
-		Account a;
-		Account t;
+		Account acc1;
+		Account acc2;
 
-		if ('0' == accountID.charAt(1)) { // savings
-			a = (SavingAccount) fileIO.readAccount(accountID + ".txt");
+		if ('0' == datas[1].charAt(1)) { // savings
+			acc1 = (SavingAccount) fileIO.readAccount(datas[1] + ".txt");
 		} else {
-			a = (CheckingAccount) fileIO.readAccount(accountID + ".txt");
+			acc1 = (CheckingAccount) fileIO.readAccount(datas[1] + ".txt");
 		}
 
-		if ('0' == targetAccountID.charAt(1)) { // savings
-			t = (SavingAccount) fileIO.readAccount(targetAccountID + ".txt");
+		if ('0' == datas[2].charAt(1)) { // savings
+			acc2 = (SavingAccount) fileIO.readAccount(datas[2] + ".txt");
 		} else {
-			t = (CheckingAccount) fileIO.readAccount(targetAccountID + ".txt");
+			acc2 = (CheckingAccount) fileIO.readAccount(datas[2] + ".txt");
 		}
-
-		Boolean canTransfer = true;
+		
+		if(acc2 == null) {
+			fileIO.writeLog(userID, datas[1] + ": Unauthorized access attempt.");
+			return result = new Message("target account N/A", MessageType.ERROR);
+		}
 
 		// if can't withdraw, return error
-		if (!a.transferFunds(t, Double.parseDouble(amount))) {
-			canTransfer = false;
+		if (!acc1.transferFunds(acc2, Double.parseDouble(buffer))) {
+			fileIO.writeLog(userID, datas[1] + ":Transfer failed: overdraft.");
+			fileIO.writeLog(datas[1], "Transfer failed: overdraft.");
+		}else {
+			fileIO.writeAccount(datas[1] + ".txt", acc1);
+			fileIO.writeAccount(datas[1] + ".txt", acc2);
+			fileIO.writeLog(userID, datas[1] + ":transfer success to" + datas[2] + ": " + buffer);
+			fileIO.writeLog( datas[1] , "transfer success to" + datas[2] + ": " + buffer);
+			fileIO.writeLog(datas[2], "transfer success from" + datas[1] + ": " + buffer);
 		}
 		
-		fileIO.writeAccount(accountID, a);
-		fileIO.writeAccount(targetAccountID, t);
-		
+		ArrayList<String> arr = acc1.filePrep();
+		arr = acc1.filePrep();
 
-		fileIO.writeAccount(targetAccountID, a);
-
-		String result = "";
-		ArrayList<String> arr = a.filePrep();
-
-		for (int x = 0; x < arr.size(); x++) {
-			result += arr.get(x);
-			if (!(x == arr.size() - 1)) {
-				result += ",";
-			}
-		}
-		
-		if (canTransfer) {
-			return new Message(result, MessageType.TRANSFER);
-		} else {
-			return new Message("TRANSFER", MessageType.ERROR);
-		}
+		String data = String.join(",", arr);
+		result = new Message(data, MessageType.WITHDRAW);
+		return result;
 	}
+	//TODO:big change, non acc related methods under WIP under
+	public Message transactionHistory(Message m) {
+		String[] datas = m.getMessage(); //userID 0, accID 1, other info 2
+		if (!authorize(datas[1])) {
+			fileIO.writeLog(userID, datas[1] + ": Unauthorized access attempt.");
+			return result = new Message(String.join(",", u.filePrep()), MessageType.UPDATEERROR);
 
-	public Message transactionHistory(String accountID) {
-		if (!authorize(accountID)) {
-			fileIO.writeLog(accountID, "Unauthorized access attempt.");
-			return new Message("TRANSACTION_HISTORY", MessageType.ERROR);
 		}
-		return new Message(fileIO.readLog(accountID), MessageType.TRANSACTION_HISTORY);
+		return new Message(fileIO.readLog(datas[1]), MessageType.TRANSACTION_HISTORY);
 	}
 
 	// this function adds the user to a the specified account, if the user already exists it returns an error message
-	public Message addUser(String accountID, String superUserID, String username, String password) {
-		
+	public Message addUser(Message m) {
+		String[] datas = m.getMessage(); //userID 0, accID 1, other info 2
 		// if function not called by super user
 		if ('1' != superUserID.charAt(1)) {
 			fileIO.writeLog(superUserID, "Attempt made by non super user");
@@ -204,17 +214,18 @@ public class ServerFacade {
 		
 		User u = new User(username, password);
 		
-		if (u.Authorize(accountID)) {
+		if (u.Authorize(datas[1])) {
 			// if user already has the account
 			return new Message("ADD_USER", MessageType.ERROR);
 		}
 		
-		u.addAccount(accountID); // else update user account list
-		fileIO.writeOperator(accountID + ".txt", u); // update operator text file
+		u.addAccount(datas[1]); // else update user account list
+		fileIO.writeOperator(datas[1] + ".txt", u); // update operator text file
 		return new Message(MessageType.ADD_USER);
 	}
 	
-	public Message createAccount(String accountID, String superUserID) {
+	public Message createAccount(Message m) {
+		String[] datas = m.getMessage(); //userID 0, accID 1, other info 2
 		
 		// if function not called by super user
 		if ('1' != superUserID.charAt(1)) {
@@ -227,8 +238,8 @@ public class ServerFacade {
 		return new Message(MessageType.CREATE_ACCOUNT);
 	}
 	
-	public Message deactivateAccount(String accountID, String superUserID) {
-
+	public Message deactivateAccount(Message m) {
+		String[] datas = m.getMessage(); //userID 0, accID 1, other info 2
 		// if function not called by super user
 		if ('1' != superUserID.charAt(1)) {
 			fileIO.writeLog(superUserID, "Attempt made by non super user");
