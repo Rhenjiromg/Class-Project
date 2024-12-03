@@ -71,8 +71,7 @@ public class GUI {
 			"Add User",
 			"Change User",
 			"Add Account",
-			"Deactivate Account",
-			
+			"Deactivate Account"
 	};
 
 	private JButton[] accountButtons;
@@ -528,14 +527,14 @@ public class GUI {
 
 
 		JPanel row2 = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		JLabel accountLabel = new JLabel("Enter Account ID: ");
+		JLabel accountLabel = new JLabel("Enter Account ID, for create account enter A0 for saving and A1 for checking: ");
 		JTextField accountText = new JTextField(10);
 		row2.add(accountLabel);
 		row2.add(accountText);
 
 		mainPanel.add(row2);
 
-		JButton createAccountButton = new JButton("Create Account");
+		JButton createAccountButton = new JButton("Add Account");
 		JButton cancelButton = new JButton("Cancel");
 
 		JOptionPane optionPane = new JOptionPane(mainPanel,
