@@ -179,13 +179,9 @@ public class Server {
 								//          returns Message                     
 								sendMessage(serverFacade.transactionHistory(msg));
 								break;
-							case ADD_USER:
-								//        
-								sendMessage(serverFacade.addUser(msg));
-								break;
-							case CREATE_ACCOUNT:
+							case ADD_ACCOUNT:
 								
-								sendMessage(serverFacade.createAccount(msg));
+								sendMessage(serverFacade.addAccount(msg));
 								break;
 							case DEACTIVATE_ACCOUNT:
 						
