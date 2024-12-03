@@ -1,5 +1,6 @@
 package server;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import shared.Account;
@@ -93,6 +94,8 @@ public class ServerFacade {
 		
 		a.deposit(Double.parseDouble(buffer));
 		fileIO.writeAccount(datas[1] + ".txt", a);
+		fileIO.writeLog(userID, datas[1] + ":Deposit success: " + buffer);
+		fileIO.writeLog(datas[1], "Deposit success: " + buffer);
 
 		
 		ArrayList<String> arr = a.filePrep();
@@ -141,7 +144,6 @@ public class ServerFacade {
 		return result;
 	}
 
-	//TODO: error
 	public Message transferAmount(Message m) {
 		String[] datas = m.getMessage(); //userID 0, accID 1, accID2 2, other info 3
 		String buffer;
@@ -180,10 +182,10 @@ public class ServerFacade {
 			fileIO.writeLog(datas[1], "Transfer failed: overdraft.");
 		}else {
 			fileIO.writeAccount(datas[1] + ".txt", acc1);
-			fileIO.writeAccount(datas[1] + ".txt", acc2);
+			fileIO.writeAccount(datas[2] + ".txt", acc2);
 			fileIO.writeLog(userID, datas[1] + ":transfer success to" + datas[2] + ": " + buffer);
-			fileIO.writeLog( datas[1] , "transfer success to" + datas[2] + ": " + buffer);
-			fileIO.writeLog(datas[2], "transfer success from" + datas[1] + ": " + buffer);
+			fileIO.writeLog( datas[1] , "transfer success to " + datas[2] + ": " + buffer);
+			fileIO.writeLog(datas[2], "transfer success from " + datas[1] + ": " + buffer);
 		}
 		
 		ArrayList<String> arr = acc1.filePrep();
@@ -193,7 +195,6 @@ public class ServerFacade {
 		result = new Message(data, MessageType.WITHDRAW);
 		return result;
 	}
-	//TODO:big change, non acc related methods under WIP under
 	public Message transactionHistory(Message m) {
 		String[] datas = m.getMessage(); //userID 0, accID 1, other info 2
 		if (!authorize(datas[1])) {
@@ -229,25 +230,44 @@ public class ServerFacade {
 	}
 	*/
 	
+	
+	//TODO: well for a quick hack these are handle by my gui magic, wip code can be forgotton ig
 	public Message addAccount(Message m) {
 		String[] datas = m.getMessage(); //userID 0, accID 1, other info 2
+		File file = new File(datas[1] + ".txt");
+		Account acc;
 		
-		
-		Account a = new Account();
-		fileIO.writeAccount(a.getAccountID() + ".txt", a);
-		return new Message(MessageType.CREATE_ACCOUNT);
+		u = (User) fileIO.readOperator(userID + ".txt");
+		if (file.exists()) {
+			u.addAccount(datas[1]);
+		} else {
+			if ('0' == datas[1].charAt(1)) { // savings
+				acc = new SavingAccount();
+				 fileIO.writeAccount(acc.getAccountID() + ".txt", acc);
+			} else {
+				acc = new CheckingAccount();
+				fileIO.writeAccount(acc.getAccountID() + ".txt", acc);
+			}
+			u.addAccount(acc.getAccountID());
+			
+		}
+		fileIO.writeOperator(userID, u);
+		String data = String.join(",", u.filePrep());
+		return new Message(data, MessageType.UPDATEERROR);
 	}
 	
 	public Message deactivateAccount(Message m) {
 		String[] datas = m.getMessage(); //userID 0, accID 1, other info 2
-		// if function not called by super user
-		if ('1' != superUserID.charAt(1)) {
-			fileIO.writeLog(superUserID, "Attempt made by non super user");
-			return new Message("DEACTIVATE_ACCOUNT", MessageType.ERROR);
-		}
+
 		
-		// find the account and delete that file
-		// or change the state of account to inactive
-		return new Message(MessageType.DEACTIVATE_ACCOUNT);
+		if (!authorize(datas[1])) {
+			fileIO.writeLog(userID, datas[1] + ": Unauthorized access attempt.");
+			return result = new Message(String.join(",", u.filePrep()), MessageType.UPDATEERROR);
+		} else {
+			u.popAcc(datas[1]);
+			fileIO.writeOperator(userID, u);
+			String data = String.join(",", u.filePrep());
+			return new Message(data, MessageType.UPDATEERROR);
+		}		
 	}
 }

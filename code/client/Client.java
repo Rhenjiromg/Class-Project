@@ -202,7 +202,7 @@ public class Client {
 					    	}
 							gui.updateAccount(accbuffer);
 							break;
-					    case UPDATEERROR:
+					    case UPDATEERROR: //this hack is going to be call with any change that reflect on the display of a user
 					    	buffer = msg.getMessage();
 					    	for (int i = 4; i < buffer.length; i++){
 								bList.add(buffer[i]);
@@ -239,21 +239,8 @@ public class Client {
 							gui.updateAccount(accbuffer);
 							break;
 					    case TRANSACTION_HISTORY:
-					    	//TODO: error is because msg is not parsable aka buffer has length 1 -> check file/facadeServer
 					    	buffer = msg.getMessage();
-					    	if (buffer[0].charAt(1) == '0'){  //saving
-					    	    accbuffer = new SavingAccount(buffer[0], buffer[1], buffer[2], buffer[3], buffer[4]);
-					    	} else {
-					    	    accbuffer = new CheckingAccount(buffer[0], buffer[1], buffer[2], buffer[3]);
-					    	}
-							gui.updateAccount(accbuffer);
-							break;
-						//TODO: su events
-						case ADD_ACCOUNT:
-							
-							break;
-						case DEACTIVATE_ACCOUNT:
-							
+							gui.updateInfo(buffer);
 							break;
 						case ERROR:
 					    	

@@ -80,15 +80,6 @@ public class FacadeFrame {
 		sendMessage(message, MessageType.WITHDRAW);
 	}
 
-	public void addUser(String userID, String accountID) {
-		String message = userID + "," + accountID;
-		sendMessage(message, MessageType.ADD_USER);
-	}
-
-	public void createAccount(String password, String userCredentials) {
-		String message = password + "," + userCredentials;
-		sendMessage(message, MessageType.CREATE_ACCOUNT);
-	}
 
 	public void deactivateAccount(String accountNumber) {
 		sendMessage(accountNumber, MessageType.DEACTIVATE_ACCOUNT);
