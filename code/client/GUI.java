@@ -283,7 +283,7 @@ public class GUI {
 			case "Deposit":
 				buffer = deposit();
 				if (!buffer.equals("")) {
-					data += buffer;
+					data += "," + buffer;
 					Message result = new Message(data, MessageType.DEPOSIT);
 					synchronized (outbound) {
 						addQueue(outbound, result);
@@ -295,7 +295,7 @@ public class GUI {
 			case "Withdraw":
 				buffer = withdraw();
 				if (!buffer.equals("")) {
-					data += buffer;
+					data += "," + buffer;
 					Message result = new Message(data, MessageType.WITHDRAW);
 					synchronized (outbound) {
 						addQueue(outbound, result);
@@ -306,7 +306,7 @@ public class GUI {
 			case "Transfer":
 				buffer = transfer();
 				if (!buffer.equals("")) {
-					data += buffer;
+					data += "," + buffer;
 					Message result = new Message(data, MessageType.TRANSFER);
 					synchronized (outbound) {
 						addQueue(outbound, result);

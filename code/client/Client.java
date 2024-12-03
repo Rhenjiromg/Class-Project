@@ -221,9 +221,33 @@ public class Client {
 							break;
 						//TODO:ADD TO THIS
 					    case WITHDRAW:
-					    case TRANSFER:
-					    case TRANSACTION_HISTORY:
+					    	buffer = msg.getMessage();
+					    	if (buffer[0].charAt(1) == '0'){  //saving
+					    	    accbuffer = new SavingAccount(buffer[0], buffer[1], buffer[2], buffer[3], buffer[4]);
+					    	} else {
+					    	    accbuffer = new CheckingAccount(buffer[0], buffer[1], buffer[2], buffer[3]);
+					    	}
+							gui.updateAccount(accbuffer);
 							break;
+					    case TRANSFER:
+					    	buffer = msg.getMessage();
+					    	if (buffer[0].charAt(1) == '0'){  //saving
+					    	    accbuffer = new SavingAccount(buffer[0], buffer[1], buffer[2], buffer[3], buffer[4]);
+					    	} else {
+					    	    accbuffer = new CheckingAccount(buffer[0], buffer[1], buffer[2], buffer[3]);
+					    	}
+							gui.updateAccount(accbuffer);
+							break;
+					    case TRANSACTION_HISTORY:
+					    	buffer = msg.getMessage();
+					    	if (buffer[0].charAt(1) == '0'){  //saving
+					    	    accbuffer = new SavingAccount(buffer[0], buffer[1], buffer[2], buffer[3], buffer[4]);
+					    	} else {
+					    	    accbuffer = new CheckingAccount(buffer[0], buffer[1], buffer[2], buffer[3]);
+					    	}
+							gui.updateAccount(accbuffer);
+							break;
+						//TODO: su events
 						case ADD_USER:
 						
 							break;
