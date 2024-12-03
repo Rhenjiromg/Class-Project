@@ -201,6 +201,41 @@ public class Client {
 					    	    accbuffer = new CheckingAccount(buffer[0], buffer[1], buffer[2], buffer[3]);
 					    	}
 							gui.updateAccount(accbuffer);
+							break;
+					    case UPDATEERROR:
+					    	buffer = msg.getMessage();
+					    	for (int i = 4; i < buffer.length; i++){
+								bList.add(buffer[i]);
+							}
+					    	opbuffer = new User(buffer[0], buffer[1], buffer[2], buffer[3], bList);
+					    	gui.updateUser((User) opbuffer);
+					    	break;
+					    case DEPOSIT:
+					    	buffer = msg.getMessage();
+					    	if (buffer[0].charAt(1) == '0'){  //saving
+					    	    accbuffer = new SavingAccount(buffer[0], buffer[1], buffer[2], buffer[3], buffer[4]);
+					    	} else {
+					    	    accbuffer = new CheckingAccount(buffer[0], buffer[1], buffer[2], buffer[3]);
+					    	}
+							gui.updateAccount(accbuffer);
+							break;
+						//TODO:ADD TO THIS
+					    case WITHDRAW:
+					    case TRANSFER:
+					    case TRANSACTION_HISTORY:
+							break;
+						case ADD_USER:
+						
+							break;
+						case CREATE_ACCOUNT:
+							
+							break;
+						case DEACTIVATE_ACCOUNT:
+							
+							break;
+						case ERROR:
+					    	
+					    	break; 	
 					    default:
 					    	break;
 						}

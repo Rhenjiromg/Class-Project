@@ -138,6 +138,14 @@ public class GUI {
 
 		return handshake;
 	}
+	
+	private void checkClient() {
+	    if ((userFrame == null || !userFrame.isVisible()) &&
+	        (suFrame == null || !suFrame.isVisible())) {
+	        System.exit(0); // Terminate the client
+	    }
+	}
+
 
 	public void userDisplay(User user) {
 		op = user; //this to allow SU to work on a user after log in to that user. Since op is shared
@@ -155,6 +163,7 @@ public class GUI {
 					superUserDisplay(su); //reopen, simulating a refresh, as now teller no longer work on old client
 				} 
 				userFrame.dispose(); // Close the UserFrame
+				checkClient();
 			}
 		});
 			
@@ -204,6 +213,14 @@ public class GUI {
 
 	// TODO: superGUI not done, need revise
 	public void superUserDisplay(SuperUser SU) {
+		suFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		suFrame.addWindowListener((WindowListener) new WindowAdapter() { 
+			@Override 
+			public void windowClosing(WindowEvent e) { 
+				checkClient();
+			}
+		});
+		
 		su = SU; //bandaid hack for closing userpanel
 		suFrame.setSize(950, 800);
 		suFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -214,7 +231,7 @@ public class GUI {
 		for (String option : superUserDisplay) {
 			JButton button = new JButton(option);
 			button.addActionListener(e -> {
-				methodCaller(option, accID);
+				methodCallerSU(option);
 			});
 			button.setFont(new Font("Courier New", Font.BOLD, 15));
 			button.setPreferredSize(new Dimension(300, 50));
@@ -242,7 +259,7 @@ public class GUI {
 	// SOME FUNCTIONS NEED MERGING, REPETITIVE CODE
 	// TODO: handle cancels
 	private void methodCaller(String s, String r) {
-		String data = op.getID() + "," + r;
+		String data = op.getID() + "," + r; //prepared data for user, r get from selecting account button
 		String buffer;
 		switch (s) {
 			case "Account Detail":
@@ -297,7 +314,12 @@ public class GUI {
 					break;
 				}
 				break;
-
+		}
+	}
+	
+	private void methodCallerSU(String s) {
+		
+		switch (s) {
 			// TODO: CONT FIXING LATER
 			// ---------------------------- Super User ----------------------------
 			case "Add User":
@@ -587,14 +609,14 @@ public class GUI {
 	}
 	*/
 
-	private JScrollPane getScrollableInfoPanel(Operator op) {
+	private JScrollPane getScrollableInfoPanel(Operator ope) {
 		// Clear old info from the panel 
 		infoPanel.removeAll(); 
 		infoPanel.revalidate(); 
 		infoPanel.repaint(); 
 				
 		// Get new data
-		String[] data = op.getInfo().toArray(new String[0]);
+		String[] data = ope.getInfo().toArray(new String[0]);
 
 		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS)); // Add the data to the panel
 		for (String info : data) {
