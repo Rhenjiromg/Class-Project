@@ -157,6 +157,7 @@ public class Server {
 						    	// if user has this account let them in
 						    	sendMessage(serverFacade.login(msg));
 						    	break;
+                
 						    case ACCOUNT_INFO:
 						    	sendMessage(serverFacade.getInfo(msg));
 						    	

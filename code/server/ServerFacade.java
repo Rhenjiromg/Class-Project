@@ -14,7 +14,9 @@ import shared.User;
 public class ServerFacade {
 	private String userID;
 	private Message result;
+
 	private User u;
+
 	public ServerFacade() {
 		
 	}
@@ -52,6 +54,7 @@ public class ServerFacade {
 		
 		return result = new Message(MessageType.LOGIN); //i guess we can have client recognized message string = null as failed request.
 	}
+
 	
 	public Message getInfo(Message m) {
 		String[] datas = m.getMessage(); //userID 0, accID 1, other info 2

@@ -41,7 +41,9 @@ public class FileIO {
     }
 
     public void writeOperator(String filePath, Operator op){
+
     	//filePath = "code/" + filePath;
+
         long writeStamp = lockManager.getWriteLock(filePath); //get lock
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, false))) {
@@ -61,7 +63,9 @@ public class FileIO {
 
     // Read Account
     public Account readAccount(String filePath) {
+
     	//filePath = "code/" + filePath;
+
 
         long stamp = lockManager.getOptimist(filePath); //get optimist long for reference
         Account account = null;
@@ -182,7 +186,7 @@ public class FileIO {
     public void writeLog(String logname, String status){
         
         Time time = new Time();
-        String logPath = "L" + logname + ".txt";
+        String logPath = "code/L" + logname + ".txt";
         String log = time.getCurrentTime() + ": " + status;
         File file = new File(logPath);
         if (!file.exists()) {
