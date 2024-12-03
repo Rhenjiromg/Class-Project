@@ -184,6 +184,7 @@ public class GUI {
 				else {
 					userFrame.dispose();
 				}
+
 			}
 		});
 			

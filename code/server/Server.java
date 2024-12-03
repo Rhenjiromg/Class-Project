@@ -173,6 +173,7 @@ public class Server {
 						    case TRANSFER:
 					            //          returns Message 
 						    	sendMessage(serverFacade.transferAmount(msg));
+
 						    	break;
 							case TRANSACTION_HISTORY:
 								
