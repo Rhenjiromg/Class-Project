@@ -3,6 +3,7 @@ package shared;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -214,13 +215,22 @@ public class FileIO {
     	String logPath = "L" + logname + ".txt";
     	String fileContent = null;
     	
-    	try { 
-    		Path filePath = Paths.get(logPath); // get file path
-    		fileContent = Files.readString(filePath); // put file contents in fileContent as a string
-    	} catch (IOException e) { 
-    		e.printStackTrace();
-    	}
-        return fileContent;
+    	 try (BufferedReader reader = new BufferedReader(new FileReader(logPath))) {
+    		 ArrayList<String> buffer = new ArrayList<String>();
+    		 String line;
+    		 while ((line = reader.readLine()) != null) { 
+                 buffer.add(line);
+             }
+    		 fileContent = String.join(",", buffer);
+    	 } catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	 return fileContent;
+    	 
     }
 }
 

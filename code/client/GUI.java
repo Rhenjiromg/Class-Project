@@ -515,7 +515,7 @@ public class GUI {
 
 		// If button pressed was deposit, return text field value
 		if (optionPane.getValue() == transferButton) {
-			return textField.getText();
+			return accountText.getText() + "," + textField.getText();
 		}
 
 		return ""; // if canceled then return empty string
@@ -685,6 +685,26 @@ public class GUI {
 		return scrollPane;
 	}
 
+	private JScrollPane getScrollableInfoPanel(String[] data) {
+		// Clear old info from the panel 
+		infoPanel.removeAll(); 
+		infoPanel.revalidate(); 
+		infoPanel.repaint(); 
+		
+		// Get new data
+
+		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS)); // Add the data to the panel
+		for (String info : data) {
+			JLabel label = new JLabel(info);
+			infoPanel.add(label);
+			infoPanel.add(Box.createRigidArea(new Dimension(0, 5))); // Add spacing between labels
+		} // Create a scroll pane to wrap the panel
+		JScrollPane scrollPane = new JScrollPane(infoPanel);
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.getVerticalScrollBar().setUnitIncrement(20); // increase scroll speed
+		scrollPane.setBorder(new EmptyBorder(10, 0, 10, 10));
+		return scrollPane;
+	}
 	
 	private JScrollPane getScrollableDisplayPanel(SuperUser SU) {
 		JPanel emptyPanel = new JPanel(); 
@@ -800,6 +820,23 @@ public class GUI {
 
 			// Create updated JScrollPanes with new content
 			JScrollPane updatedUserInfoScroll = getScrollableInfoPanel(acc);
+
+			// Add the new JScrollPanes
+			mainUserPanel.add(updatedUserInfoScroll, 2); // Add to right position (index 2)
+
+			// Revalidate and repaint to ensure the UI is updated
+			mainUserPanel.revalidate();
+			mainUserPanel.repaint();
+		});
+	}
+	
+	public void updateInfo(String[] data) {
+		SwingUtilities.invokeLater(() -> {
+			// Remove the old JScrollPanes
+			mainUserPanel.remove(2); // Removing the right JScrollPane (userInfoScroll)
+
+			// Create updated JScrollPanes with new content
+			JScrollPane updatedUserInfoScroll = getScrollableInfoPanel(data);
 
 			// Add the new JScrollPanes
 			mainUserPanel.add(updatedUserInfoScroll, 2); // Add to right position (index 2)

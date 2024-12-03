@@ -145,7 +145,6 @@ public class Server {
 					//for msg coming in that doesnt fit the designed case, it would simply be drop
 					@Override
 					public void run() {
-						Message buffer;
 						switch (msg.getType()) {
 							case LOGOUT:
 								

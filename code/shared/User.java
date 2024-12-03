@@ -52,4 +52,10 @@ public class User extends Operator {
     public void addAccount(String account) {
     	accounts.add(account);
     }
+    
+    public void popAcc(String acc) {
+    	accounts.remove(acc);
+    }
+
+    
 }
