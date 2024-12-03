@@ -2,6 +2,8 @@ package shared;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -22,7 +24,7 @@ public class FileIO {
     private final LockManager lockManager = LockManager.getInstance();
 
     public void writeAccount(String filePath, Account acc) {
-    	filePath = "code/" + filePath;
+    	//filePath = "code/" + filePath;
         long writeStamp = lockManager.getWriteLock(filePath); //use handle to get lock for write
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, false))) {
@@ -40,7 +42,9 @@ public class FileIO {
     }
 
     public void writeOperator(String filePath, Operator op){
-    	filePath = "code/" + filePath;
+
+    	//filePath = "code/" + filePath;
+
         long writeStamp = lockManager.getWriteLock(filePath); //get lock
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, false))) {
@@ -60,7 +64,9 @@ public class FileIO {
 
     // Read Account
     public Account readAccount(String filePath) {
-    	filePath = "code/" + filePath;
+
+    	//filePath = "code/" + filePath;
+
 
         long stamp = lockManager.getOptimist(filePath); //get optimist long for reference
         Account account = null;
@@ -181,8 +187,17 @@ public class FileIO {
     public void writeLog(String logname, String status){
         
         Time time = new Time();
-        String logPath = "code/L" + logname + ".txt";
+        String logPath = "L" + logname + ".txt";
         String log = time.getCurrentTime() + ": " + status;
+        File file = new File(logPath);
+        if (!file.exists()) {
+        	try {
+				file.createNewFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
 
         long writeStamp = lockManager.getWriteLock(logPath);
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(logPath, true))) {
@@ -197,16 +212,25 @@ public class FileIO {
     
     //                           accountID
     public String readLog(String logname) {
-    	String logPath = "L" + logname;
+    	String logPath = "L" + logname + ".txt";
     	String fileContent = null;
     	
-    	try { 
-    		Path filePath = Paths.get(logPath); // get file path
-    		fileContent = Files.readString(filePath); // put file contents in fileContent as a string
-    	} catch (IOException e) { 
-    		e.printStackTrace();
-    	}
-        return fileContent;
+    	 try (BufferedReader reader = new BufferedReader(new FileReader(logPath))) {
+    		 ArrayList<String> buffer = new ArrayList<String>();
+    		 String line;
+    		 while ((line = reader.readLine()) != null) { 
+                 buffer.add(line);
+             }
+    		 fileContent = String.join(",", buffer);
+    	 } catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	 return fileContent;
+    	 
     }
 }
 

@@ -195,12 +195,59 @@ public class Client {
 					        
 					    case ACCOUNT_INFO:
 					    	buffer = msg.getMessage();
-					    	if (buffer[1].charAt(1) == '0'){  //saving
+					    	if (buffer[0].charAt(1) == '0'){  //saving
 					    	    accbuffer = new SavingAccount(buffer[0], buffer[1], buffer[2], buffer[3], buffer[4]);
 					    	} else {
 					    	    accbuffer = new CheckingAccount(buffer[0], buffer[1], buffer[2], buffer[3]);
 					    	}
 							gui.updateAccount(accbuffer);
+							break;
+					    case UPDATEERROR: //this hack is going to be call with any change that reflect on the display of a user
+					    	buffer = msg.getMessage();
+					    	for (int i = 4; i < buffer.length; i++){
+								bList.add(buffer[i]);
+							}
+					    	opbuffer = new User(buffer[0], buffer[1], buffer[2], buffer[3], bList);
+					    	gui.updateUser((User) opbuffer);
+					    	break;
+					    case DEPOSIT:
+					    	buffer = msg.getMessage();
+					    	if (buffer[0].charAt(1) == '0'){  //saving
+					    	    accbuffer = new SavingAccount(buffer[0], buffer[1], buffer[2], buffer[3], buffer[4]);
+					    	} else {
+					    	    accbuffer = new CheckingAccount(buffer[0], buffer[1], buffer[2], buffer[3]);
+					    	}
+							gui.updateAccount(accbuffer);
+							break;
+						//TODO:ADD TO THIS
+					    case WITHDRAW:
+
+					    	buffer = msg.getMessage();
+					    	if (buffer[0].charAt(1) == '0'){  //saving
+					    	    accbuffer = new SavingAccount(buffer[0], buffer[1], buffer[2], buffer[3], buffer[4]);
+					    	} else {
+					    	    accbuffer = new CheckingAccount(buffer[0], buffer[1], buffer[2], buffer[3]);
+					    	}
+							gui.updateAccount(accbuffer);
+
+							break;
+					    case TRANSFER:
+					    	buffer = msg.getMessage();
+					    	if (buffer[0].charAt(1) == '0'){  //saving
+					    	    accbuffer = new SavingAccount(buffer[0], buffer[1], buffer[2], buffer[3], buffer[4]);
+					    	} else {
+					    	    accbuffer = new CheckingAccount(buffer[0], buffer[1], buffer[2], buffer[3]);
+					    	}
+							gui.updateAccount(accbuffer);
+
+							break;
+					    case TRANSACTION_HISTORY:
+					    	buffer = msg.getMessage();
+							gui.updateInfo(buffer);
+							break;
+						case ERROR:
+					    	
+					    	break; 	
 					    default:
 					    	break;
 						}

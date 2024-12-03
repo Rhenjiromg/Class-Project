@@ -11,11 +11,10 @@ public enum MessageType {
     WITHDRAW(0),
     TRANSFER(0),
     TRANSACTION_HISTORY(0),
-    ADD_USER(0),
-    CREATE_ACCOUNT(0),
+    ADD_ACCOUNT(0),
     DEACTIVATE_ACCOUNT(0),
     ERROR(0),
-    SUCCESS(0), 
+    UPDATEERROR(0), 
     ACCOUNT_INFO(0);
 
     private final int argLength;
