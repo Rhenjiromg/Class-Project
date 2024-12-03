@@ -636,14 +636,18 @@ public class GUI {
 	}
 	*/
 
+
 	private JScrollPane getScrollableInfoPanel(Operator ope) {
+
 		// Clear old info from the panel 
 		infoPanel.removeAll(); 
 		infoPanel.revalidate(); 
 		infoPanel.repaint(); 
 				
 		// Get new data
+
 		String[] data = ope.getInfo().toArray(new String[0]);
+
 
 		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS)); // Add the data to the panel
 		for (String info : data) {

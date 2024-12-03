@@ -30,6 +30,7 @@ public class ServerFacade {
 	public Boolean authorize(String accID) {
 		u = (User) fileIO.readOperator(userID + ".txt");
 		return u.getAccList().contains(accID);
+
 	}
 	
 	public Message login(Message m) {
@@ -57,10 +58,12 @@ public class ServerFacade {
 
 	
 	public Message getInfo(Message m) {
+
 		String[] datas = m.getMessage(); //userID 0, accID 1, other info 2
 		if (!authorize(datas[1])) {
 			fileIO.writeLog(userID, datas[1] + ": Unauthorized access attempt.");
 			return result = new Message(String.join(",", u.filePrep()), MessageType.UPDATEERROR); //use this to update user on gui in case there is a change to accList
+
 		}
 		else {
 			Account accBuf = fileIO.readAccount(datas[1] + ".txt");
@@ -76,6 +79,7 @@ public class ServerFacade {
 		if (!authorize(datas[1])) {
 			fileIO.writeLog(userID, datas[1] + ": Unauthorized access attempt.");
 			return result = new Message(String.join(",", u.filePrep()), MessageType.UPDATEERROR);
+
 		}
 		
 		Account a;
@@ -98,7 +102,6 @@ public class ServerFacade {
 
 		return result;
 	}
-
 	//for withdraw ig all we do is log them down if overdraft and dont decrease it
 	public Message withdrawAmount(Message m) {
 		String[] datas = m.getMessage(); //userID 0, accID 1, other info 2 //userID 0, accID 1, other info 2
@@ -107,6 +110,7 @@ public class ServerFacade {
 		if (!authorize(datas[1])) {
 			fileIO.writeLog(userID, datas[1] + ": Unauthorized access attempt.");
 			return result = new Message(String.join(",", u.filePrep()), MessageType.UPDATEERROR);
+
 		}
 		
 		Account a;
@@ -145,6 +149,7 @@ public class ServerFacade {
 		if (!authorize(datas[1])) {
 			fileIO.writeLog(userID, datas[1] + ": Unauthorized access attempt.");
 			return result = new Message(String.join(",", u.filePrep()), MessageType.UPDATEERROR);
+
 		}
 		
 		// transfer function requires the target Account, the message needs to send
@@ -188,13 +193,13 @@ public class ServerFacade {
 		result = new Message(data, MessageType.WITHDRAW);
 		return result;
 	}
-
 	//TODO:big change, non acc related methods under WIP under
 	public Message transactionHistory(Message m) {
 		String[] datas = m.getMessage(); //userID 0, accID 1, other info 2
 		if (!authorize(datas[1])) {
 			fileIO.writeLog(userID, datas[1] + ": Unauthorized access attempt.");
 			return result = new Message(String.join(",", u.filePrep()), MessageType.UPDATEERROR);
+
 		}
 		return new Message(fileIO.readLog(datas[1]), MessageType.TRANSACTION_HISTORY);
 	}
