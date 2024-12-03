@@ -144,6 +144,11 @@ public class ServerFacade {
 		return result;
 	}
 
+<<<<<<< HEAD
+=======
+	//TODO: error
+
+>>>>>>> 2d1d0892e469e2ccb60e94303666f8d8ec4297a3
 	public Message transferAmount(Message m) {
 		String[] datas = m.getMessage(); //userID 0, accID 1, accID2 2, other info 3
 		String buffer;
@@ -205,6 +210,7 @@ public class ServerFacade {
 		return new Message(fileIO.readLog(datas[1]), MessageType.TRANSACTION_HISTORY);
 	}
 
+
 	// leverage login to show user display for user operation, this method is unneed
 	/*
 	public Message addUser(Message m) {
@@ -212,27 +218,36 @@ public class ServerFacade {
 		// if function not called by super user...this wont be a case since non user has no access to superuser panel
 		
 		if ('1' != datas[0].charAt(1)) {
+
 			fileIO.writeLog(superUserID, "Attempt made by non super user");
 			return new Message(MessageType.ERROR);
 		}
 		
 		
+
 		User u = new User(datas[1], datas[2]);
 		
 		//...new user has no accounts!
+
 		if (u.Authorize(datas[1])) {
 			// if user already has the account
 			return new Message("ADD_USER", MessageType.ERROR);
 		}
 		
+
 		fileIO.writeOperator(u.getID() + ".txt", u); // update operator text file
 		return new Message(MessageType.ADD_USER);
 	}
 	*/
 	
+<<<<<<< HEAD
 	
 	//TODO: well for a quick hack these are handle by my gui magic, wip code can be forgotton ig
+=======
+
+>>>>>>> 2d1d0892e469e2ccb60e94303666f8d8ec4297a3
 	public Message addAccount(Message m) {
+
 		String[] datas = m.getMessage(); //userID 0, accID 1, other info 2
 		File file = new File(datas[1] + ".txt");
 		Account acc;
