@@ -244,9 +244,9 @@ public class ServerFacade {
 		u = (User) fileIO.readOperator(userID + ".txt");
 		Account acc;
 		if (file.exists()) {
-			u.addAccount(datas[0]);
+			u.addAccount(datas[1]);
 		} else {
-			if ('0' == datas[0].charAt(1)) { // savings
+			if ('0' == datas[1].charAt(1)) { // savings
 				acc = new SavingAccount();
 				 fileIO.writeAccount(acc.getAccountID() + ".txt", acc);
 			} else {

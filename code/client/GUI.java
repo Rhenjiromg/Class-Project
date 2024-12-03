@@ -560,7 +560,7 @@ public class GUI {
 
 		// If button pressed was deposit, return text field value
 		if (optionPane.getValue() == createAccountButton) {
-			return accountText.getText();
+			return op.getID() + "," + accountText.getText();
 		}
 
 		return ""; // if canceled then return empty string
