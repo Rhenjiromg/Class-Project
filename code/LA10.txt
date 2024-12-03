@@ -1,3 +1,0 @@
-23:00:51: Withdraw success: 51.89
-23:04:34: Withdraw success: 50
-23:04:40: Withdraw success: 50

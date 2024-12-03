@@ -237,29 +237,29 @@ public class ServerFacade {
 	
 	public Message addAccount(Message m) {
 
-		String[] datas = m.getMessage(); //userID 0, accID 1, other info 2
-		File file = new File(datas[1] + ".txt");
-		Account acc;
+		String[] datas = m.getMessage(); //accID 0
+		File file = new File(datas[0] + ".txt");
+		
 		
 		u = (User) fileIO.readOperator(userID + ".txt");
+		Account acc;
 		if (file.exists()) {
-			u.addAccount(datas[1]);
+			u.addAccount(datas[0]);
 		} else {
-			if ('0' == datas[1].charAt(1)) { // savings
+			if ('0' == datas[0].charAt(1)) { // savings
 				acc = new SavingAccount();
 				 fileIO.writeAccount(acc.getAccountID() + ".txt", acc);
 			} else {
 				acc = new CheckingAccount();
 				fileIO.writeAccount(acc.getAccountID() + ".txt", acc);
-			}
-			u.addAccount(acc.getAccountID());
-			
+			}			
 		}
-		fileIO.writeOperator(userID, u);
+		fileIO.writeOperator(userID + ".txt", u);
 		String data = String.join(",", u.filePrep());
 		return new Message(data, MessageType.UPDATEERROR);
 
 	}
+
 	
 	public Message deactivateAccount(Message m) {
 		String[] datas = m.getMessage(); //userID 0, accID 1, other info 2
