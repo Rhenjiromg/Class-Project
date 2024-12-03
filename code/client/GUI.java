@@ -42,11 +42,12 @@ public class GUI {
 	private Operator op;
 	
 	private Account acc;
-	private JButton[] accountButtons;
+	
 	private Queue<Message> outbound;
 	private String accID = ""; // this is where the accID is added to from displayScroll buttons (acc selector)
 	boolean isLogin = false;
 	private SuperUser su;
+	private boolean hideU = false;
 
 	private synchronized void addQueue(Queue<Message> queue, Message message) {
 		queue.add(message);
@@ -68,12 +69,14 @@ public class GUI {
 	
 	private final String[] superUserDisplay = {
 			"Add User",
-			"Deactivate User",
+			"Change User",
 			"Add Account",
 			"Deactivate Account",
 			
 	};
 
+	private JButton[] accountButtons;
+	private JButton[] SUButtons = new JButton[superUserDisplay.length-1];
 	// add operator, user
 	// add account
 
@@ -86,6 +89,7 @@ public class GUI {
 
 	// returns String Array, array[0] = name, array[1] = password;
 	public Message login() {
+		
 		Message handshake = new Message();
 		JPanel panel = new JPanel(new GridLayout(2, 2, 5, 5));
 		JLabel userNameLabel = new JLabel("Username: ");
@@ -149,7 +153,21 @@ public class GUI {
 
 	public void userDisplay(User user) {
 		op = user; //this to allow SU to work on a user after log in to that user. Since op is shared
+		for (JButton but : SUButtons) {
+			if (but == null) {
+				break;
+			}
+			but.setEnabled(true); // Enable each button now that we selected an account to reference
+		}
+		//these lines are hack to represent SU having a user to work with their methods!
+		//when SU acquire a user, they do it through calling login again and resulted in this method
 		
+		//TODO: better condition!
+		if (hideU) { //this to check if we login or we leverage this log in for superuser hack
+			updateUser(user);
+			userFrame.setVisible(true);
+			return; //this we know we just update user display
+		}
 		
 		userFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); 
 		// Prevent default close behavior 
@@ -158,12 +176,15 @@ public class GUI {
 			@Override 
 			public void windowClosing(WindowEvent e) { 
 				op = null;
-				if (suFrame != null && suFrame.isVisible()) { 
-					suFrame.dispose(); // Close the SuperUserFrame
-					superUserDisplay(su); //reopen, simulating a refresh, as now teller no longer work on old client
+				if (suFrame != null && suFrame.isVisible()) {  //only if we are working with su
+					updateSuperUser(su); // refresh superuser display to default
+					op = null;
+					userFrame.setVisible(false); // trick to hide user frame
 				} 
-				userFrame.dispose(); // Close the UserFrame
-				checkClient();
+				else {
+					userFrame.dispose();
+				}
+
 			}
 		});
 			
@@ -228,16 +249,23 @@ public class GUI {
 		JPanel mainButtonPanel = new JPanel();
 		JPanel buttonPanel = new JPanel(new GridLayout(superUserDisplay.length, 0)); // for buttons
 
-		for (String option : superUserDisplay) {
+		
+		for (int i = 0; i < superUserDisplay.length; i++) {
+			String option = superUserDisplay[i];
 			JButton button = new JButton(option);
+			if (i > 0) {
+				SUButtons[i-1] = button; // store button in array for global reference
+				button.setEnabled(false); // Initially disabled
+			}
+			
 			button.addActionListener(e -> {
 				methodCallerSU(option);
 			});
 			button.setFont(new Font("Courier New", Font.BOLD, 15));
-			button.setPreferredSize(new Dimension(300, 50));
+			button.setPreferredSize(new Dimension(250, 50));
 			buttonPanel.add(button);
 		}
-
+		
 		// displayInfoPanel in scroll-able form (updated by client)
 		// infoPanel in scroll-able form (updated by client)
 		// TODO: at first display superuser dont have a user memory yet to display this
@@ -283,7 +311,7 @@ public class GUI {
 			case "Deposit":
 				buffer = deposit();
 				if (!buffer.equals("")) {
-					data += buffer;
+					data += "," + buffer;
 					Message result = new Message(data, MessageType.DEPOSIT);
 					synchronized (outbound) {
 						addQueue(outbound, result);
@@ -295,7 +323,7 @@ public class GUI {
 			case "Withdraw":
 				buffer = withdraw();
 				if (!buffer.equals("")) {
-					data += buffer;
+					data += "," + buffer;
 					Message result = new Message(data, MessageType.WITHDRAW);
 					synchronized (outbound) {
 						addQueue(outbound, result);
@@ -306,7 +334,7 @@ public class GUI {
 			case "Transfer":
 				buffer = transfer();
 				if (!buffer.equals("")) {
-					data += buffer;
+					data += "," + buffer;
 					Message result = new Message(data, MessageType.TRANSFER);
 					synchronized (outbound) {
 						addQueue(outbound, result);
@@ -333,18 +361,22 @@ public class GUI {
 			// MERGE ACCOUNT FUNCTIONS INTO 1.
 			case "Add Account":
 				synchronized (outbound) {
-					addQueue(outbound, new Message(createAccount(), MessageType.CREATE_ACCOUNT));
+					addQueue(outbound, new Message(addAccount(), MessageType.ADD_ACCOUNT));
 				}
 				break;
 			case "Deactivate Account":
 				synchronized (outbound) {
-					addQueue(outbound, new Message(deleteAccount(), MessageType.DEACTIVATE_ACCOUNT));
+					addQueue(outbound, new Message(op.getID()+","+ removeAccount(), MessageType.DEACTIVATE_ACCOUNT));
 				}
 				break;
-			case "Deactivate User":
+			case "Change User":
 				// Ask superUser: which user's account they want access?
 				// open up user Display for that account.
 				//addQueue(outbound, new Message(deleteAccount(), MessageType.DEACTIVATE_USER));
+				userFrame.setVisible(false);
+				op = null;
+				hideU = true;
+				updateSuperUser(su);
 				break;
 			case "Make me Millionaire":
 				displayMillionDollars();
@@ -489,15 +521,11 @@ public class GUI {
 		return ""; // if canceled then return empty string
 	}
 
-	private String createAccount() {
+	private String addAccount() {
 		// Main panel with a vertical BoxLayout
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-		JPanel row1 = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		JLabel label = new JLabel("Enter User Name");
-		JTextField textField = new JTextField(10);
-		row1.add(label);
-		row1.add(textField);
+
 
 		JPanel row2 = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		JLabel accountLabel = new JLabel("Enter Account ID: ");
@@ -505,7 +533,6 @@ public class GUI {
 		row2.add(accountLabel);
 		row2.add(accountText);
 
-		mainPanel.add(row1);
 		mainPanel.add(row2);
 
 		JButton createAccountButton = new JButton("Create Account");
@@ -534,13 +561,13 @@ public class GUI {
 
 		// If button pressed was deposit, return text field value
 		if (optionPane.getValue() == createAccountButton) {
-			return textField.getText();
+			return accountText.getText();
 		}
 
 		return ""; // if canceled then return empty string
 	}
-
-	private String deleteAccount() {
+// for now what this do is remove an acc from selected user
+	private String removeAccount() {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		JLabel label = new JLabel("Enter Account ID: ");
 		JTextField textField = new JTextField(10);
@@ -548,7 +575,7 @@ public class GUI {
 		panel.add(label);
 		panel.add(textField);
 
-		JButton deleteAccountButton = new JButton("Delete Account");
+		JButton deleteAccountButton = new JButton("Remove Account");
 		JButton cancelButton = new JButton("Cancel");
 
 		JOptionPane optionPane = new JOptionPane(panel,
@@ -558,7 +585,7 @@ public class GUI {
 				// custom buttons, default is deposit button
 				new Object[] { deleteAccountButton, cancelButton }, deleteAccountButton);
 
-		JDialog dialog = optionPane.createDialog("Delete Account");
+		JDialog dialog = optionPane.createDialog("Remove Account");
 
 		deleteAccountButton.addActionListener(e -> {
 			optionPane.setValue(deleteAccountButton); // record deposit button press
@@ -574,7 +601,8 @@ public class GUI {
 
 		// If button pressed was deposit, return text field value
 		if (optionPane.getValue() == deleteAccountButton) {
-			return textField.getText();
+			String result = textField.getText();
+			return result;
 		}
 
 		return ""; // if canceled then return empty string
@@ -674,26 +702,29 @@ public class GUI {
 		displayPanel.repaint(); 
 				
 		// Get new data
-		String[] data = op2.getAcc();
-		SwingUtilities.invokeLater(() -> {
-			displayPanel.setLayout(new BoxLayout(displayPanel, BoxLayout.Y_AXIS));
-			// Vertical layout
-			// Add buttons to the existing display panel
-			for (String option : data) {
-				JButton button = new JButton(option);
-	
-				button.addActionListener(e -> {
-					// Handle the button, pass the accountID to string req!
-					accID = option;
-					for (JButton but : accountButtons) {
-						but.setEnabled(true); // Enable each button now that we selected an account to reference
-					}
-				});
-				displayPanel.add(button);
-				displayPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-				// Add spacing between buttons
-			} // Create a scroll pane to wrap the panel
-		});	
+		if (op2 != null){
+			String[] data = op2.getAcc();
+			SwingUtilities.invokeLater(() -> {
+				displayPanel.setLayout(new BoxLayout(displayPanel, BoxLayout.Y_AXIS));
+				// Vertical layout
+				// Add buttons to the existing display panel
+				for (String option : data) {
+					JButton button = new JButton(option);
+		
+					button.addActionListener(e -> {
+						// Handle the button, pass the accountID to string req!
+						accID = option;
+						for (JButton but : accountButtons) {
+							but.setEnabled(true); // Enable each button now that we selected an account to reference
+						}
+					});
+					displayPanel.add(button);
+					displayPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+					// Add spacing between buttons
+				} // Create a scroll pane to wrap the panel
+			});	
+		}
+		
 		JScrollPane scrollPane = new JScrollPane(displayPanel);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(20); // Increase scroll speed
@@ -729,6 +760,26 @@ public class GUI {
 	
 			// Create updated JScrollPanes with new content
 			JScrollPane updatedDisplayScroll = getScrollableDisplayPanel(u); // TODO:fix later, involve method fixing
+	
+			// Add the new JScrollPanes
+			mainSUPanel.add(updatedDisplayScroll, 1); // Add to center position (index 1)
+	
+			// Revalidate and repaint to ensure the UI is updated
+			mainSUPanel.revalidate();
+			mainSUPanel.repaint();
+		});	
+	}
+	
+	public void updateSuperUser(SuperUser su) {
+		SwingUtilities.invokeLater(() -> {
+			for (JButton but : SUButtons) {
+				but.setEnabled(true); // Enable each button now that we selected an account to reference
+			}
+			// Remove the old JScrollPanes
+			mainSUPanel.remove(1); // Removing the center JScrollPane (displayScroll)
+	
+			// Create updated JScrollPanes with new content
+			JScrollPane updatedDisplayScroll = getScrollableDisplayPanel(su); // TODO:fix later, involve method fixing
 	
 			// Add the new JScrollPanes
 			mainSUPanel.add(updatedDisplayScroll, 1); // Add to center position (index 1)

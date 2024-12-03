@@ -172,26 +172,21 @@ public class Server {
 						    	break;
 						    case TRANSFER:
 					            //          returns Message 
-						    	sendMessage(serverFacade.transferAmount(msg);
+						    	sendMessage(serverFacade.transferAmount(msg));
+
 						    	break;
 							case TRANSACTION_HISTORY:
 								
 								//          returns Message                     
 								sendMessage(serverFacade.transactionHistory(msg));
 								break;
-							case ADD_USER:
-								//                       account ID           super user ID        user name            password
-								sendMessage(serverFacade.addUser(msg.getMessage()[0], msg.getMessage()[1], msg.getMessage()[2], msg.getMessage()[3]));
-								break;
-							case CREATE_ACCOUNT:
+							case ADD_ACCOUNT:
 								
-                                //		                                   account ID           super user ID
-								sendMessage(serverFacade.createAccount(msg.getMessage()[0], msg.getMessage()[1]));
+								sendMessage(serverFacade.addAccount(msg));
 								break;
 							case DEACTIVATE_ACCOUNT:
-								
-		                        //                                             account ID           super user ID
-								sendMessage(serverFacade.deactivateAccount(msg.getMessage()[0], msg.getMessage()[1]));
+						
+								sendMessage(serverFacade.deactivateAccount(msg));
 								break;
 						    default:
 						    	sendMessage(MessageType.ERROR);

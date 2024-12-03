@@ -141,6 +141,8 @@ public class ServerFacade {
 		return result;
 	}
 
+	//TODO: error
+
 	public Message transferAmount(Message m) {
 		String[] datas = m.getMessage(); //userID 0, accID 1, accID2 2, other info 3
 		String buffer;
@@ -203,35 +205,41 @@ public class ServerFacade {
 		return new Message(fileIO.readLog(datas[1]), MessageType.TRANSACTION_HISTORY);
 	}
 
-	// this function adds the user to a the specified account, if the user already exists it returns an error message
+
+	// leverage login to show user display for user operation, this method is unneed
+	/*
 	public Message addUser(Message m) {
-		String[] datas = m.getMessage(); //userID 0, accID 1, other info 2
-		// if function not called by super user
-		if ('1' != superUserID.charAt(1)) {
+		String[] datas = m.getMessage(); //superUserID 0, username 1, password 2
+		// if function not called by super user...this wont be a case since non user has no access to superuser panel
+		
+		if ('1' != datas[0].charAt(1)) {
+
 			fileIO.writeLog(superUserID, "Attempt made by non super user");
 			return new Message(MessageType.ERROR);
 		}
 		
-		User u = new User(username, password);
 		
+
+		User u = new User(datas[1], datas[2]);
+		
+		//...new user has no accounts!
+
 		if (u.Authorize(datas[1])) {
 			// if user already has the account
 			return new Message("ADD_USER", MessageType.ERROR);
 		}
 		
-		u.addAccount(datas[1]); // else update user account list
-		fileIO.writeOperator(datas[1] + ".txt", u); // update operator text file
+
+		fileIO.writeOperator(u.getID() + ".txt", u); // update operator text file
 		return new Message(MessageType.ADD_USER);
 	}
+	*/
 	
-	public Message createAccount(Message m) {
+
+	public Message addAccount(Message m) {
+
 		String[] datas = m.getMessage(); //userID 0, accID 1, other info 2
 		
-		// if function not called by super user
-		if ('1' != superUserID.charAt(1)) {
-			fileIO.writeLog(superUserID, "Attempt made by non super user");
-			return new Message("CREATE_ACCOUNT", MessageType.ERROR);
-		}
 		
 		Account a = new Account();
 		fileIO.writeAccount(a.getAccountID() + ".txt", a);

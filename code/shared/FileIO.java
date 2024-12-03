@@ -186,7 +186,7 @@ public class FileIO {
     public void writeLog(String logname, String status){
         
         Time time = new Time();
-        String logPath = "code/L" + logname + ".txt";
+        String logPath = "L" + logname + ".txt";
         String log = time.getCurrentTime() + ": " + status;
         File file = new File(logPath);
         if (!file.exists()) {
@@ -211,7 +211,7 @@ public class FileIO {
     
     //                           accountID
     public String readLog(String logname) {
-    	String logPath = "L" + logname;
+    	String logPath = "L" + logname + ".txt";
     	String fileContent = null;
     	
     	try { 
