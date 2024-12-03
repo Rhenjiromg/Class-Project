@@ -144,11 +144,6 @@ public class ServerFacade {
 		return result;
 	}
 
-<<<<<<< HEAD
-=======
-	//TODO: error
-
->>>>>>> 2d1d0892e469e2ccb60e94303666f8d8ec4297a3
 	public Message transferAmount(Message m) {
 		String[] datas = m.getMessage(); //userID 0, accID 1, accID2 2, other info 3
 		String buffer;
@@ -240,12 +235,6 @@ public class ServerFacade {
 	}
 	*/
 	
-<<<<<<< HEAD
-	
-	//TODO: well for a quick hack these are handle by my gui magic, wip code can be forgotton ig
-=======
-
->>>>>>> 2d1d0892e469e2ccb60e94303666f8d8ec4297a3
 	public Message addAccount(Message m) {
 
 		String[] datas = m.getMessage(); //userID 0, accID 1, other info 2
@@ -269,6 +258,7 @@ public class ServerFacade {
 		fileIO.writeOperator(userID, u);
 		String data = String.join(",", u.filePrep());
 		return new Message(data, MessageType.UPDATEERROR);
+
 	}
 	
 	public Message deactivateAccount(Message m) {

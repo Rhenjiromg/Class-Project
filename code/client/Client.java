@@ -229,6 +229,7 @@ public class Client {
 					    	    accbuffer = new CheckingAccount(buffer[0], buffer[1], buffer[2], buffer[3]);
 					    	}
 							gui.updateAccount(accbuffer);
+
 							break;
 					    case TRANSFER:
 					    	buffer = msg.getMessage();
@@ -238,6 +239,7 @@ public class Client {
 					    	    accbuffer = new CheckingAccount(buffer[0], buffer[1], buffer[2], buffer[3]);
 					    	}
 							gui.updateAccount(accbuffer);
+
 							break;
 					    case TRANSACTION_HISTORY:
 					    	buffer = msg.getMessage();
