@@ -13,6 +13,9 @@ import shared.User;
 public class ServerFacade {
 	private String userID;
 	private Message result;
+
+	private User u;
+
 	public ServerFacade() {
 		
 	}
@@ -23,8 +26,10 @@ public class ServerFacade {
 	
 	FileIO fileIO = new FileIO();
 	
-	public Boolean autherize(String accountID) {
-		User u = (User) fileIO.readOperator(userID + ".txt");
+
+	public Boolean authorize(String accountID) {
+		u = (User) fileIO.readOperator(userID + ".txt");
+
 		return u.getAccList().contains(accountID);
 	}
 	
@@ -41,9 +46,23 @@ public class ServerFacade {
 		return result = new Message(MessageType.LOGIN); //i guess we can have client recognized message string = null as failed request.
 	}
 
+	
+	public Message getInfo(Message m) {
+		String[] datas = m.getMessage();
+		if (!authorize(datas[1])) {
+			return result = new Message(String.join(",", u.filePrep()), MessageType.LOGIN); //use this to update user on gui in case there is a change to accList
+		}
+		else {
+			Account accBuf = fileIO.readAccount(datas[1] + ".txt");
+			result = new Message(String.join(",", accBuf.filePrep()),MessageType.ACCOUNT_INFO);
+			return result;
+		}
+	}
+
+
 	public Message depositAmount(String accountID, String amount) {
 
-		if (!autherize(accountID)) {
+		if (!authorize(accountID)) {
 			fileIO.writeLog(accountID, "Unauthorized access attempt.");
 			return new Message(MessageType.ERROR);
 		}
@@ -73,7 +92,7 @@ public class ServerFacade {
 	}
 
 	public Message withdrawAmount(String accountID, String amount) {
-		if (!autherize(accountID)) {
+		if (!authorize(accountID)) {
 			fileIO.writeLog(accountID, "Unauthorized access attempt.");
 			return new Message(MessageType.ERROR);
 		}
@@ -114,7 +133,7 @@ public class ServerFacade {
 
 	public Message transferAmount(String accountID, String targetAccountID, String amount) {
 		
-		if (!autherize(accountID)) {
+		if (!authorize(accountID)) {
 			fileIO.writeLog(accountID, "Unauthorized access attempt.");
 			return new Message(MessageType.ERROR);
 		}
@@ -167,7 +186,7 @@ public class ServerFacade {
 	}
 
 	public Message transactionHistory(String accountID) {
-		if (!autherize(accountID)) {
+		if (!authorize(accountID)) {
 			fileIO.writeLog(accountID, "Unauthorized access attempt.");
 			return new Message("TRANSACTION_HISTORY", MessageType.ERROR);
 		}

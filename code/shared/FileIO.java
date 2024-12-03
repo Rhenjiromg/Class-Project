@@ -2,6 +2,7 @@ package shared;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -40,7 +41,9 @@ public class FileIO {
     }
 
     public void writeOperator(String filePath, Operator op){
-    	filePath = "code/" + filePath;
+
+    	//filePath = "code/" + filePath;
+
         long writeStamp = lockManager.getWriteLock(filePath); //get lock
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, false))) {
@@ -60,7 +63,9 @@ public class FileIO {
 
     // Read Account
     public Account readAccount(String filePath) {
-    	filePath = "code/" + filePath;
+
+    	//filePath = "code/" + filePath;
+
 
         long stamp = lockManager.getOptimist(filePath); //get optimist long for reference
         Account account = null;
@@ -183,6 +188,15 @@ public class FileIO {
         Time time = new Time();
         String logPath = "code/L" + logname + ".txt";
         String log = time.getCurrentTime() + ": " + status;
+        File file = new File(logPath);
+        if (!file.exists()) {
+        	try {
+				file.createNewFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
 
         long writeStamp = lockManager.getWriteLock(logPath);
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(logPath, true))) {

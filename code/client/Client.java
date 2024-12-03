@@ -195,7 +195,7 @@ public class Client {
 					        
 					    case ACCOUNT_INFO:
 					    	buffer = msg.getMessage();
-					    	if (buffer[1].charAt(1) == '0'){  //saving
+					    	if (buffer[0].charAt(1) == '0'){  //saving
 					    	    accbuffer = new SavingAccount(buffer[0], buffer[1], buffer[2], buffer[3], buffer[4]);
 					    	} else {
 					    	    accbuffer = new CheckingAccount(buffer[0], buffer[1], buffer[2], buffer[3]);
