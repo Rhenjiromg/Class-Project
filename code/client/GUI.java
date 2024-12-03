@@ -672,6 +672,16 @@ public class GUI {
 		String[] data = acc.filePrep().toArray(new String[0]);
 
 		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS)); // Add the data to the panel
+		if (data[0].charAt(1) == 0) {
+			JLabel label = new JLabel("Saving Account:");
+			infoPanel.add(label);
+			infoPanel.add(Box.createRigidArea(new Dimension(0, 5))); // Add spacing between labels
+		} else {
+			JLabel label = new JLabel("Checking Account: ");
+			infoPanel.add(label);
+			infoPanel.add(Box.createRigidArea(new Dimension(0, 5))); // Add spacing between labels
+		}
+		
 		for (String info : data) {
 			JLabel label = new JLabel(info);
 			infoPanel.add(label);
