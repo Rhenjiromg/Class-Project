@@ -13,7 +13,9 @@ import shared.User;
 public class ServerFacade {
 	private String userID;
 	private Message result;
+
 	private User u;
+
 	public ServerFacade() {
 		
 	}
@@ -24,8 +26,10 @@ public class ServerFacade {
 	
 	FileIO fileIO = new FileIO();
 	
+
 	public Boolean authorize(String accountID) {
 		u = (User) fileIO.readOperator(userID + ".txt");
+
 		return u.getAccList().contains(accountID);
 	}
 	
@@ -41,6 +45,7 @@ public class ServerFacade {
 		
 		return result = new Message(MessageType.LOGIN); //i guess we can have client recognized message string = null as failed request.
 	}
+
 	
 	public Message getInfo(Message m) {
 		String[] datas = m.getMessage();
@@ -53,6 +58,7 @@ public class ServerFacade {
 			return result;
 		}
 	}
+
 
 	public Message depositAmount(String accountID, String amount) {
 
