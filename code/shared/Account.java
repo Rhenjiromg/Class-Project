@@ -7,13 +7,19 @@ import java.util.ArrayList;
 public class Account {
 
 	protected String accountID;
-	protected static int count = 0;
+	protected static int count = 0; //right now this is instance based... might want to get some sort of reference to keep in between?
 	protected double balance;
 	protected LocalDate creationDate;
 	protected LocalDate lastCheck;
+	private boolean updateCount = true;
 	
 	// Account constructor, for create new account
 	public Account() {
+		/*
+    	while (count == 0) { //condition on new server that doesnt know of pre-created files
+			//TODO: logic to synch count with databbase here
+		}
+		*/
 		accountID = Integer.toString(++count);
 
 		creationDate = LocalDate.now();

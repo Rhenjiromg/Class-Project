@@ -10,6 +10,11 @@ public class Operator {
     protected UserState state;
 
     public Operator(String n, String pass){
+    	/*
+    	while (count == 0) { //condition on new server that doesnt know of pre-created files
+			//TODO: logic to synch count with databbase here
+		}
+		*/
         this.name = n;
         this.ID = String.valueOf(++count);
         this.password = pass;
