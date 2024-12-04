@@ -1,5 +1,6 @@
 package shared;
 
+//while bal dip below 100, -5. fee is charge on operation while this is true
 public class CheckingAccount extends Account {
 	private final double Fee = 5.0;
 	

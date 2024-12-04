@@ -35,7 +35,7 @@ public class Client {
 		public void run() {
 			Socket socket = null;
 			try {
-				socket = new Socket("localhost", port);
+				socket = new Socket("134.154.76.42", port);
 				new Thread(new Session(socket)).start();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -48,10 +48,10 @@ public class Client {
 			private ObjectOutputStream out;
 			private ObjectInputStream in;
 
-			
-			//queues here so its socket bounded
+			// queues here so its socket bounded
 			private Queue<Message> outbound = new ArrayDeque<>();
 			private Queue<Message> inbound = new ArrayDeque<>();
+
 			private synchronized void addQueue(Queue<Message> queue, Message message) {
 				queue.add(message);
 				queue.notify();
@@ -63,9 +63,9 @@ public class Client {
 
 			public Session(Socket s) {
 				this.soc = s;
-				//pass queue to gui by reference
+				// pass queue to gui by reference
 				gui = new GUI(outbound);
-				
+
 				try {
 					this.out = new ObjectOutputStream(soc.getOutputStream());
 					this.in = new ObjectInputStream(soc.getInputStream());
@@ -101,7 +101,6 @@ public class Client {
 
 				System.out.println("error: threads exit prematurely");
 			}
-
 
 			// Start: listen for session
 
@@ -159,7 +158,7 @@ public class Client {
 						}
 					}
 				}
-				
+
 				private class Process implements Runnable {
 					private Message msg;
 
@@ -175,88 +174,92 @@ public class Client {
 						Operator opbuffer;
 						Account accbuffer;
 						switch (msg.getType()) {
-						//this way only when log in is success then we show display?
-					    case LOGIN:
-							
-							buffer = msg.getMessage();
-							if (buffer[1].charAt(1) == '0'){ //user
-								
-								for (int i = 4; i < buffer.length; i++){
+							// this way only when log in is success then we show display?
+							case LOGIN:
+
+								buffer = msg.getMessage();
+								if (buffer[1].charAt(1) == '0') { // user
+
+									for (int i = 4; i < buffer.length; i++) {
+										bList.add(buffer[i]);
+									}
+									opbuffer = new User(buffer[0], buffer[1], buffer[2], buffer[3], bList);
+									gui.userDisplay((User) opbuffer);
+								} else {
+									opbuffer = new SuperUser(buffer[0], buffer[1], buffer[2], buffer[3]);
+									gui.superUserDisplay((SuperUser) opbuffer);
+								}
+								break;
+							// try to run this, see if it can update the acc on gui while still display
+
+							case ACCOUNT_INFO:
+								buffer = msg.getMessage();
+								if (buffer[0].charAt(1) == '0') { // saving
+									accbuffer = new SavingAccount(buffer[0], buffer[1], buffer[2], buffer[3],
+											buffer[4]);
+								} else {
+									accbuffer = new CheckingAccount(buffer[0], buffer[1], buffer[2], buffer[3]);
+								}
+								gui.updateAccount(accbuffer);
+								break;
+							case UPDATEERROR: // this hack is going to be call with any change that reflect on the
+												// display of a user
+								buffer = msg.getMessage();
+								for (int i = 4; i < buffer.length; i++) {
 									bList.add(buffer[i]);
 								}
 								opbuffer = new User(buffer[0], buffer[1], buffer[2], buffer[3], bList);
-								gui.userDisplay((User) opbuffer);
-							} else {
-								opbuffer = new SuperUser(buffer[0], buffer[1], buffer[2], buffer[3]);
-								gui.superUserDisplay((SuperUser) opbuffer);
-							}
-					        break;
-						//try to run this, see if it can update the acc on gui while still display
-					        
-					    case ACCOUNT_INFO:
-					    	buffer = msg.getMessage();
-					    	if (buffer[0].charAt(1) == '0'){  //saving
-					    	    accbuffer = new SavingAccount(buffer[0], buffer[1], buffer[2], buffer[3], buffer[4]);
-					    	} else {
-					    	    accbuffer = new CheckingAccount(buffer[0], buffer[1], buffer[2], buffer[3]);
-					    	}
-							gui.updateAccount(accbuffer);
-							break;
-					    case UPDATEERROR: //this hack is going to be call with any change that reflect on the display of a user
-					    	buffer = msg.getMessage();
-					    	for (int i = 4; i < buffer.length; i++){
-								bList.add(buffer[i]);
-							}
-					    	opbuffer = new User(buffer[0], buffer[1], buffer[2], buffer[3], bList);
-					    	gui.updateUser((User) opbuffer);
-					    	break;
-					    case DEPOSIT:
-					    	buffer = msg.getMessage();
-					    	if (buffer[0].charAt(1) == '0'){  //saving
-					    	    accbuffer = new SavingAccount(buffer[0], buffer[1], buffer[2], buffer[3], buffer[4]);
-					    	} else {
-					    	    accbuffer = new CheckingAccount(buffer[0], buffer[1], buffer[2], buffer[3]);
-					    	}
-							gui.updateAccount(accbuffer);
-							break;
-						//TODO:ADD TO THIS
-					    case WITHDRAW:
+								gui.updateUser((User) opbuffer);
+								break;
+							case DEPOSIT:
+								buffer = msg.getMessage();
+								if (buffer[0].charAt(1) == '0') { // saving
+									accbuffer = new SavingAccount(buffer[0], buffer[1], buffer[2], buffer[3],
+											buffer[4]);
+								} else {
+									accbuffer = new CheckingAccount(buffer[0], buffer[1], buffer[2], buffer[3]);
+								}
+								gui.updateAccount(accbuffer);
+								break;
+							// TODO:ADD TO THIS
+							case WITHDRAW:
 
-					    	buffer = msg.getMessage();
-					    	if (buffer[0].charAt(1) == '0'){  //saving
-					    	    accbuffer = new SavingAccount(buffer[0], buffer[1], buffer[2], buffer[3], buffer[4]);
-					    	} else {
-					    	    accbuffer = new CheckingAccount(buffer[0], buffer[1], buffer[2], buffer[3]);
-					    	}
-							gui.updateAccount(accbuffer);
+								buffer = msg.getMessage();
+								if (buffer[0].charAt(1) == '0') { // saving
+									accbuffer = new SavingAccount(buffer[0], buffer[1], buffer[2], buffer[3],
+											buffer[4]);
+								} else {
+									accbuffer = new CheckingAccount(buffer[0], buffer[1], buffer[2], buffer[3]);
+								}
+								gui.updateAccount(accbuffer);
 
-							break;
-					    case TRANSFER:
-					    	buffer = msg.getMessage();
-					    	if (buffer[0].charAt(1) == '0'){  //saving
-					    	    accbuffer = new SavingAccount(buffer[0], buffer[1], buffer[2], buffer[3], buffer[4]);
-					    	} else {
-					    	    accbuffer = new CheckingAccount(buffer[0], buffer[1], buffer[2], buffer[3]);
-					    	}
-							gui.updateAccount(accbuffer);
+								break;
+							case TRANSFER:
+								buffer = msg.getMessage();
+								if (buffer[0].charAt(1) == '0') { // saving
+									accbuffer = new SavingAccount(buffer[0], buffer[1], buffer[2], buffer[3],
+											buffer[4]);
+								} else {
+									accbuffer = new CheckingAccount(buffer[0], buffer[1], buffer[2], buffer[3]);
+								}
+								gui.updateAccount(accbuffer);
 
-							break;
-					    case TRANSACTION_HISTORY:
-					    	buffer = msg.getMessage();
-							gui.updateInfo(buffer);
-							break;
-						case ERROR:
-					    	
-					    	break; 	
-					    default:
-					    	break;
+								break;
+							case TRANSACTION_HISTORY:
+								buffer = msg.getMessage();
+								gui.updateInfo(buffer);
+								break;
+							case ERROR:
+
+								break;
+							default:
+								break;
 						}
 					}
 
 					// Check to establish basic handshake, once that is done we got a session and
 					// constantly send txt until logout bool is true
-					
-					
+
 					//
 					//
 					// public void text() {

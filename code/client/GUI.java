@@ -7,15 +7,7 @@ import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayDeque;
 import java.util.Queue;
-
-import javax.swing.border.EmptyBorder;
-
-import shared.*;
-
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -29,20 +21,15 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
-
-import shared.Account;
-import shared.Message;
-import shared.MessageType;
-import shared.Operator;
-import shared.User;
+import shared.*;
 
 // ADD ACCOUNT AND OPERATOR WHEN DONE.
 
 public class GUI {
 	private Operator op;
-	
+
 	private Account acc;
-	
+
 	private Queue<Message> outbound;
 	private String accID = ""; // this is where the accID is added to from displayScroll buttons (acc selector)
 	boolean isLogin = false;
@@ -66,7 +53,11 @@ public class GUI {
 			"Transfer",
 			"Make me Millionaire"
 	};
-	
+
+	// right now the biggest issue with user/account construction is that the count
+	// used in unique id is session based
+	// -> risk of duplicating which each server run, maybe we can have a data file
+	// that record those metadata like operator count and acc count
 	private final String[] superUserDisplay = {
 			"Add User",
 			"Change User",
@@ -75,7 +66,7 @@ public class GUI {
 	};
 
 	private JButton[] accountButtons;
-	private JButton[] SUButtons = new JButton[superUserDisplay.length-1];
+	private JButton[] SUButtons = new JButton[superUserDisplay.length - 1];
 	// add operator, user
 	// add account
 
@@ -88,7 +79,7 @@ public class GUI {
 
 	// returns String Array, array[0] = name, array[1] = password;
 	public Message login() {
-		
+
 		Message handshake = new Message();
 		JPanel panel = new JPanel(new GridLayout(2, 2, 5, 5));
 		JLabel userNameLabel = new JLabel("Username: ");
@@ -114,80 +105,78 @@ public class GUI {
 				null,
 				new Object[] { loginButton, cancelButton }, loginButton);
 
-		
-			// Open a dialog from the option pane
-			JDialog dialog = optionPane.createDialog("Login Screen");
+		// Open a dialog from the option pane
+		JDialog dialog = optionPane.createDialog("Login Screen");
 
-			loginButton.addActionListener(e -> {
-				optionPane.setValue(loginButton); // record login press
-				dialog.dispose();
-			});
+		loginButton.addActionListener(e -> {
+			optionPane.setValue(loginButton); // record login press
+			dialog.dispose();
+		});
 
-			cancelButton.addActionListener(e -> {
-				optionPane.setValue(cancelButton); // record cancel press
-				dialog.dispose();
-			});
+		cancelButton.addActionListener(e -> {
+			optionPane.setValue(cancelButton); // record cancel press
+			dialog.dispose();
+		});
 
-			dialog.setVisible(true);
+		dialog.setVisible(true);
 
-			// if login pressed return text field values.
-			if (optionPane.getValue() == loginButton) {
-				String username = userNameField.getText(); //this get the userID not user's name, to be clear!
-				String password = new String(passwordField.getText());
-				String data = username + "," + password;
-				handshake = new Message(data, MessageType.LOGIN);
-			}
-		
+		// if login pressed return text field values.
+		if (optionPane.getValue() == loginButton) {
+			String username = userNameField.getText(); // this get the userID not user's name, to be clear!
+			String password = new String(passwordField.getText());
+			String data = username + "," + password;
+			handshake = new Message(data, MessageType.LOGIN);
+		}
 
 		return handshake;
 	}
-	
+
 	private void checkClient() {
-	    if ((userFrame == null || !userFrame.isVisible()) &&
-	        (suFrame == null || !suFrame.isVisible())) {
-	        System.exit(0); // Terminate the client
-	    }
+		if ((userFrame == null || !userFrame.isVisible()) &&
+				(suFrame == null || !suFrame.isVisible())) {
+			System.exit(0); // Terminate the client
+		}
 	}
 
-
 	public void userDisplay(User user) {
-		op = user; //this to allow SU to work on a user after log in to that user. Since op is shared
+		op = user; // this to allow SU to work on a user after log in to that user. Since op is
+					// shared
 		for (JButton but : SUButtons) {
 			if (but == null) {
 				break;
 			}
 			but.setEnabled(true); // Enable each button now that we selected an account to reference
 		}
-		//these lines are hack to represent SU having a user to work with their methods!
-		//when SU acquire a user, they do it through calling login again and resulted in this method
-		
-		//TODO: better condition!
-		if (hideU) { //this to check if we login or we leverage this log in for superuser hack
+		// these lines are hack to represent SU having a user to work with their
+		// methods!
+		// when SU acquire a user, they do it through calling login again and resulted
+		// in this method
+
+		// TODO: better condition!
+		if (hideU) { // this to check if we login or we leverage this log in for superuser hack
 			updateUser(user);
 			userFrame.setVisible(true);
-			return; //this we know we just update user display
+			return; // this we know we just update user display
 		}
-		
-		userFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); 
-		// Prevent default close behavior 
-		// Add a window listener to handle the close event 
-		userFrame.addWindowListener((WindowListener) new WindowAdapter() { 
-			@Override 
-			public void windowClosing(WindowEvent e) { 
+
+		userFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		// Prevent default close behavior
+		// Add a window listener to handle the close event
+		userFrame.addWindowListener((WindowListener) new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
 				op = null;
-				if (suFrame != null && suFrame.isVisible()) {  //only if we are working with su
+				if (suFrame != null && suFrame.isVisible()) { // only if we are working with su
 					updateSuperUser(su); // refresh superuser display to default
 					op = null;
 					userFrame.setVisible(false); // trick to hide user frame
-				} 
-				else {
+				} else {
 					userFrame.dispose();
 				}
 
 			}
 		});
-			
-		
+
 		userFrame.setSize(800, 800);
 
 		// dispose it if super user calls it
@@ -234,29 +223,28 @@ public class GUI {
 	// TODO: superGUI not done, need revise
 	public void superUserDisplay(SuperUser SU) {
 		suFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		suFrame.addWindowListener((WindowListener) new WindowAdapter() { 
-			@Override 
-			public void windowClosing(WindowEvent e) { 
+		suFrame.addWindowListener((WindowListener) new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
 				checkClient();
 			}
 		});
-		
-		su = SU; //bandaid hack for closing userpanel
+
+		su = SU; // bandaid hack for closing userpanel
 		suFrame.setSize(950, 800);
 		suFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JPanel mainButtonPanel = new JPanel();
 		JPanel buttonPanel = new JPanel(new GridLayout(superUserDisplay.length, 0)); // for buttons
 
-		
 		for (int i = 0; i < superUserDisplay.length; i++) {
 			String option = superUserDisplay[i];
 			JButton button = new JButton(option);
 			if (i > 0) {
-				SUButtons[i-1] = button; // store button in array for global reference
+				SUButtons[i - 1] = button; // store button in array for global reference
 				button.setEnabled(false); // Initially disabled
 			}
-			
+
 			button.addActionListener(e -> {
 				methodCallerSU(option);
 			});
@@ -264,7 +252,7 @@ public class GUI {
 			button.setPreferredSize(new Dimension(250, 50));
 			buttonPanel.add(button);
 		}
-		
+
 		// displayInfoPanel in scroll-able form (updated by client)
 		// infoPanel in scroll-able form (updated by client)
 		// TODO: at first display superuser dont have a user memory yet to display this
@@ -286,7 +274,7 @@ public class GUI {
 	// SOME FUNCTIONS NEED MERGING, REPETITIVE CODE
 	// TODO: handle cancels
 	private void methodCaller(String s, String r) {
-		String data = op.getID() + "," + r; //prepared data for user, r get from selecting account button
+		String data = op.getID() + "," + r; // prepared data for user, r get from selecting account button
 		String buffer;
 		switch (s) {
 			case "Account Detail":
@@ -343,9 +331,9 @@ public class GUI {
 				break;
 		}
 	}
-	
+
 	private void methodCallerSU(String s) {
-		
+
 		switch (s) {
 			// TODO: CONT FIXING LATER
 			// ---------------------------- Super User ----------------------------
@@ -365,13 +353,14 @@ public class GUI {
 				break;
 			case "Deactivate Account":
 				synchronized (outbound) {
-					addQueue(outbound, new Message(op.getID()+","+ removeAccount(), MessageType.DEACTIVATE_ACCOUNT));
+					addQueue(outbound, new Message(op.getID() + "," + removeAccount(), MessageType.DEACTIVATE_ACCOUNT));
 				}
 				break;
 			case "Change User":
 				// Ask superUser: which user's account they want access?
 				// open up user Display for that account.
-				//addQueue(outbound, new Message(deleteAccount(), MessageType.DEACTIVATE_USER));
+				// addQueue(outbound, new Message(deleteAccount(),
+				// MessageType.DEACTIVATE_USER));
 				userFrame.setVisible(false);
 				op = null;
 				hideU = true;
@@ -525,9 +514,9 @@ public class GUI {
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
-
 		JPanel row2 = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		JLabel accountLabel = new JLabel("Enter Account ID, for create account enter A0 for saving and A1 for checking: ");
+		JLabel accountLabel = new JLabel(
+				"Enter Account ID, for create account enter A0 for saving and A1 for checking: ");
 		JTextField accountText = new JTextField(10);
 		row2.add(accountLabel);
 		row2.add(accountText);
@@ -565,7 +554,8 @@ public class GUI {
 
 		return ""; // if canceled then return empty string
 	}
-// for now what this do is remove an acc from selected user
+
+	// for now what this do is remove an acc from selected user
 	private String removeAccount() {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		JLabel label = new JLabel("Enter Account ID: ");
@@ -630,24 +620,23 @@ public class GUI {
 		displayPanel.repaint(); // Repaint the panel to show the updated content
 	}
 
-	/* Updates the user info
-	public void setUserPanelInfo(String[] s) {
-		JScrollPane displayScroll = getScrollableDisplayPanel(op);
-	}
-	*/
-
+	/*
+	 * Updates the user info
+	 * public void setUserPanelInfo(String[] s) {
+	 * JScrollPane displayScroll = getScrollableDisplayPanel(op);
+	 * }
+	 */
 
 	private JScrollPane getScrollableInfoPanel(Operator ope) {
 
-		// Clear old info from the panel 
-		infoPanel.removeAll(); 
-		infoPanel.revalidate(); 
-		infoPanel.repaint(); 
-				
+		// Clear old info from the panel
+		infoPanel.removeAll();
+		infoPanel.revalidate();
+		infoPanel.repaint();
+
 		// Get new data
 
 		String[] data = ope.getInfo().toArray(new String[0]);
-
 
 		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS)); // Add the data to the panel
 		for (String info : data) {
@@ -657,22 +646,22 @@ public class GUI {
 		} // Create a scroll pane to wrap the panel
 		JScrollPane scrollPane = new JScrollPane(infoPanel);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		scrollPane.getVerticalScrollBar().setUnitIncrement(20); // increase scroll speed
+		scrollPane.getVerticalScrollBar().setUnitIncrement(20);
 		scrollPane.setBorder(new EmptyBorder(10, 0, 10, 10));
 		return scrollPane;
 	}
 
 	private JScrollPane getScrollableInfoPanel(Account acc) {
-		// Clear old info from the panel 
-		infoPanel.removeAll(); 
-		infoPanel.revalidate(); 
-		infoPanel.repaint(); 
-		
+		// Clear old info from the panel
+		infoPanel.removeAll();
+		infoPanel.revalidate();
+		infoPanel.repaint();
+
 		// Get new data
 		String[] data = acc.filePrep().toArray(new String[0]);
 
 		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS)); // Add the data to the panel
-		if (data[0].charAt(1) == 0) {
+		if (data[0].charAt(1) == '0') {
 			JLabel label = new JLabel("Saving Account:");
 			infoPanel.add(label);
 			infoPanel.add(Box.createRigidArea(new Dimension(0, 5))); // Add spacing between labels
@@ -681,7 +670,7 @@ public class GUI {
 			infoPanel.add(label);
 			infoPanel.add(Box.createRigidArea(new Dimension(0, 5))); // Add spacing between labels
 		}
-		
+
 		for (String info : data) {
 			JLabel label = new JLabel(info);
 			infoPanel.add(label);
@@ -689,17 +678,17 @@ public class GUI {
 		} // Create a scroll pane to wrap the panel
 		JScrollPane scrollPane = new JScrollPane(infoPanel);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		scrollPane.getVerticalScrollBar().setUnitIncrement(20); // increase scroll speed
+		scrollPane.getVerticalScrollBar().setUnitIncrement(20);
 		scrollPane.setBorder(new EmptyBorder(10, 0, 10, 10));
 		return scrollPane;
 	}
 
 	private JScrollPane getScrollableInfoPanel(String[] data) {
-		// Clear old info from the panel 
-		infoPanel.removeAll(); 
-		infoPanel.revalidate(); 
-		infoPanel.repaint(); 
-		
+		// Clear old info from the panel
+		infoPanel.removeAll();
+		infoPanel.revalidate();
+		infoPanel.repaint();
+
 		// Get new data
 
 		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS)); // Add the data to the panel
@@ -710,28 +699,28 @@ public class GUI {
 		} // Create a scroll pane to wrap the panel
 		JScrollPane scrollPane = new JScrollPane(infoPanel);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		scrollPane.getVerticalScrollBar().setUnitIncrement(20); // increase scroll speed
+		scrollPane.getVerticalScrollBar().setUnitIncrement(20);
 		scrollPane.setBorder(new EmptyBorder(10, 0, 10, 10));
 		return scrollPane;
 	}
-	
+
 	private JScrollPane getScrollableDisplayPanel(SuperUser SU) {
-		JPanel emptyPanel = new JPanel(); 
+		JPanel emptyPanel = new JPanel();
 		emptyPanel.setLayout(new BoxLayout(emptyPanel, BoxLayout.Y_AXIS));
-		JScrollPane emptyScrollPane = new JScrollPane(emptyPanel); 
+		JScrollPane emptyScrollPane = new JScrollPane(emptyPanel);
 
 		emptyScrollPane.setBorder(new EmptyBorder(10, 10, 10, 0));
 		return emptyScrollPane;
 	}
 
 	private JScrollPane getScrollableDisplayPanel(User op2) {
-		// Clear old info from the panel 
-		displayPanel.removeAll(); 
-		displayPanel.revalidate(); 
-		displayPanel.repaint(); 
-				
+		// Clear old info from the panel
+		displayPanel.removeAll();
+		displayPanel.revalidate();
+		displayPanel.repaint();
+
 		// Get new data
-		if (op2 != null){
+		if (op2 != null) {
 			String[] data = op2.getAcc();
 			SwingUtilities.invokeLater(() -> {
 				displayPanel.setLayout(new BoxLayout(displayPanel, BoxLayout.Y_AXIS));
@@ -739,7 +728,7 @@ public class GUI {
 				// Add buttons to the existing display panel
 				for (String option : data) {
 					JButton button = new JButton(option);
-		
+
 					button.addActionListener(e -> {
 						// Handle the button, pass the accountID to string req!
 						accID = option;
@@ -751,9 +740,9 @@ public class GUI {
 					displayPanel.add(Box.createRigidArea(new Dimension(0, 5)));
 					// Add spacing between buttons
 				} // Create a scroll pane to wrap the panel
-			});	
+			});
 		}
-		
+
 		JScrollPane scrollPane = new JScrollPane(displayPanel);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(20); // Increase scroll speed
@@ -761,44 +750,46 @@ public class GUI {
 		return scrollPane;
 	}
 
-	// TODO: to use these, point to mainUserPanel for userdisplay, and mainSUPanel for SUperUser display updates
-	// For SuperUser updates, this is ideally only need to be call when you change between user 
+	// TODO: to use these, point to mainUserPanel for userdisplay, and mainSUPanel
+	// for SUperUser display updates
+	// For SuperUser updates, this is ideally only need to be call when you change
+	// between user
 	// caller need to make a user object with the new updated list of accounts
 	// before calling
 	public void updateUser(User u) {
 		SwingUtilities.invokeLater(() -> {
 			// Remove the old JScrollPanes
 			mainUserPanel.remove(1); // Removing the center JScrollPane (displayScroll)
-	
+
 			// Create updated JScrollPanes with new content
 			JScrollPane updatedDisplayScroll = getScrollableDisplayPanel(u); // TODO:fix later, involve method fixing
-	
+
 			// Add the new JScrollPanes
 			mainUserPanel.add(updatedDisplayScroll, 1); // Add to center position (index 1)
-	
+
 			// Revalidate and repaint to ensure the UI is updated
 			mainUserPanel.revalidate();
 			mainUserPanel.repaint();
-		});	
+		});
 	}
-	
+
 	public void updateSuperUser(User u) {
 		SwingUtilities.invokeLater(() -> {
 			// Remove the old JScrollPanes
 			mainSUPanel.remove(1); // Removing the center JScrollPane (displayScroll)
-	
+
 			// Create updated JScrollPanes with new content
 			JScrollPane updatedDisplayScroll = getScrollableDisplayPanel(u); // TODO:fix later, involve method fixing
-	
+
 			// Add the new JScrollPanes
 			mainSUPanel.add(updatedDisplayScroll, 1); // Add to center position (index 1)
-	
+
 			// Revalidate and repaint to ensure the UI is updated
 			mainSUPanel.revalidate();
 			mainSUPanel.repaint();
-		});	
+		});
 	}
-	
+
 	public void updateSuperUser(SuperUser su) {
 		SwingUtilities.invokeLater(() -> {
 			for (JButton but : SUButtons) {
@@ -806,17 +797,17 @@ public class GUI {
 			}
 			// Remove the old JScrollPanes
 			mainSUPanel.remove(1); // Removing the center JScrollPane (displayScroll)
-	
+
 			// Create updated JScrollPanes with new content
 			JScrollPane updatedDisplayScroll = getScrollableDisplayPanel(su); // TODO:fix later, involve method fixing
-	
+
 			// Add the new JScrollPanes
 			mainSUPanel.add(updatedDisplayScroll, 1); // Add to center position (index 1)
-	
+
 			// Revalidate and repaint to ensure the UI is updated
 			mainSUPanel.revalidate();
 			mainSUPanel.repaint();
-		});	
+		});
 	}
 
 	// caller need to make an account type object with the new updated list of
@@ -838,7 +829,7 @@ public class GUI {
 			mainUserPanel.repaint();
 		});
 	}
-	
+
 	public void updateInfo(String[] data) {
 		SwingUtilities.invokeLater(() -> {
 			// Remove the old JScrollPanes
