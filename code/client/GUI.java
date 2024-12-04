@@ -67,6 +67,8 @@ public class GUI {
 			"Make me Millionaire"
 	};
 	
+	//right now the biggest issue with user/account construction is that the count used in unique id is session based
+	//-> risk of duplicating which each server run, maybe we can have a data file that record those metadata like operator count and acc count
 	private final String[] superUserDisplay = {
 			"Add User",
 			"Change User",
@@ -657,7 +659,7 @@ public class GUI {
 		} // Create a scroll pane to wrap the panel
 		JScrollPane scrollPane = new JScrollPane(infoPanel);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		scrollPane.getVerticalScrollBar().setUnitIncrement(20); // increase scroll speed
+		scrollPane.getVerticalScrollBar().setUnitIncrement(20);  
 		scrollPane.setBorder(new EmptyBorder(10, 0, 10, 10));
 		return scrollPane;
 	}
@@ -672,7 +674,7 @@ public class GUI {
 		String[] data = acc.filePrep().toArray(new String[0]);
 
 		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS)); // Add the data to the panel
-		if (data[0].charAt(1) == 0) {
+		if (data[0].charAt(1) == '0') {
 			JLabel label = new JLabel("Saving Account:");
 			infoPanel.add(label);
 			infoPanel.add(Box.createRigidArea(new Dimension(0, 5))); // Add spacing between labels
@@ -689,7 +691,7 @@ public class GUI {
 		} // Create a scroll pane to wrap the panel
 		JScrollPane scrollPane = new JScrollPane(infoPanel);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		scrollPane.getVerticalScrollBar().setUnitIncrement(20); // increase scroll speed
+		scrollPane.getVerticalScrollBar().setUnitIncrement(20);  
 		scrollPane.setBorder(new EmptyBorder(10, 0, 10, 10));
 		return scrollPane;
 	}
@@ -710,7 +712,7 @@ public class GUI {
 		} // Create a scroll pane to wrap the panel
 		JScrollPane scrollPane = new JScrollPane(infoPanel);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		scrollPane.getVerticalScrollBar().setUnitIncrement(20); // increase scroll speed
+		scrollPane.getVerticalScrollBar().setUnitIncrement(20);  
 		scrollPane.setBorder(new EmptyBorder(10, 0, 10, 10));
 		return scrollPane;
 	}

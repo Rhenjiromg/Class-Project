@@ -236,28 +236,33 @@ public class ServerFacade {
 	*/
 	
 	public Message addAccount(Message m) {
-
-		String[] datas = m.getMessage(); //accID 0
-		File file = new File(datas[0] + ".txt");
+ 
+		String[] datas = m.getMessage(); //userID 0, accID 1
+		File file = new File(datas[1] + ".txt");
 		
 		
 		u = (User) fileIO.readOperator(userID + ".txt");
 		Account acc;
-		if (file.exists()) {
-			u.addAccount(datas[1]);
-		} else {
+		 if (datas[1].length() == 2) {
 			if ('0' == datas[1].charAt(1)) { // savings
 				acc = new SavingAccount();
 				 fileIO.writeAccount(acc.getAccountID() + ".txt", acc);
 			} else {
 				acc = new CheckingAccount();
 				fileIO.writeAccount(acc.getAccountID() + ".txt", acc);
-			}			
+			}	
+			//bug note: forgot to add acc to user here!
+			u.addAccount(acc.getAccountID());
+			fileIO.writeOperator(userID + ".txt", u);
+			String data = String.join(",", u.filePrep());
+			return new Message(data, MessageType.UPDATEERROR);
+		} else if (file.exists()) {
+			u.addAccount(datas[1]);
+			fileIO.writeOperator(userID + ".txt", u);
+						
 		}
-		fileIO.writeOperator(userID + ".txt", u);
-		String data = String.join(",", u.filePrep());
-		return new Message(data, MessageType.UPDATEERROR);
-
+		 String data = String.join(",", u.filePrep());
+		 return new Message(data, MessageType.UPDATEERROR);
 	}
 
 	
@@ -270,7 +275,7 @@ public class ServerFacade {
 			return result = new Message(String.join(",", u.filePrep()), MessageType.UPDATEERROR);
 		} else {
 			u.popAcc(datas[1]);
-			fileIO.writeOperator(userID, u);
+			fileIO.writeOperator(userID + ".txt", u);
 			String data = String.join(",", u.filePrep());
 			return new Message(data, MessageType.UPDATEERROR);
 		}		
